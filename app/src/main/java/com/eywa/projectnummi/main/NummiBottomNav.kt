@@ -5,14 +5,31 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.utils.NummiIconInfo
+
+@Composable
+fun NummiBottomNav(
+        navController: NavController,
+        onClick: (destination: NavRoute) -> Unit,
+) {
+    val current by navController.currentBackStackEntryAsState()
+    NummiBottomNav(
+            currentRoute = current?.destination?.route,
+            onClick = onClick,
+    )
+}
 
 @Composable
 fun NummiBottomNav(
@@ -20,11 +37,12 @@ fun NummiBottomNav(
         onClick: (destination: NavRoute) -> Unit,
 ) {
     BottomNavigation(
-            backgroundColor = Color.Black,
-            contentColor = Color.White,
+            backgroundColor = NummiTheme.colors.navBar.main,
+            contentColor = NummiTheme.colors.navBar.content,
     ) {
         NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Default.Add),
+                icon = NummiIconInfo.VectorIcon(Icons.Outlined.Add),
+                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Add),
                 label = "Add",
                 contentDescription = "Add transactions",
                 destination = MainNavRoute.ADD_TRANSACTIONS,
@@ -32,7 +50,8 @@ fun NummiBottomNav(
                 onClick = onClick,
         )
         NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Default.List),
+                icon = NummiIconInfo.VectorIcon(Icons.Outlined.List),
+                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.List),
                 label = "View",
                 contentDescription = "View transactions",
                 destination = MainNavRoute.VIEW_TRANSACTIONS,

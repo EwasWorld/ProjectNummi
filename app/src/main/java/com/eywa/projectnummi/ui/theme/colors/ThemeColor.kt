@@ -8,6 +8,6 @@ data class ThemeColor(
         /**
          * e.g. the colour for text on [main]
          */
-        val on: Color,
+        val content: Color,
 )
 

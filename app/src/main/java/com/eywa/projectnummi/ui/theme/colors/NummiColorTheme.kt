@@ -9,12 +9,12 @@ import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
 enum class NummiColorTheme(
         val colors: ColorPalette
 ) {
-    LIGHT(
+    MAIN(
             colors = ColorPalette()
     ),
-    DARK(
+    SECONDARY(
             colors = ColorPalette(
-                    appBackground = ThemeColor(main = Color.Black, on = Color.White)
+                    appBackground = ThemeColor(main = Color.White, content = Color.Black)
             )
     )
 }

@@ -7,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.NummiColorTheme
-import com.eywa.projectnummi.ui.theme.currentAppTheme
+import com.eywa.projectnummi.ui.theme.currentColorTheme
 
 @Composable
-fun NummiScreenPreviewWrapper(theme: NummiColorTheme = currentAppTheme, content: @Composable () -> Unit) {
+fun NummiScreenPreviewWrapper(theme: NummiColorTheme = currentColorTheme, content: @Composable () -> Unit) {
     NummiTheme(theme) {
         Box(
                 modifier = Modifier

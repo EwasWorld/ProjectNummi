@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -19,11 +20,14 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val navRoutes = MainNavRoute.values()
 
+                window.navigationBarColor = NummiTheme.colors.androidNavButtons.toArgb()
+                window.statusBarColor = NummiTheme.colors.statusBar.toArgb()
+
                 Scaffold(
                         backgroundColor = NummiTheme.colors.appBackground.main,
                         bottomBar = {
                             NummiBottomNav(
-                                    currentRoute = navController.currentDestination?.route,
+                                    navController = navController,
                                     onClick = { navController.navigate(it.routeBase) },
                             )
                         }

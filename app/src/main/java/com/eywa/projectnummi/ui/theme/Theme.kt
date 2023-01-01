@@ -6,17 +6,21 @@ import com.eywa.projectnummi.ui.theme.colors.NummiColorTheme
 import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
 
 
+val LocalDimens = staticCompositionLocalOf { Dimens() }
+
 val LocalColorPalette = staticCompositionLocalOf { ColorPalette() }
-var currentAppTheme by mutableStateOf(NummiColorTheme.LIGHT)
+var currentColorTheme by mutableStateOf(NummiColorTheme.MAIN)
 
 
 @Composable
 fun NummiTheme(
-        theme: NummiColorTheme = currentAppTheme,
+        colorTheme: NummiColorTheme = currentColorTheme,
+        dimens: Dimens = Dimens(),
         content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-            LocalColorPalette provides theme.colors,
+            LocalColorPalette provides colorTheme.colors,
+            LocalDimens provides dimens,
     ) {
         MaterialTheme(
                 typography = Typography,
@@ -30,4 +34,7 @@ object NummiTheme {
     val colors: ColorPalette
         @Composable
         get() = LocalColorPalette.current
+    val dimens: Dimens
+        @Composable
+        get() = LocalDimens.current
 }
