@@ -5,6 +5,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Immutable
-data class Dimens(
+data class NummiDimens(
         val screenPadding: Dp = 20.dp,
 )

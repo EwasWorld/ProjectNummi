@@ -3,6 +3,7 @@ package com.eywa.projectnummi.features.addTransactions
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.TempInMemoryDb
+import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
 import com.eywa.projectnummi.model.Transaction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,14 +17,17 @@ class AddTransactionsViewModel : ViewModel() {
 
     fun handle(action: AddTransactionsIntent) {
         when (action) {
-            is AddTransactionsIntent.AmountChanged -> {
-                _state.update { it.copy(enteredAmount = action.amount) }
+            is AmountChanged -> {
+                _state.update { it.copy(amount = action.amount) }
             }
-            AddTransactionsIntent.CreateTransaction -> viewModelScope.launch {
-                val amount = state.value.enteredAmount
-                _state.update { it.copy(enteredAmount = "") }
+            is NameChanged -> {
+                _state.update { it.copy(name = action.name) }
+            }
+            CreateTransaction -> viewModelScope.launch {
+                val oldState = state.value
+                _state.update { it.copy(amount = "", name = "") }
                 TempInMemoryDb.addTransaction(
-                        Transaction(0, (amount.toDouble() * 100).roundToInt())
+                        Transaction(0, oldState.name, (oldState.amount.toDouble() * 100).roundToInt())
                 )
             }
         }

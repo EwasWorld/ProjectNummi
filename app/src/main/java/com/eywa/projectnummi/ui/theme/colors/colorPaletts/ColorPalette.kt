@@ -1,5 +1,7 @@
 package com.eywa.projectnummi.ui.theme.colors.colorPaletts
 
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -18,6 +20,14 @@ data class ColorPalette(
         val appBackground: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
         val navBar: ThemeColor = ThemeColor(main = BaseColor.BASE_SPACE, content = Color.White),
 
+        val generalButton: @Composable () -> ButtonColors = {
+            ButtonDefaults.buttonColors(
+                    backgroundColor = BaseColor.BASE_BLUE,
+                    contentColor = BaseColor.BASE_SPACE,
+                    disabledBackgroundColor = BaseColor.BASE_SPACE,
+                    disabledContentColor = BaseColor.GREY,
+            )
+        },
         val outlinedTextField: @Composable () -> TextFieldColors = {
             TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.White,
@@ -49,5 +59,5 @@ data class ColorPalette(
                     placeholderColor = BaseColor.BASE_PURPLE.copy(alpha = 0.5f),
                     disabledPlaceholderColor = BaseColor.GREY.copy(alpha = 0.5f),
             )
-        }
+        },
 )
