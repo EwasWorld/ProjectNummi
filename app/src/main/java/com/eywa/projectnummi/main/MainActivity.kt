@@ -6,22 +6,21 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.eywa.projectnummi.ui.theme.ProjectNummiTheme
+import com.eywa.projectnummi.ui.theme.NummiTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ProjectNummiTheme {
+            NummiTheme {
                 val navController = rememberNavController()
                 val navRoutes = MainNavRoute.values()
 
                 Scaffold(
-                        backgroundColor = Color.White,
+                        backgroundColor = NummiTheme.colors.appBackground.main,
                         bottomBar = {
                             NummiBottomNav(
                                     currentRoute = navController.currentDestination?.route,

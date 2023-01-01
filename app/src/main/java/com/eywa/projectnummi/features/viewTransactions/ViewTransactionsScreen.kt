@@ -9,9 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.eywa.projectnummi.features.addTransactions.AddTransactionsViewModel
+import com.eywa.projectnummi.model.providers.TransactionProvider
+import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 
 @Composable
 fun ViewTransactionsScreen(
@@ -38,5 +40,17 @@ fun ViewTransactionsScreen(
                     text = "£%.2f".format(item.amount / 100.0),
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun ViewTransactionsScreen_Preview() {
+    NummiScreenPreviewWrapper {
+        ViewTransactionsScreen(
+                ViewTransactionsState(
+                        transactions = TransactionProvider.basic,
+                )
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.ui.components
+package com.eywa.projectnummi.ui.utils
 
 import androidx.annotation.DrawableRes
 import androidx.compose.material.Icon

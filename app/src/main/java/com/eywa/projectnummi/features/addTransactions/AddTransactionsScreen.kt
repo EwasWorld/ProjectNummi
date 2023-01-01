@@ -8,13 +8,12 @@ import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlin.math.roundToInt
+import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 
 
 @Composable
@@ -28,7 +27,6 @@ fun AddTransactionsScreen(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun AddTransactionsScreen(
         state: AddTransactionsState,
@@ -48,8 +46,20 @@ fun AddTransactionsScreen(
                 keyboardActions = KeyboardActions(
                         onDone = {
                             listener(AddTransactionsIntent.CreateTransaction)
-                                 },
+                        },
                 )
         )
+    }
+}
+
+@Preview
+@Composable
+fun AddTransactionsScreen_Preview() {
+    NummiScreenPreviewWrapper {
+        AddTransactionsScreen(
+                AddTransactionsState(
+                        enteredAmount = "12.05",
+                )
+        ) {}
     }
 }
