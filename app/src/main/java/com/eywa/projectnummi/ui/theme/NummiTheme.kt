@@ -8,6 +8,7 @@ import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
 
 val LocalDimens = staticCompositionLocalOf { NummiDimens() }
 val LocalShapes = staticCompositionLocalOf { NummiShapes() }
+val LocalTypography = staticCompositionLocalOf { Typography }
 
 val LocalColorPalette = staticCompositionLocalOf { ColorPalette() }
 var currentColorTheme by mutableStateOf(NummiColorTheme.MAIN)
@@ -24,9 +25,10 @@ fun NummiTheme(
             LocalColorPalette provides colorTheme.colors,
             LocalDimens provides dimens,
             LocalShapes provides shapes,
+            LocalTypography provides Typography,
     ) {
         MaterialTheme(
-                typography = Typography,
+                typography = LocalTypography.current,
                 content = content
         )
     }
@@ -42,4 +44,7 @@ object NummiTheme {
     val shapes: NummiShapes
         @Composable
         get() = LocalShapes.current
+    val typography: androidx.compose.material.Typography
+        @Composable
+        get() = LocalTypography.current
 }

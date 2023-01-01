@@ -20,6 +20,8 @@ data class ColorPalette(
         val appBackground: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
         val navBar: ThemeColor = ThemeColor(main = BaseColor.BASE_SPACE, content = Color.White),
 
+        val link: Color = BaseColor.LINK_BLUE,
+
         val generalButton: @Composable () -> ButtonColors = {
             ButtonDefaults.buttonColors(
                     backgroundColor = BaseColor.BASE_BLUE,
@@ -36,25 +38,25 @@ data class ColorPalette(
                     backgroundColor = BaseColor.BASE_SPACE,
 
                     cursorColor = BaseColor.BASE_PURPLE,
-                    errorCursorColor = BaseColor.BASE_ERROR,
+                    errorCursorColor = BaseColor.ERROR_RED,
 
                     focusedBorderColor = BaseColor.BASE_BLUE,
                     unfocusedBorderColor = BaseColor.BASE_PURPLE,
                     disabledBorderColor = BaseColor.GREY,
-                    errorBorderColor = BaseColor.BASE_ERROR,
+                    errorBorderColor = BaseColor.ERROR_RED,
 
                     leadingIconColor = BaseColor.BASE_PURPLE,
                     disabledLeadingIconColor = BaseColor.GREY,
-                    errorLeadingIconColor = BaseColor.BASE_ERROR,
+                    errorLeadingIconColor = BaseColor.ERROR_RED,
 
                     trailingIconColor = BaseColor.BASE_PURPLE,
                     disabledTrailingIconColor = BaseColor.GREY,
-                    errorTrailingIconColor = BaseColor.BASE_ERROR,
+                    errorTrailingIconColor = BaseColor.ERROR_RED,
 
                     focusedLabelColor = BaseColor.BASE_BLUE,
                     unfocusedLabelColor = BaseColor.BASE_PURPLE,
                     disabledLabelColor = BaseColor.GREY,
-                    errorLabelColor = BaseColor.BASE_ERROR,
+                    errorLabelColor = BaseColor.ERROR_RED,
 
                     placeholderColor = BaseColor.BASE_PURPLE.copy(alpha = 0.5f),
                     disabledPlaceholderColor = BaseColor.GREY.copy(alpha = 0.5f),

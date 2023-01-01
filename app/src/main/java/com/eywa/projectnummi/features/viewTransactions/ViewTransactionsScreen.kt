@@ -19,6 +19,7 @@ import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
+import com.eywa.projectnummi.ui.utils.DateTimeFormat
 
 @Composable
 fun ViewTransactionsScreen(
@@ -34,6 +35,8 @@ fun ViewTransactionsScreen(
 fun ViewTransactionsScreen(
         state: ViewTransactionsState,
 ) {
+    val displayItems = state.transactions.sortedByDescending { it.date }
+
     LazyColumn(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -41,26 +44,36 @@ fun ViewTransactionsScreen(
                     .fillMaxSize()
                     .padding(NummiTheme.dimens.screenPadding)
     ) {
-        items(state.transactions) { item ->
+        items(displayItems) { item ->
             Surface(
                     color = Color.Transparent,
                     border = BorderStroke(1.dp, BaseColor.GREY),
-                    shape = RoundedCornerShape(100),
+                    shape = RoundedCornerShape(30),
                     modifier = Modifier.fillMaxWidth()
             ) {
-                Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp)
+                Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp)
                 ) {
                     Text(
-                            text = item.name,
+                            text = DateTimeFormat.SHORT_DATE.format(item.date),
                             color = NummiTheme.colors.appBackground.content,
                     )
-                    Text(
-                            text = "£%.2f".format(item.amount / 100.0),
-                            color = NummiTheme.colors.appBackground.content,
-                    )
+                    Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                                text = item.name,
+                                color = NummiTheme.colors.appBackground.content,
+                        )
+                        Text(
+                                text = "£%.2f".format(item.amount / 100.0),
+                                color = NummiTheme.colors.appBackground.content,
+                        )
+                    }
                 }
             }
         }

@@ -1,13 +1,31 @@
 package com.eywa.projectnummi.ui.theme
 
 import androidx.compose.material.Typography
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.sp
+
+@Composable
+fun TextStyle.asClickableStyle() = copy(
+        color = NummiTheme.colors.link,
+        textDecoration = TextDecoration.Underline,
+)
 
 // Set of Material typography styles to start with
 val Typography = Typography(
+        h5 = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp
+        ),
+        h6 = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp
+        ),
         body1 = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Normal,

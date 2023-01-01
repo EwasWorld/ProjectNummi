@@ -12,7 +12,8 @@ object BaseColor {
     val BASE_BLUE = Color(0xFF79A0A0)
     val BASE_GREEN = Color(0xFFB3BC9F)
 
-    val BASE_ERROR = Color(0xFFAE6B6B)
+    val ERROR_RED = Color(0xFFAE6B6B)
+    val LINK_BLUE = Color(0xFF4C6BE6)
 
     const val PLACEHOLDER_ALPHA = 0.3f
 
