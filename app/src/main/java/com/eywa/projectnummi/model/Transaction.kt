@@ -7,4 +7,8 @@ data class Transaction(
         val date: Calendar,
         val name: String,
         val amount: Int,
+        /**
+         * True if money is leaving the account, false if it's entering the account
+         */
+        val isOutgoing: Boolean = true,
 )

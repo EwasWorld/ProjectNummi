@@ -4,6 +4,7 @@ import java.util.*
 
 sealed class AddTransactionsIntent {
     object CreateTransaction : AddTransactionsIntent()
+    object ToggleIsOutgoing : AddTransactionsIntent()
     data class DateChanged(val date: Calendar) : AddTransactionsIntent()
     data class DateIncremented(val daysAdded: Int) : AddTransactionsIntent()
     data class AmountChanged(val amount: String) : AddTransactionsIntent()

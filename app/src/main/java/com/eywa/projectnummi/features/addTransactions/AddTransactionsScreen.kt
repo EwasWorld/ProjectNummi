@@ -121,6 +121,21 @@ fun AddTransactionsScreen(
                 },
                 colors = NummiTheme.colors.outlinedTextField()
         )
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.clickable { listener(ToggleIsOutgoing) }
+        ) {
+            Text(
+                    text = "Outgoing",
+                    color = NummiTheme.colors.appBackground.content,
+            )
+            Checkbox(
+                    checked = state.isOutgoing,
+                    onCheckedChange = { listener(ToggleIsOutgoing) },
+                    colors = NummiTheme.colors.generalCheckbox(),
+            )
+        }
         Button(
                 colors = NummiTheme.colors.generalButton(),
                 shape = NummiTheme.shapes.generalButton,
