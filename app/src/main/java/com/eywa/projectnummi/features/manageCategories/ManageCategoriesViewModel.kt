@@ -35,10 +35,12 @@ class ManageCategoriesViewModel : ViewModel() {
 
     private fun handleCreateDialogIntent(action: CreateCategoryDialogIntent) {
         when (action) {
-            is CreateCategoryDialogIntent.NameChanged ->
-                _state.update { it.copy(createDialogState = it.createDialogState?.copy(name = action.name)) }
+            is CreateCategoryDialogIntent.NameChanged,
             is CreateCategoryDialogIntent.HueChanged ->
-                _state.update { it.copy(createDialogState = it.createDialogState?.copy(hue = action.hue)) }
+                _state.update {
+                    val currentState = it.createDialogState ?: return
+                    it.copy(createDialogState = action.updateState(currentState))
+                }
             CreateCategoryDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             CreateCategoryDialogIntent.Submit -> {
                 val oldState = _state.value.createDialogState!!

@@ -26,8 +26,8 @@ fun CornerTriangleShape(
         yScale: Float = 1f,
 ): GenericShape {
     return GenericShape { size, _ ->
-        fun xModifier(x: Float) = if (isTop) xScale * x else (size.width - xScale * x)
-        fun yModifier(y: Float) = if (isLeft) yScale * y else (size.height - yScale * y)
+        fun xModifier(x: Float) = if (isLeft) xScale * x else (size.width - xScale * x)
+        fun yModifier(y: Float) = if (isTop) yScale * y else (size.height - yScale * y)
 
         // Start in the corner
         moveTo(xModifier(0f), yModifier(0f))

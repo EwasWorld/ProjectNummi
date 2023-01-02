@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -48,13 +47,21 @@ fun ViewTransactionsScreen(
             modifier = Modifier.fillMaxSize()
     ) {
         items(displayItems) { item ->
-            BoxWithConstraints {
+            Box {
                 Surface(
                         color = Color.Transparent,
                         border = BorderStroke(1.dp, BaseColor.GREY_500),
-                        shape = RoundedCornerShape(30),
+                        shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
+                    if (item.category != null) {
+                        Box(
+                                modifier = Modifier
+                                        .matchParentSize()
+                                        .clip(CornerTriangleShape(isTop = false))
+                                        .background(item.category.color)
+                        )
+                    }
                     Box(
                             modifier = Modifier
                                     .matchParentSize()
@@ -62,22 +69,35 @@ fun ViewTransactionsScreen(
                                     .alpha(0.3f)
                                     .background(if (item.isOutgoing) BaseColor.RED else BaseColor.GREEN)
                     )
-                    Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp)
+                    Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(15.dp)
                     ) {
-                        Text(
-                                text = DateTimeFormat.SHORT_DATE.format(item.date),
-                                color = NummiTheme.colors.appBackground.content,
-                        )
-                        Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
+                        Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
                         ) {
                             Text(
                                     text = item.name,
+                                    color = NummiTheme.colors.appBackground.content,
+                                    style = NummiTheme.typography.h5
+                            )
+                            if (item.category != null) {
+                                Text(
+                                        text = item.category.name,
+                                        color = NummiTheme.colors.appBackground.content,
+                                )
+                            }
+                        }
+                        Column(
+                                horizontalAlignment = Alignment.End,
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Text(
+                                    text = DateTimeFormat.SHORT_DATE.format(item.date),
                                     color = NummiTheme.colors.appBackground.content,
                             )
                             Text(

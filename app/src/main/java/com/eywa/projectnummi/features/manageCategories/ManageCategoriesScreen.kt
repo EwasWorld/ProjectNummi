@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
@@ -58,17 +57,17 @@ fun ManageCategoriesScreen(
                 modifier = Modifier.fillMaxSize()
         ) {
             items(displayItems) { item ->
-                BoxWithConstraints {
+                Box {
                     Surface(
                             color = Color.Transparent,
                             border = BorderStroke(1.dp, BaseColor.GREY_500),
-                            shape = RoundedCornerShape(30),
+                            shape = NummiTheme.shapes.generalListItem,
                             modifier = Modifier.fillMaxWidth()
                     ) {
                         Box(
                                 modifier = Modifier
                                         .matchParentSize()
-                                        .clip(CornerTriangleShape(xScale = 2f, yScale = 2f))
+                                        .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
                                         .background(item.color)
                         )
                         Column(

@@ -1,5 +1,7 @@
 package com.eywa.projectnummi.features.addTransactions
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -13,6 +15,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
@@ -20,12 +24,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
+import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialog
+import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogState
+import com.eywa.projectnummi.ui.components.CornerTriangleShape
 import com.eywa.projectnummi.ui.components.DatePicker
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.components.NummiTextField
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
+import com.eywa.projectnummi.ui.theme.colors.BaseColor
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
 
 
@@ -40,7 +49,7 @@ fun AddTransactionsScreen(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AddTransactionsScreen(
         state: AddTransactionsState,
@@ -52,6 +61,17 @@ fun AddTransactionsScreen(
     val datePicker by lazy {
         DatePicker.createDialog(context, state.date) { listener(DateChanged(it)) }
     }
+
+    SelectCategoryDialog(
+            isShown = state.selectCategoryDialogIsShown,
+            state = SelectCategoryDialogState(state.categories ?: listOf()),
+            listener = { listener(SelectCategoryDialogAction(it)) },
+    )
+    CreateCategoryDialog(
+            isShown = true,
+            state = state.createCategoryDialogState,
+            listener = { listener(CreateCategoryDialogAction(it)) },
+    )
 
     Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -108,8 +128,31 @@ fun AddTransactionsScreen(
                             text = "10.99"
                     )
                 },
-                colors = NummiTheme.colors.outlinedTextField()
+                colors = NummiTheme.colors.outlinedTextField(),
+                modifier = Modifier.padding(bottom = 10.dp)
         )
+        Box {
+            Surface(
+                    color = Color.Transparent,
+                    border = BorderStroke(1.dp, BaseColor.GREY_500),
+                    shape = NummiTheme.shapes.generalListItem,
+                    onClick = { listener(StartChangeCategory) }
+            ) {
+                if (state.category != null) {
+                    Box(
+                            modifier = Modifier
+                                    .matchParentSize()
+                                    .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
+                                    .background(state.category.color)
+                    )
+                }
+                Text(
+                        text = state.category?.name ?: "No category",
+                        color = NummiTheme.colors.appBackground.content,
+                        modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
+                )
+            }
+        }
         Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,

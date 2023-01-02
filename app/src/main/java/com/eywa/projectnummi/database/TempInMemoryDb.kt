@@ -19,5 +19,6 @@ object TempInMemoryDb {
 
     suspend fun addCategory(category: Category) = withContext(Dispatchers.IO) {
         categories.update { it.plus(category) }
+        category.id
     }
 }
