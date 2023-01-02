@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
 import com.eywa.projectnummi.ui.components.DatePicker
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.ui.components.NummiTextField
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
@@ -83,23 +84,11 @@ fun AddTransactionsScreen(
                 )
             }
         }
-        OutlinedTextField(
-                value = state.name,
-                onValueChange = { listener(NameChanged(it.stripNewLines())) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Next
-                ),
-                label = {
-                    Text(
-                            text = "Name"
-                    )
-                },
-                placeholder = {
-                    Text(
-                            text = "Tesco"
-                    )
-                },
-                colors = NummiTheme.colors.outlinedTextField()
+        NummiTextField(
+                text = state.name,
+                onTextChanged = { listener(NameChanged(it)) },
+                label = "Name",
+                placeholderText = "Tesco",
         )
         OutlinedTextField(
                 value = state.amount,

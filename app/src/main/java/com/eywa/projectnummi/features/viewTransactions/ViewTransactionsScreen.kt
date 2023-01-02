@@ -44,9 +44,8 @@ fun ViewTransactionsScreen(
     LazyColumn(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                    .fillMaxSize()
-                    .padding(NummiTheme.dimens.screenPadding)
+            contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
+            modifier = Modifier.fillMaxSize()
     ) {
         items(displayItems) { item ->
             BoxWithConstraints {

@@ -16,6 +16,8 @@ data class ColorPalette(
 
         val appBackground: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
         val navBar: ThemeColor = ThemeColor(main = BaseColor.BASE_SPACE, content = Color.White),
+        val fab: ThemeColor = ThemeColor(main = BaseColor.BASE_BLUE, content = BaseColor.BASE_SPACE),
+        val dialog: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
 
         val link: Color = BaseColor.BLUE,
 
@@ -24,6 +26,18 @@ data class ColorPalette(
                     backgroundColor = BaseColor.BASE_BLUE,
                     contentColor = BaseColor.BASE_SPACE,
                     disabledBackgroundColor = BaseColor.BASE_SPACE,
+                    disabledContentColor = BaseColor.GREY,
+            )
+        },
+        val primaryTextButton: @Composable () -> ButtonColors = {
+            ButtonDefaults.textButtonColors(
+                    contentColor = Color.White,
+                    disabledContentColor = BaseColor.GREY,
+            )
+        },
+        val secondaryTextButton: @Composable () -> ButtonColors = {
+            ButtonDefaults.textButtonColors(
+                    contentColor = BaseColor.BASE_PURPLE,
                     disabledContentColor = BaseColor.GREY,
             )
         },
