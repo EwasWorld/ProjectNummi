@@ -26,19 +26,19 @@ data class ColorPalette(
                     backgroundColor = BaseColor.BASE_BLUE,
                     contentColor = BaseColor.BASE_SPACE,
                     disabledBackgroundColor = BaseColor.BASE_SPACE,
-                    disabledContentColor = BaseColor.GREY,
+                    disabledContentColor = BaseColor.GREY_500,
             )
         },
         val primaryTextButton: @Composable () -> ButtonColors = {
             ButtonDefaults.textButtonColors(
                     contentColor = Color.White,
-                    disabledContentColor = BaseColor.GREY,
+                    disabledContentColor = BaseColor.GREY_500,
             )
         },
         val secondaryTextButton: @Composable () -> ButtonColors = {
             ButtonDefaults.textButtonColors(
                     contentColor = BaseColor.BASE_PURPLE,
-                    disabledContentColor = BaseColor.GREY,
+                    disabledContentColor = BaseColor.GREY_500,
             )
         },
         val generalCheckbox: @Composable () -> CheckboxColors = {
@@ -46,14 +46,30 @@ data class ColorPalette(
                     checkedColor = BaseColor.BASE_PURPLE,
                     uncheckedColor = BaseColor.BASE_PURPLE,
                     checkmarkColor = BaseColor.BASE_SPACE,
-                    disabledColor = BaseColor.GREY,
-                    disabledIndeterminateColor = BaseColor.GREY,
+                    disabledColor = BaseColor.GREY_500,
+                    disabledIndeterminateColor = BaseColor.GREY_500,
+            )
+        },
+        val generalSlider: @Composable () -> SliderColors = {
+            SliderDefaults.colors(
+                    thumbColor = BaseColor.BASE_PURPLE,
+                    disabledThumbColor = BaseColor.GREY_500,
+
+                    activeTrackColor = BaseColor.BASE_PURPLE,
+                    inactiveTrackColor = BaseColor.BASE_SPACE,
+                    disabledActiveTrackColor = BaseColor.GREY_500,
+                    disabledInactiveTrackColor = BaseColor.GREY_300,
+
+                    activeTickColor = Color.Transparent,
+                    inactiveTickColor = Color.Transparent,
+                    disabledActiveTickColor = Color.Transparent,
+                    disabledInactiveTickColor = Color.Transparent,
             )
         },
         val outlinedTextField: @Composable () -> TextFieldColors = {
             TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.White,
-                    disabledTextColor = BaseColor.GREY,
+                    disabledTextColor = BaseColor.GREY_500,
 
                     backgroundColor = BaseColor.BASE_SPACE,
 
@@ -62,24 +78,24 @@ data class ColorPalette(
 
                     focusedBorderColor = BaseColor.BASE_BLUE,
                     unfocusedBorderColor = BaseColor.BASE_PURPLE,
-                    disabledBorderColor = BaseColor.GREY,
+                    disabledBorderColor = BaseColor.GREY_500,
                     errorBorderColor = BaseColor.RED,
 
                     leadingIconColor = BaseColor.BASE_PURPLE,
-                    disabledLeadingIconColor = BaseColor.GREY,
+                    disabledLeadingIconColor = BaseColor.GREY_500,
                     errorLeadingIconColor = BaseColor.RED,
 
                     trailingIconColor = BaseColor.BASE_PURPLE,
-                    disabledTrailingIconColor = BaseColor.GREY,
+                    disabledTrailingIconColor = BaseColor.GREY_500,
                     errorTrailingIconColor = BaseColor.RED,
 
                     focusedLabelColor = BaseColor.BASE_BLUE,
                     unfocusedLabelColor = BaseColor.BASE_PURPLE,
-                    disabledLabelColor = BaseColor.GREY,
+                    disabledLabelColor = BaseColor.GREY_500,
                     errorLabelColor = BaseColor.RED,
 
                     placeholderColor = BaseColor.BASE_PURPLE.copy(alpha = 0.5f),
-                    disabledPlaceholderColor = BaseColor.GREY.copy(alpha = 0.5f),
+                    disabledPlaceholderColor = BaseColor.GREY_500.copy(alpha = 0.5f),
             )
         },
 )

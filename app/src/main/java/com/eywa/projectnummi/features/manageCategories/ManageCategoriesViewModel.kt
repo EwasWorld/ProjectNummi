@@ -2,6 +2,7 @@ package com.eywa.projectnummi.features.manageCategories
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eywa.projectnummi.common.ColorHelper
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.database.TempInMemoryDb
@@ -34,9 +35,11 @@ class ManageCategoriesViewModel : ViewModel() {
 
     private fun handleCreateDialogIntent(action: CreateCategoryDialogIntent) {
         when (action) {
-            CreateCategoryDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             is CreateCategoryDialogIntent.NameChanged ->
                 _state.update { it.copy(createDialogState = it.createDialogState?.copy(name = action.name)) }
+            is CreateCategoryDialogIntent.HueChanged ->
+                _state.update { it.copy(createDialogState = it.createDialogState?.copy(hue = action.hue)) }
+            CreateCategoryDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             CreateCategoryDialogIntent.Submit -> {
                 val oldState = _state.value.createDialogState!!
                 _state.update { it.copy(createDialogState = null) }
@@ -46,6 +49,7 @@ class ManageCategoriesViewModel : ViewModel() {
                             Category(
                                     id = 0,
                                     name = oldState.name,
+                                    color = ColorHelper.asCategoryColor(oldState.hue),
                             )
                     )
                 }

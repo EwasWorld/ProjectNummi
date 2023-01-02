@@ -18,5 +18,6 @@ object BaseColor {
 
     const val PLACEHOLDER_ALPHA = 0.3f
 
-    val GREY = Color(0xFF818181)
+    val GREY_500 = Color(0xFF818181)
+    val GREY_300 = Color(0xFFADADAD)
 }
