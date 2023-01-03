@@ -18,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
+import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
@@ -55,13 +56,17 @@ fun ViewTransactionsScreen(
                     if (item.category != null) {
                         CornerTriangleBox(
                                 color = item.category.color,
-                                isTop = false,
+                                state = CornerTriangleShapeState(
+                                        isTop = false,
+                                ),
                         )
                     }
                     CornerTriangleBox(
                             color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
-                            isTop = false,
-                            isLeft = false,
+                            state = CornerTriangleShapeState(
+                                    isTop = false,
+                                    isLeft = false,
+                            ),
                             modifier = Modifier.alpha(0.3f)
                     )
                     Row(

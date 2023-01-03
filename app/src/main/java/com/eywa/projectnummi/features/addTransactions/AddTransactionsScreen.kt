@@ -212,9 +212,11 @@ private fun CategoryRow(
             if (category != null) {
                 CornerTriangleBox(
                         color = category.color,
-                        isTop = false,
-                        xScale = 2f,
-                        yScale = 2f,
+                        state = CornerTriangleShapeState(
+                                isTop = false,
+                                xScale = 2f,
+                                yScale = 2f,
+                        ),
                 )
             }
             Text(

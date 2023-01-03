@@ -23,6 +23,7 @@ import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.Ad
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
+import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 
@@ -64,9 +65,11 @@ fun ManageCategoriesScreen(
                     Box(contentAlignment = Alignment.Center) {
                         CornerTriangleBox(
                                 color = item.color,
-                                isTop = false,
-                                xScale = 2f,
-                                yScale = 2f,
+                                state = CornerTriangleShapeState(
+                                        isTop = false,
+                                        xScale = 2f,
+                                        yScale = 2f,
+                                )
                         )
                         Text(
                                 text = item.name,

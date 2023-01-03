@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
+import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -91,9 +92,11 @@ fun CategoryRow(
         ) {
             CornerTriangleBox(
                     color = color ?: Color.Transparent,
-                    isTop = false,
-                    xScale = 2f,
-                    yScale = 2f,
+                    state = CornerTriangleShapeState(
+                            isTop = false,
+                            xScale = 2f,
+                            yScale = 2f,
+                    ),
             )
             Text(
                     text = text,
