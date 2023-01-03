@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.model
 
 data class Amount(
-        val transactionId: Int,
+        val category: Category?,
+        val person: Person,
         val amount: Int,
 )

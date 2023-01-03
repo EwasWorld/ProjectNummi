@@ -53,9 +53,9 @@ fun ViewTransactionsScreen(
                         shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (item.category != null) {
+                    if (item.amount.category != null) {
                         CornerTriangleBox(
-                                color = item.category.color,
+                                color = item.amount.category.color,
                                 state = CornerTriangleShapeState(
                                         isTop = false,
                                 ),
@@ -80,9 +80,9 @@ fun ViewTransactionsScreen(
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
                         ) {
-                            if (item.person.id != TempInMemoryDb.defaultPersonId) {
+                            if (item.amount.person.id != TempInMemoryDb.defaultPersonId) {
                                 Text(
-                                        text = item.person.name,
+                                        text = item.amount.person.name,
                                         color = NummiTheme.colors.appBackground.content,
                                 )
                             }
@@ -91,9 +91,9 @@ fun ViewTransactionsScreen(
                                     color = NummiTheme.colors.appBackground.content,
                                     style = NummiTheme.typography.h5,
                             )
-                            if (item.category != null) {
+                            if (item.amount.category != null) {
                                 Text(
-                                        text = item.category.name,
+                                        text = item.amount.category.name,
                                         color = NummiTheme.colors.appBackground.content,
                                 )
                             }
@@ -107,7 +107,7 @@ fun ViewTransactionsScreen(
                                     color = NummiTheme.colors.appBackground.content,
                             )
                             Text(
-                                    text = "£%.2f".format(item.amount / 100.0),
+                                    text = "£%.2f".format(item.amount.amount / 100.0),
                                     color = NummiTheme.colors.appBackground.content,
                             )
                         }

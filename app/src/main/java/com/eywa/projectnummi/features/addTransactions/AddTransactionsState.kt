@@ -2,6 +2,7 @@ package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.model.Amount
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
 import com.eywa.projectnummi.model.Transaction
@@ -38,9 +39,11 @@ data class AddTransactionsState(
             id = 0,
             date = date,
             name = name,
-            amount = (amount.toDouble() * 100).roundToInt(),
-            category = category,
-            person = person!!,
+            amount = Amount(
+                    amount = (amount.toDouble() * 100).roundToInt(),
+                    category = category,
+                    person = person!!,
+            ),
             isOutgoing = isOutgoing,
     )
 }

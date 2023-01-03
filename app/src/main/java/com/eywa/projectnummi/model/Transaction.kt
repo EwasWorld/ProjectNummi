@@ -2,13 +2,12 @@ package com.eywa.projectnummi.model
 
 import java.util.*
 
+// TODO Transaction.note feature
 data class Transaction(
         val id: Int,
         val date: Calendar,
         val name: String,
-        val amount: Int,
-        val category: Category?,
-        val person: Person,
+        val amount: Amount,
         /**
          * True if money is leaving the account, false if it's entering the account
          */
