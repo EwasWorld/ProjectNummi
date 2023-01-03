@@ -1,7 +1,6 @@
 package com.eywa.projectnummi.features.addTransactions
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
@@ -15,7 +14,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -33,6 +31,8 @@ import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectP
 import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogState
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.providers.CategoryProvider
+import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.*
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
@@ -210,11 +210,11 @@ private fun CategoryRow(
     ) {
         Box {
             if (category != null) {
-                Box(
-                        modifier = Modifier
-                                .matchParentSize()
-                                .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
-                                .background(category.color)
+                CornerTriangleBox(
+                        color = category.color,
+                        isTop = false,
+                        xScale = 2f,
+                        yScale = 2f,
                 )
             }
             Text(
@@ -294,6 +294,10 @@ fun AddTransactionsScreen_Preview() {
         AddTransactionsScreen(
                 AddTransactionsState(
                         amount = "12.05",
+                        categoryId = 1,
+                        categories = CategoryProvider.basic,
+                        personId = 0,
+                        people = PeopleProvider.basic,
                 )
         ) {}
     }

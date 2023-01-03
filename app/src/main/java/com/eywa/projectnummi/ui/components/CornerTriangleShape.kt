@@ -2,6 +2,7 @@ package com.eywa.projectnummi.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material.Text
@@ -18,48 +19,59 @@ import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
 
-@Suppress("FunctionName") // because I'm not allowed to extend generic shape -.-
+@Composable
+fun BoxScope.CornerTriangleBox(
+        color: Color,
+        modifier: Modifier = Modifier,
+        isTop: Boolean = true,
+        isLeft: Boolean = true,
+        xScale: Float = 1f,
+        yScale: Float = 1f,
+) {
+    Box(
+            modifier = modifier
+                    .matchParentSize()
+                    .clip(CornerTriangleShape(isTop, isLeft, xScale, yScale))
+                    .background(color)
+    )
+}
+
+@Suppress("FunctionName") // because I'm not allowed to extend GenericShape -.-
 fun CornerTriangleShape(
         isTop: Boolean = true,
         isLeft: Boolean = true,
         xScale: Float = 1f,
         yScale: Float = 1f,
-): GenericShape {
-    return GenericShape { size, _ ->
-        fun xModifier(x: Float) = if (isLeft) xScale * x else (size.width - xScale * x)
-        fun yModifier(y: Float) = if (isTop) yScale * y else (size.height - yScale * y)
+) = GenericShape { size, _ ->
+    fun xModifier(x: Float) = if (isLeft) xScale * x else (size.width - xScale * x)
+    fun yModifier(y: Float) = if (isTop) yScale * y else (size.height - yScale * y)
 
-        // Start in the corner
-        moveTo(xModifier(0f), yModifier(0f))
-        // Move along the width towards the centre
-        lineTo(xModifier(size.height), yModifier(0f))
-        // Move back to the edge vertically connected to the starting corner
-        lineTo(xModifier(0f), yModifier(size.height))
-    }
+    // Start in the corner
+    moveTo(xModifier(0f), yModifier(0f))
+    // Move along the width towards the centre
+    lineTo(xModifier(size.height), yModifier(0f))
+    // Move back to the edge vertically connected to the starting corner
+    lineTo(xModifier(0f), yModifier(size.height))
 }
 
 @Preview
 @Composable
 fun CornerTriangleShape_Preview(
-        @PreviewParameter(provider = CornerTriangleShapePreviewProvider::class) params: CornerTriangleShapePreviewParams
+        @PreviewParameter(provider = CornerTriangleShapePreviewProvider::class)
+        params: CornerTriangleShapePreviewParams,
 ) {
     NummiTheme {
         Box(
                 contentAlignment = Alignment.Center,
+                modifier = Modifier.size(300.dp, 100.dp)
         ) {
-            Box(
-                    modifier = Modifier
-                            .size(300.dp, 100.dp)
-                            .clip(
-                                    CornerTriangleShape(
-                                            isTop = params.isTop,
-                                            isLeft = params.isLeft,
-                                            xScale = params.xScale,
-                                            yScale = params.yScale,
-                                    )
-                            )
-                            .alpha(0.3f)
-                            .background(BaseColor.GREEN)
+            CornerTriangleBox(
+                    color = BaseColor.GREEN,
+                    isTop = params.isTop,
+                    isLeft = params.isLeft,
+                    xScale = params.xScale,
+                    yScale = params.yScale,
+                    modifier = Modifier.alpha(0.3f)
             )
             Text(
                     text = params.description,

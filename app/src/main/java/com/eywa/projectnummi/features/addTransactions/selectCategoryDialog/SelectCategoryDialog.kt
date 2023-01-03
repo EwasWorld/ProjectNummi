@@ -1,7 +1,6 @@
 package com.eywa.projectnummi.features.addTransactions.selectCategoryDialog
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,14 +14,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.ui.components.CornerTriangleShape
+import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -91,11 +89,11 @@ fun CategoryRow(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier.fillMaxWidth()
         ) {
-            Box(
-                    modifier = Modifier
-                            .matchParentSize()
-                            .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
-                            .background(color ?: Color.Transparent)
+            CornerTriangleBox(
+                    color = color ?: Color.Transparent,
+                    isTop = false,
+                    xScale = 2f,
+                    yScale = 2f,
             )
             Text(
                     text = text,

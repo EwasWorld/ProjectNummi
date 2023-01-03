@@ -1,7 +1,6 @@
 package com.eywa.projectnummi.features.viewTransactions
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,14 +11,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
-import com.eywa.projectnummi.ui.components.CornerTriangleShape
+import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
@@ -55,19 +53,16 @@ fun ViewTransactionsScreen(
                         modifier = Modifier.fillMaxWidth()
                 ) {
                     if (item.category != null) {
-                        Box(
-                                modifier = Modifier
-                                        .matchParentSize()
-                                        .clip(CornerTriangleShape(isTop = false))
-                                        .background(item.category.color)
+                        CornerTriangleBox(
+                                color = item.category.color,
+                                isTop = false,
                         )
                     }
-                    Box(
-                            modifier = Modifier
-                                    .matchParentSize()
-                                    .clip(CornerTriangleShape(isTop = false, isLeft = false))
-                                    .alpha(0.3f)
-                                    .background(NummiTheme.colors.getTransactionColor(item.isOutgoing))
+                    CornerTriangleBox(
+                            color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
+                            isTop = false,
+                            isLeft = false,
+                            modifier = Modifier.alpha(0.3f)
                     )
                     Row(
                             verticalAlignment = Alignment.CenterVertically,
