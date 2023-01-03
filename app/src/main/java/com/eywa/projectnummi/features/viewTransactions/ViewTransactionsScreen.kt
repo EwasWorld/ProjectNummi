@@ -1,9 +1,11 @@
 package com.eywa.projectnummi.features.viewTransactions
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,6 +24,7 @@ import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
+import com.eywa.projectnummi.ui.theme.colors.BaseColor
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
 
 @Composable
@@ -53,11 +57,12 @@ fun ViewTransactionsScreen(
                         shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
-                    if (item.amount.category != null) {
+                    if (item.amount.any { it.category != null }) {
                         CornerTriangleBox(
-                                color = item.amount.category.color,
+                                colors = item.amount.map { it.category?.color },
                                 state = CornerTriangleShapeState(
                                         isTop = false,
+                                        segmentWeights = item.amount.map { it.amount },
                                 ),
                         )
                     }
@@ -69,47 +74,61 @@ fun ViewTransactionsScreen(
                             ),
                             modifier = Modifier.alpha(0.3f)
                     )
-                    Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                    Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(5.dp),
                             modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(15.dp)
+                                    .padding(horizontal = 18.dp, vertical = 12.dp)
                     ) {
-                        Column(
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.spacedBy(5.dp),
+                        Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
                         ) {
-                            if (item.amount.person.id != TempInMemoryDb.defaultPersonId) {
-                                Text(
-                                        text = item.amount.person.name,
-                                        color = NummiTheme.colors.appBackground.content,
-                                )
-                            }
                             Text(
                                     text = item.name,
                                     color = NummiTheme.colors.appBackground.content,
                                     style = NummiTheme.typography.h5,
                             )
-                            if (item.amount.category != null) {
-                                Text(
-                                        text = item.amount.category.name,
-                                        color = NummiTheme.colors.appBackground.content,
-                                )
-                            }
-                        }
-                        Column(
-                                horizontalAlignment = Alignment.End,
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
                             Text(
                                     text = DateTimeFormat.SHORT_DATE.format(item.date),
                                     color = NummiTheme.colors.appBackground.content,
                             )
-                            Text(
-                                    text = "£%.2f".format(item.amount.amount / 100.0),
-                                    color = NummiTheme.colors.appBackground.content,
-                            )
+                        }
+                        Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(5.dp),
+                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)
+                        ) {
+                            item.amount.forEach { amount ->
+                                Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    if (amount.category != null) {
+                                        Text(
+                                                text = amount.category.name,
+                                                color = NummiTheme.colors.appBackground.content,
+                                                modifier = Modifier.padding(end = 10.dp)
+                                        )
+                                    }
+                                    if (amount.person.id != TempInMemoryDb.defaultPersonId) {
+                                        Text(
+                                                text = amount.person.name,
+                                                color = NummiTheme.colors.appBackground.content,
+                                                fontStyle = FontStyle.Italic,
+                                                modifier = Modifier
+                                                        .background(BaseColor.BASE_SPACE, RoundedCornerShape(100))
+                                                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Text(
+                                            text = "£%.2f".format(amount.amount / 100.0),
+                                            color = NummiTheme.colors.appBackground.content,
+                                    )
+                                }
+                            }
                         }
                     }
                 }

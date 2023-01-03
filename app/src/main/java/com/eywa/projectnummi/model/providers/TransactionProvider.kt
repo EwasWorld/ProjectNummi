@@ -10,30 +10,36 @@ object TransactionProvider {
                     id = 0,
                     date = DateProvider.getDate(0),
                     name = "Sainsburys",
-                    amount = Amount(
-                            CategoryProvider.basic[1],
-                            PeopleProvider.basic[0],
-                            1_50,
+                    amount = listOf(
+                            Amount(
+                                    CategoryProvider.basic[1],
+                                    PeopleProvider.basic[0],
+                                    1_50,
+                            ),
                     ),
             ),
             Transaction(
                     id = 1,
                     date = DateProvider.getDate(-1),
                     name = "Gym",
-                    amount = Amount(
-                            null,
-                            PeopleProvider.basic[2],
-                            30,
+                    amount = listOf(
+                            Amount(
+                                    null,
+                                    PeopleProvider.basic[2],
+                                    30,
+                            ),
                     ),
             ),
             Transaction(
                     id = 2,
                     date = DateProvider.getDate(-2),
                     name = "Salary",
-                    amount = Amount(
-                            CategoryProvider.basic[2],
-                            PeopleProvider.basic[0],
-                            1000_00,
+                    amount = listOf(
+                            Amount(
+                                    CategoryProvider.basic[2],
+                                    PeopleProvider.basic[0],
+                                    1000_00,
+                            ),
                     ),
                     isOutgoing = false
             ),
@@ -41,10 +47,29 @@ object TransactionProvider {
                     id = 3,
                     date = DateProvider.getDate(-3),
                     name = "Amazon",
-                    amount = Amount(
-                            CategoryProvider.basic[0],
-                            PeopleProvider.basic[1],
-                            13_59,
+                    amount = listOf(
+                            Amount(
+                                    CategoryProvider.basic[0],
+                                    PeopleProvider.basic[1],
+                                    13_59,
+                            ),
+                            Amount(
+                                    CategoryProvider.basic[3],
+                                    PeopleProvider.basic[0],
+                                    29_99,
+                            ),
+                    ),
+            ),
+            Transaction(
+                    id = 4,
+                    date = DateProvider.getDate(-4),
+                    name = "Toaster",
+                    amount = listOf(
+                            Amount(
+                                    null,
+                                    PeopleProvider.basic[0],
+                                    20_00,
+                            ),
                     ),
             ),
     )

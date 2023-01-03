@@ -58,7 +58,7 @@ data class CornerTriangleShapeState(
  */
 @Composable
 fun BoxScope.CornerTriangleBox(
-        colors: List<Color>,
+        colors: List<Color?>,
         modifier: Modifier = Modifier,
         segmentModifier: Modifier = Modifier,
         state: CornerTriangleShapeState = CornerTriangleShapeState(),
@@ -75,6 +75,7 @@ fun BoxScope.CornerTriangleBox(
                 if (colors.size == state.segmentWeights.size) state
                 else state.copy(segmentWeights = List(colors.size) { 1 })
         colors.forEachIndexed { index, color ->
+            if (color == null) return@forEachIndexed
             CornerTriangleBox(
                     color = color,
                     state = adjustedState,
@@ -186,12 +187,15 @@ fun CornerTriangleShape_Preview(
 data class CornerTriangleShapePreviewParams(
         val description: String,
         val state: CornerTriangleShapeState = CornerTriangleShapeState(),
-        val colors: List<Color> = listOf(BaseColor.GREEN),
+        val colors: List<Color?> = listOf(BaseColor.GREEN),
 )
 
 @Suppress("BooleanLiteralArgument")
 class CornerTriangleShapePreviewProvider : CollectionPreviewParameterProvider<CornerTriangleShapePreviewParams>(
         listOf(
+                CornerTriangleShapePreviewParams("null colour",
+                        CornerTriangleShapeState(),
+                        colors = listOf(0f, null, 0.6f, 0.8f).map { v -> v?.let { ColorHelper.asCategoryColor(it) } }),
                 CornerTriangleShapePreviewParams("weighted percentage",
                         CornerTriangleShapeState(segmentWeights = listOf(3, 1, 2)),
                         listOf(0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),

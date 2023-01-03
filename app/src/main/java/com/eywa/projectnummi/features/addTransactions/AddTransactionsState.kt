@@ -39,10 +39,12 @@ data class AddTransactionsState(
             id = 0,
             date = date,
             name = name,
-            amount = Amount(
-                    amount = (amount.toDouble() * 100).roundToInt(),
-                    category = category,
-                    person = person!!,
+            amount = listOf(
+                    Amount(
+                            amount = (amount.toDouble() * 100).roundToInt(),
+                            category = category,
+                            person = person!!,
+                    ),
             ),
             isOutgoing = isOutgoing,
     )

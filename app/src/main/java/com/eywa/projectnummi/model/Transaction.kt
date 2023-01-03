@@ -7,7 +7,7 @@ data class Transaction(
         val id: Int,
         val date: Calendar,
         val name: String,
-        val amount: Amount,
+        val amount: List<Amount>,
         /**
          * True if money is leaving the account, false if it's entering the account
          */
