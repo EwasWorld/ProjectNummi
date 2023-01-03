@@ -8,6 +8,7 @@ data class Transaction(
         val name: String,
         val amount: Int,
         val category: Category?,
+        val person: Person,
         /**
          * True if money is leaving the account, false if it's entering the account
          */

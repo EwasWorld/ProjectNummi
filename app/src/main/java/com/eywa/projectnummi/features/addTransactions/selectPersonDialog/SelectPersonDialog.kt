@@ -1,7 +1,6 @@
-package com.eywa.projectnummi.features.addTransactions.selectCategoryDialog
+package com.eywa.projectnummi.features.addTransactions.selectPersonDialog
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -15,39 +14,51 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogIntent.*
-import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.ui.components.CornerTriangleShape
+import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogIntent.*
+import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SelectCategoryDialog(
+fun SelectPersonDialog(
         isShown: Boolean,
-        state: SelectCategoryDialogState?,
-        listener: (SelectCategoryDialogIntent) -> Unit,
+        state: SelectPersonDialogState?,
+        listener: (SelectPersonDialogIntent) -> Unit,
 ) {
     NummiDialog(
             isShown = isShown && state != null,
-            title = "Select a category",
+            title = "Select a person",
             onCancelListener = { listener(Close) },
     ) {
         LazyColumn(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(5.dp),
         ) {
-            item {
-                CategoryRow(text = "No category", color = null) { listener(NoCategoryClicked) }
-            }
-
-            items(state?.categories?.sortedBy { it.name } ?: listOf()) { item ->
-                CategoryRow(text = item.name, color = item.color) { listener(CategoryClicked(item)) }
+            items(state?.people?.sortedBy { it.name } ?: listOf()) { item ->
+                Surface(
+                        color = Color.Transparent,
+                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+                        shape = NummiTheme.shapes.generalListItem,
+                        onClick = { listener(PersonClicked(item)) },
+                        modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                    ) {
+                        Text(
+                                text = item.name,
+                                color = NummiTheme.colors.appBackground.content,
+                        )
+                    }
+                }
             }
 
             item {
@@ -65,7 +76,7 @@ fun SelectCategoryDialog(
                             tint = NummiTheme.colors.appBackground.content,
                     )
                     Text(
-                            text = "New category",
+                            text = "New person",
                             color = NummiTheme.colors.appBackground.content,
                     )
                 }
@@ -74,46 +85,13 @@ fun SelectCategoryDialog(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun CategoryRow(
-        text: String,
-        color: Color?,
-        onClick: () -> Unit,
-) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
-    ) {
-        Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                    modifier = Modifier
-                            .matchParentSize()
-                            .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
-                            .background(color ?: Color.Transparent)
-            )
-            Text(
-                    text = text,
-                    color = NummiTheme.colors.appBackground.content,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(10.dp)
-            )
-        }
-    }
-}
-
 @Preview
 @Composable
-fun SelectCategoryDialog_Preview() {
+fun SelectPersonDialog_Preview() {
     NummiScreenPreviewWrapper {
-        SelectCategoryDialog(
+        SelectPersonDialog(
                 isShown = true,
-                state = SelectCategoryDialogState(CategoryProvider.basic),
+                state = SelectPersonDialogState(PeopleProvider.basic),
                 listener = {},
         )
     }

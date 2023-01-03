@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.dp
 data class NummiDimens(
         val screenPadding: Dp = 20.dp,
         val fabToScreenEdgePadding: Dp = 30.dp,
+        val listItemBorder: Dp = 1.dp,
 
         val buttonElevationNone: @Composable () -> ButtonElevation =
-                { ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp) }
+                { ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp) },
 )

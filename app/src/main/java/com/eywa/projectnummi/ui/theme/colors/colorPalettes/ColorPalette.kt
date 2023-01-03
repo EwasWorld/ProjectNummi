@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.ui.theme.colors.colorPaletts
+package com.eywa.projectnummi.ui.theme.colors.colorPalettes
 
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,8 +18,12 @@ data class ColorPalette(
         val navBar: ThemeColor = ThemeColor(main = BaseColor.BASE_SPACE, content = Color.White),
         val fab: ThemeColor = ThemeColor(main = BaseColor.BASE_BLUE, content = BaseColor.BASE_SPACE),
         val dialog: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
+        val listItemBorder: Color = BaseColor.GREY_500,
 
         val link: Color = BaseColor.BLUE,
+
+        val incomingTransaction: Color = BaseColor.GREEN,
+        val outgoingTransaction: Color = BaseColor.RED,
 
         val generalButton: @Composable () -> ButtonColors = {
             ButtonDefaults.buttonColors(
@@ -98,4 +102,6 @@ data class ColorPalette(
                     disabledPlaceholderColor = BaseColor.GREY_500.copy(alpha = 0.5f),
             )
         },
-)
+) {
+    fun getTransactionColor(isOutgoing: Boolean) = if (isOutgoing) outgoingTransaction else incomingTransaction
+}

@@ -25,22 +25,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
+import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
 import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialog
 import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogState
-import com.eywa.projectnummi.ui.components.CornerTriangleShape
-import com.eywa.projectnummi.ui.components.DatePicker
-import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
-import com.eywa.projectnummi.ui.components.NummiTextField
+import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialog
+import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogState
+import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.ui.components.*
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
-import com.eywa.projectnummi.ui.theme.colors.BaseColor
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
+import java.util.*
 
 
 @Composable
 fun AddTransactionsScreen(
-        viewModel: AddTransactionsViewModel = viewModel()
+        viewModel: AddTransactionsViewModel = viewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     AddTransactionsScreen(
@@ -49,19 +51,11 @@ fun AddTransactionsScreen(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun AddTransactionsScreen(
         state: AddTransactionsState,
         listener: (AddTransactionsIntent) -> Unit,
 ) {
-    val context = LocalContext.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    val datePicker by lazy {
-        DatePicker.createDialog(context, state.date) { listener(DateChanged(it)) }
-    }
-
     SelectCategoryDialog(
             isShown = state.selectCategoryDialogIsShown,
             state = SelectCategoryDialogState(state.categories ?: listOf()),
@@ -72,6 +66,16 @@ fun AddTransactionsScreen(
             state = state.createCategoryDialogState,
             listener = { listener(CreateCategoryDialogAction(it)) },
     )
+    SelectPersonDialog(
+            isShown = state.selectPersonDialogIsShown,
+            state = SelectPersonDialogState(state.people ?: listOf()),
+            listener = { listener(SelectPersonDialogAction(it)) },
+    )
+    CreatePersonDialog(
+            isShown = true,
+            state = state.createPersonDialogState,
+            listener = { listener(CreatePersonDialogAction(it)) },
+    )
 
     Column(
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -80,107 +84,208 @@ fun AddTransactionsScreen(
                     .fillMaxSize()
                     .padding(NummiTheme.dimens.screenPadding)
     ) {
-        Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-        ) {
-            IconButton(onClick = { listener(DateIncremented(-1)) }) {
-                Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "One day earlier",
-                        tint = NummiTheme.colors.appBackground.content,
-                )
-            }
-            Text(
-                    text = DateTimeFormat.LONG_DATE.format(state.date),
-                    style = NummiTheme.typography.h6.asClickableStyle(),
-                    modifier = Modifier.clickable { datePicker.show() }
-            )
-            IconButton(onClick = { listener(DateIncremented(1)) }) {
-                Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "One day later",
-                        tint = NummiTheme.colors.appBackground.content,
-                )
-            }
-        }
-        NummiTextField(
-                text = state.name,
-                onTextChanged = { listener(NameChanged(it)) },
-                label = "Name",
-                placeholderText = "Tesco",
+        DateRow(
+                date = state.date,
+                onIncrement = { listener(DateIncremented(it)) },
+                onChange = { listener(DateChanged(it)) },
         )
-        OutlinedTextField(
-                value = state.amount,
-                onValueChange = { listener(AmountChanged(it.stripNewLines())) },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-                label = {
-                    Text(
-                            text = "Amount"
-                    )
-                },
-                placeholder = {
-                    Text(
-                            text = "10.99"
-                    )
-                },
-                colors = NummiTheme.colors.outlinedTextField(),
-                modifier = Modifier.padding(bottom = 10.dp)
+        NameRow(
+                name = state.name,
+                onChange = { listener(NameChanged(it)) },
         )
-        Box {
-            Surface(
-                    color = Color.Transparent,
-                    border = BorderStroke(1.dp, BaseColor.GREY_500),
-                    shape = NummiTheme.shapes.generalListItem,
-                    onClick = { listener(StartChangeCategory) }
-            ) {
-                if (state.category != null) {
-                    Box(
-                            modifier = Modifier
-                                    .matchParentSize()
-                                    .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
-                                    .background(state.category.color)
-                    )
-                }
-                Text(
-                        text = state.category?.name ?: "No category",
-                        color = NummiTheme.colors.appBackground.content,
-                        modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
-                )
-            }
-        }
-        Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.clickable { listener(ToggleIsOutgoing) }
-        ) {
-            Text(
-                    text = "Outgoing",
-                    color = NummiTheme.colors.appBackground.content,
-            )
-            Checkbox(
-                    checked = state.isOutgoing,
-                    onCheckedChange = { listener(ToggleIsOutgoing) },
-                    colors = NummiTheme.colors.generalCheckbox(),
-            )
-        }
-        Button(
-                colors = NummiTheme.colors.generalButton(),
-                shape = NummiTheme.shapes.generalButton,
+        AmountRow(
+                amount = state.amount,
+                onChange = { listener(AmountChanged(it)) },
+        )
+        CategoryRow(
+                category = state.category,
+                onClick = { listener(StartChangeCategory) },
+        )
+        PersonRow(
+                person = state.person,
+                onClick = { listener(StartChangePerson) },
+        )
+        OutgoingRow(
+                isOutgoing = state.isOutgoing,
+                onClick = { listener(ToggleIsOutgoing) },
+        )
+        SubmitRow(
                 onClick = { listener(CreateTransaction) },
-        ) {
-            Text(
-                    text = "Create"
+        )
+    }
+}
+
+@Composable
+private fun DateRow(
+        date: Calendar,
+        onIncrement: (Int) -> Unit,
+        onChange: (Calendar) -> Unit,
+) {
+    val context = LocalContext.current
+    val datePicker by lazy {
+        DatePicker.createDialog(context, date) { onChange(it) }
+    }
+
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        IconButton(onClick = { onIncrement(-1) }) {
+            Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "One day earlier",
+                    tint = NummiTheme.colors.appBackground.content,
+            )
+        }
+        Text(
+                text = DateTimeFormat.LONG_DATE.format(date),
+                style = NummiTheme.typography.h6.asClickableStyle(),
+                modifier = Modifier.clickable { datePicker.show() }
+        )
+        IconButton(onClick = { onIncrement(1) }) {
+            Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "One day later",
+                    tint = NummiTheme.colors.appBackground.content,
             )
         }
     }
 }
 
-fun String.stripNewLines() = replace("\n", "")
+@Composable
+private fun NameRow(
+        name: String,
+        onChange: (String) -> Unit,
+) {
+    NummiTextField(
+            text = name,
+            onTextChanged = { onChange(it) },
+            label = "Name",
+            placeholderText = "Tesco",
+    )
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+private fun AmountRow(
+        amount: String,
+        onChange: (String) -> Unit,
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    OutlinedTextField(
+            value = amount,
+            onValueChange = { onChange(it.stripNewLines()) },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+            label = {
+                Text(
+                        text = "Amount"
+                )
+            },
+            placeholder = {
+                Text(
+                        text = "10.99"
+                )
+            },
+            colors = NummiTheme.colors.outlinedTextField(),
+            modifier = Modifier.padding(bottom = 10.dp)
+    )
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun CategoryRow(
+        category: Category?,
+        onClick: () -> Unit,
+) {
+    Surface(
+            color = Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+            shape = NummiTheme.shapes.generalListItem,
+            onClick = onClick,
+    ) {
+        Box {
+            if (category != null) {
+                Box(
+                        modifier = Modifier
+                                .matchParentSize()
+                                .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
+                                .background(category.color)
+                )
+            }
+            Text(
+                    text = category?.name ?: "No category",
+                    color = NummiTheme.colors.appBackground.content,
+                    modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun PersonRow(
+        person: Person?,
+        onClick: () -> Unit,
+) {
+    Surface(
+            color = Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+            shape = NummiTheme.shapes.generalListItem,
+            onClick = onClick,
+    ) {
+        Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
+        ) {
+            Text(
+                    text = person?.name ?: "No person",
+                    color = NummiTheme.colors.appBackground.content,
+            )
+        }
+    }
+}
+
+@Composable
+private fun OutgoingRow(
+        isOutgoing: Boolean,
+        onClick: () -> Unit,
+) {
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Text(
+                text = "Outgoing",
+                color = NummiTheme.colors.appBackground.content,
+        )
+        Checkbox(
+                checked = isOutgoing,
+                onCheckedChange = { onClick() },
+                colors = NummiTheme.colors.generalCheckbox(),
+        )
+    }
+}
+
+@Composable
+private fun SubmitRow(
+        onClick: () -> Unit,
+) {
+    Button(
+            colors = NummiTheme.colors.generalButton(),
+            shape = NummiTheme.shapes.generalButton,
+            onClick = onClick,
+    ) {
+        Text(
+                text = "Create"
+        )
+    }
+}
 
 @Preview
 @Composable

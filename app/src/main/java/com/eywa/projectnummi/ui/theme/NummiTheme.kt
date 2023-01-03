@@ -4,7 +4,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Typography
 import androidx.compose.runtime.*
 import com.eywa.projectnummi.ui.theme.colors.NummiColorTheme
-import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
+import com.eywa.projectnummi.ui.theme.colors.colorPalettes.ColorPalette
 
 
 val LocalDimens = staticCompositionLocalOf { NummiDimens() }

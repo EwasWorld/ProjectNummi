@@ -17,16 +17,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleShape
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
-import com.eywa.projectnummi.ui.theme.colors.BaseColor
 import com.eywa.projectnummi.ui.utils.DateTimeFormat
 
 @Composable
 fun ViewTransactionsScreen(
-        viewModel: ViewTransactionsViewModel = viewModel()
+        viewModel: ViewTransactionsViewModel = viewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     ViewTransactionsScreen(
@@ -50,7 +50,7 @@ fun ViewTransactionsScreen(
             Box {
                 Surface(
                         color = Color.Transparent,
-                        border = BorderStroke(1.dp, BaseColor.GREY_500),
+                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
                         shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
@@ -67,7 +67,7 @@ fun ViewTransactionsScreen(
                                     .matchParentSize()
                                     .clip(CornerTriangleShape(isTop = false, isLeft = false))
                                     .alpha(0.3f)
-                                    .background(if (item.isOutgoing) BaseColor.RED else BaseColor.GREEN)
+                                    .background(NummiTheme.colors.getTransactionColor(item.isOutgoing))
                     )
                     Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -80,10 +80,16 @@ fun ViewTransactionsScreen(
                                 horizontalAlignment = Alignment.Start,
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
                         ) {
+                            if (item.person.id != TempInMemoryDb.defaultPersonId) {
+                                Text(
+                                        text = item.person.name,
+                                        color = NummiTheme.colors.appBackground.content,
+                                )
+                            }
                             Text(
                                     text = item.name,
                                     color = NummiTheme.colors.appBackground.content,
-                                    style = NummiTheme.typography.h5
+                                    style = NummiTheme.typography.h5,
                             )
                             if (item.category != null) {
                                 Text(

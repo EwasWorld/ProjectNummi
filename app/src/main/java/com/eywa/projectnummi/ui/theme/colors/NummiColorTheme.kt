@@ -1,7 +1,7 @@
 package com.eywa.projectnummi.ui.theme.colors
 
 import androidx.compose.ui.graphics.Color
-import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
+import com.eywa.projectnummi.ui.theme.colors.colorPalettes.ColorPalette
 
 /**
  * Colour themes the user can switch between

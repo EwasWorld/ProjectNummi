@@ -27,7 +27,6 @@ import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleShape
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
-import com.eywa.projectnummi.ui.theme.colors.BaseColor
 
 @Composable
 fun ManageCategoriesScreen(
@@ -60,7 +59,7 @@ fun ManageCategoriesScreen(
             items(displayItems) { item ->
                 Surface(
                         color = Color.Transparent,
-                        border = BorderStroke(1.dp, BaseColor.GREY_500),
+                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
                         shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
