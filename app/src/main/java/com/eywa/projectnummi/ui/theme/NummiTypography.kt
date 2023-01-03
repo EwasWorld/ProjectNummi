@@ -15,7 +15,7 @@ fun TextStyle.asClickableStyle() = copy(
 )
 
 // Set of Material typography styles to start with
-val Typography = Typography(
+val NummiTypography = Typography(
         h5 = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Bold,

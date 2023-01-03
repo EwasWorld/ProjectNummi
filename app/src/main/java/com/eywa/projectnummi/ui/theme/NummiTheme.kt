@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.ui.theme
 
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Typography
 import androidx.compose.runtime.*
 import com.eywa.projectnummi.ui.theme.colors.NummiColorTheme
 import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
@@ -8,7 +9,7 @@ import com.eywa.projectnummi.ui.theme.colors.colorPaletts.ColorPalette
 
 val LocalDimens = staticCompositionLocalOf { NummiDimens() }
 val LocalShapes = staticCompositionLocalOf { NummiShapes() }
-val LocalTypography = staticCompositionLocalOf { Typography }
+val LocalTypography = staticCompositionLocalOf { NummiTypography }
 
 val LocalColorPalette = staticCompositionLocalOf { ColorPalette() }
 var currentColorTheme by mutableStateOf(NummiColorTheme.MAIN)
@@ -19,13 +20,14 @@ fun NummiTheme(
         colorTheme: NummiColorTheme = currentColorTheme,
         dimens: NummiDimens = NummiDimens(),
         shapes: NummiShapes = NummiShapes(),
-        content: @Composable () -> Unit
+        typography: Typography = NummiTypography,
+        content: @Composable () -> Unit,
 ) {
     CompositionLocalProvider(
             LocalColorPalette provides colorTheme.colors,
             LocalDimens provides dimens,
             LocalShapes provides shapes,
-            LocalTypography provides Typography,
+            LocalTypography provides typography,
     ) {
         MaterialTheme(
                 typography = LocalTypography.current,
@@ -44,7 +46,7 @@ object NummiTheme {
     val shapes: NummiShapes
         @Composable
         get() = LocalShapes.current
-    val typography: androidx.compose.material.Typography
+    val typography: Typography
         @Composable
         get() = LocalTypography.current
 }
