@@ -5,9 +5,11 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -66,6 +68,15 @@ fun NummiBottomNav(
                 label = "Categories",
                 contentDescription = "Manage categories",
                 destination = MainNavRoute.MANAGE_CATEGORIES,
+                currentRoute = currentRoute,
+                onClick = onClick,
+        )
+        NummiBottomNavItem(
+                icon = NummiIconInfo.VectorIcon(Icons.Outlined.Person),
+                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Person),
+                label = "People",
+                contentDescription = "Manage people",
+                destination = MainNavRoute.MANAGE_PEOPLE,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )

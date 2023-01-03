@@ -4,6 +4,6 @@ import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialo
 import com.eywa.projectnummi.model.Category
 
 data class ManageCategoriesState(
-        val categories: List<Category> = listOf(),
+        val categories: List<Category>? = null,
         val createDialogState: CreateCategoryDialogState? = null,
 )

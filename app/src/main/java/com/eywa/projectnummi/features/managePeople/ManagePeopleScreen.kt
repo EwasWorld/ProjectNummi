@@ -1,7 +1,6 @@
-package com.eywa.projectnummi.features.manageCategories
+package com.eywa.projectnummi.features.managePeople
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,39 +14,37 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
-import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.ui.components.CornerTriangleShape
+import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
+import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
+import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction
+import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
 
 @Composable
-fun ManageCategoriesScreen(
-        viewModel: ManageCategoriesViewModel = viewModel(),
+fun ManagePeopleScreen(
+        viewModel: ManagePeopleViewModel = viewModel(),
 ) {
     val state = viewModel.state.collectAsState()
-    ManageCategoriesScreen(state = state.value, listener = { viewModel.handle(it) })
+    ManagePeopleScreen(state = state.value, listener = { viewModel.handle(it) })
 }
 
 @Composable
-fun ManageCategoriesScreen(
-        state: ManageCategoriesState,
-        listener: (ManageCategoriesIntent) -> Unit,
+fun ManagePeopleScreen(
+        state: ManagePeopleState,
+        listener: (ManagePeopleIntent) -> Unit,
 ) {
-    val displayItems = state.categories?.sortedBy { it.name } ?: listOf()
+    val displayItems = state.people?.sortedBy { it.name } ?: listOf()
 
-    CreateCategoryDialog(
+    CreatePersonDialog(
             isShown = true,
             state = state.createDialogState,
-            listener = { listener(CreateCategoryDialogAction(it)) },
+            listener = { listener(CreatePersonDialogAction(it)) },
     )
 
     Box {
@@ -64,17 +61,13 @@ fun ManageCategoriesScreen(
                         shape = NummiTheme.shapes.generalListItem,
                         modifier = Modifier.fillMaxWidth()
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Box(
-                                modifier = Modifier
-                                        .matchParentSize()
-                                        .clip(CornerTriangleShape(isTop = false, xScale = 2f, yScale = 2f))
-                                        .background(item.color)
-                        )
+                    Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp)
+                    ) {
                         Text(
                                 text = item.name,
                                 color = NummiTheme.colors.appBackground.content,
-                                modifier = Modifier.padding(vertical = 15.dp, horizontal = 15.dp)
                         )
                     }
                 }
@@ -84,14 +77,14 @@ fun ManageCategoriesScreen(
         FloatingActionButton(
                 backgroundColor = NummiTheme.colors.fab.main,
                 contentColor = NummiTheme.colors.fab.content,
-                onClick = { listener(AddCategoryClicked) },
+                onClick = { listener(AddPersonClicked) },
                 modifier = Modifier
                         .padding(NummiTheme.dimens.fabToScreenEdgePadding)
                         .align(Alignment.BottomEnd)
         ) {
             Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add category",
+                    contentDescription = "Add person",
             )
         }
     }
@@ -101,9 +94,9 @@ fun ManageCategoriesScreen(
 @Composable
 fun ManageCategoriesScreen_Preview() {
     NummiScreenPreviewWrapper {
-        ManageCategoriesScreen(
-                state = ManageCategoriesState(
-                        categories = CategoryProvider.basic,
+        ManagePeopleScreen(
+                state = ManagePeopleState(
+                        people = PeopleProvider.basic,
                 )
         ) {}
     }
