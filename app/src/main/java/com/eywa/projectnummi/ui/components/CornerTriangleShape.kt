@@ -26,26 +26,35 @@ data class CornerTriangleShapeState(
         val isLeft: Boolean = true,
         val xScale: Float = 1f,
         val yScale: Float = 1f,
-        val totalSegments: Int = 1,
+        val segmentWeights: List<Int> = listOf(1),
         /**
          * True: Each segment is given the same percentage distance along the tangent
          * False: Each segment is given the same arc angle
          */
         val usePercentage: Boolean = true,
 ) {
+    private val percentage = 1f / (segmentWeights.sum())
 
     fun getShape(segmentIndex: Int = 0): GenericShape =
             if (usePercentage) {
-                val percentage = 1f / totalSegments
-                CornerTriangleShapePercentage(this, segmentIndex * percentage, percentage)
+                CornerTriangleShapePercentage(
+                        this,
+                        (segmentWeights.take(segmentIndex).sum()) * percentage,
+                        segmentWeights[segmentIndex] * percentage
+                )
             }
             else {
-                CornerTriangleShapeArc(this, segmentIndex)
+                CornerTriangleShapeArc(
+                        this,
+                        (segmentWeights.take(segmentIndex).sum()) * percentage,
+                        segmentWeights[segmentIndex] * percentage
+                )
             }
 }
 
 /**
- * Forces [CornerTriangleShapeState.totalSegments] to be [colors].size
+ * Note: if [colors] length doesn't match [CornerTriangleShapeState.segmentWeights] length,
+ * all segments will be weighted equally
  */
 @Composable
 fun BoxScope.CornerTriangleBox(
@@ -59,10 +68,12 @@ fun BoxScope.CornerTriangleBox(
             modifier = modifier
                     .matchParentSize()
                     .clip(state
-                            .copy(totalSegments = 1)
+                            .copy(segmentWeights = listOf(1))
                             .getShape())
     ) {
-        val adjustedState = state.copy(totalSegments = colors.size)
+        val adjustedState =
+                if (colors.size == state.segmentWeights.size) state
+                else state.copy(segmentWeights = List(colors.size) { 1 })
         colors.forEachIndexed { index, color ->
             CornerTriangleBox(
                     color = color,
@@ -128,14 +139,15 @@ fun CornerTriangleShapePercentage(
 @Suppress("FunctionName") // because I'm not allowed to extend GenericShape -.-
 fun CornerTriangleShapeArc(
         state: CornerTriangleShapeState,
-        segmentIndex: Int = 0,
+        startPercentage: Float = 0f,
+        percentage: Float = 0f,
 ) = GenericShape { size, _ ->
     fun xModifier(x: Float) = if (state.isLeft) state.xScale * x else (size.width - state.xScale * x)
     fun yModifier(y: Float) = if (state.isTop) state.yScale * y else (size.height - state.yScale * y)
 
-    val segmentArc = (Math.PI.toFloat() / 2f) / state.totalSegments
-    val pointOne = Polar(size.height, segmentIndex * segmentArc).toCartesian()
-    val pointTwo = Polar(size.height, (segmentIndex + 1) * segmentArc).toCartesian()
+    val segmentArc = Math.PI.toFloat() / 2f
+    val pointOne = Polar(size.height, startPercentage * segmentArc).toCartesian()
+    val pointTwo = Polar(size.height, (percentage + startPercentage) * segmentArc).toCartesian()
 
     // Start in the corner
     moveTo(xModifier(0f), yModifier(0f))
@@ -180,12 +192,18 @@ data class CornerTriangleShapePreviewParams(
 @Suppress("BooleanLiteralArgument")
 class CornerTriangleShapePreviewProvider : CollectionPreviewParameterProvider<CornerTriangleShapePreviewParams>(
         listOf(
+                CornerTriangleShapePreviewParams("weighted percentage",
+                        CornerTriangleShapeState(segmentWeights = listOf(3, 1, 2)),
+                        listOf(0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("percentage",
                         CornerTriangleShapeState(usePercentage = true),
                         colors = listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("arc",
                         CornerTriangleShapeState(usePercentage = false),
                         listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
+                CornerTriangleShapePreviewParams("weighted arc",
+                        CornerTriangleShapeState(usePercentage = false, segmentWeights = listOf(3, 1, 2)),
+                        listOf(0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("topLeft", CornerTriangleShapeState(true, true, 1f, 1f)),
                 CornerTriangleShapePreviewParams("topRight", CornerTriangleShapeState(true, false, 1f, 1f)),
                 CornerTriangleShapePreviewParams("bottomLeft", CornerTriangleShapeState(false, true, 1f, 1f)),
