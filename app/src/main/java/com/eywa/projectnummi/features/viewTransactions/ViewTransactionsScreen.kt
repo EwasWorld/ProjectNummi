@@ -50,12 +50,14 @@ fun ViewTransactionsScreen(
             modifier = Modifier.fillMaxSize()
     ) {
         items(displayItems) { item ->
-            Box {
-                Surface(
-                        color = Color.Transparent,
-                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-                        shape = NummiTheme.shapes.generalListItem,
-                        modifier = Modifier.fillMaxWidth()
+            Surface(
+                    color = Color.Transparent,
+                    border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+                    shape = NummiTheme.shapes.generalListItem,
+                    modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                        contentAlignment = Alignment.Center
                 ) {
                     if (item.amount.any { it.category != null }) {
                         CornerTriangleBox(
@@ -63,7 +65,9 @@ fun ViewTransactionsScreen(
                                 state = CornerTriangleShapeState(
                                         isTop = false,
                                         segmentWeights = item.amount.map { it.amount },
+                                        forceSize = 100.dp,
                                 ),
+                                modifier = Modifier.align(Alignment.BottomStart)
                         )
                     }
                     CornerTriangleBox(
@@ -71,8 +75,11 @@ fun ViewTransactionsScreen(
                             state = CornerTriangleShapeState(
                                     isTop = false,
                                     isLeft = false,
+                                    forceSize = 100.dp,
                             ),
-                            modifier = Modifier.alpha(0.3f)
+                            modifier = Modifier
+                                    .alpha(0.3f)
+                                    .align(Alignment.BottomEnd)
                     )
                     Column(
                             horizontalAlignment = Alignment.CenterHorizontally,

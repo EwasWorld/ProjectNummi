@@ -6,20 +6,20 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.eywa.projectnummi.R
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.utils.NummiIconInfo
 
@@ -63,8 +63,8 @@ fun NummiBottomNav(
                 onClick = onClick,
         )
         NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Outlined.Star),
-                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Star),
+                icon = NummiIconInfo.PainterIcon(R.drawable.ic_category_outline),
+                selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_category_baseline),
                 label = "Categories",
                 contentDescription = "Manage categories",
                 destination = MainNavRoute.MANAGE_CATEGORIES,
@@ -147,6 +147,8 @@ fun RowScope.NummiBottomNavItem(
                         overflow = TextOverflow.Ellipsis,
                 )
             },
-            modifier = Modifier.semantics { this.contentDescription = contentDescription }
+            modifier = Modifier
+                    .semantics { this.contentDescription = contentDescription }
+                    .scale(if (isSelected) 1.15f else 1.0f)
     )
 }

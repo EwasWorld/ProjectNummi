@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.common.ColorHelper
 import com.eywa.projectnummi.common.Polar
@@ -32,6 +33,10 @@ data class CornerTriangleShapeState(
          * False: Each segment is given the same arc angle
          */
         val usePercentage: Boolean = true,
+        /**
+         * If no size is provided, matches parent size
+         */
+        val forceSize: Dp? = null,
 ) {
     private val percentage = 1f / (segmentWeights.sum())
 
@@ -50,7 +55,11 @@ data class CornerTriangleShapeState(
                         segmentWeights[segmentIndex] * percentage
                 )
             }
+
 }
+
+private fun Modifier.getSizeModifier(scope: BoxScope, forceSize: Dp? = null) =
+        if (forceSize == null) with(scope) { matchParentSize() } else size(forceSize)
 
 /**
  * Note: if [colors] length doesn't match [CornerTriangleShapeState.segmentWeights] length,
@@ -64,9 +73,10 @@ fun BoxScope.CornerTriangleBox(
         state: CornerTriangleShapeState = CornerTriangleShapeState(),
 ) {
     require(colors.isNotEmpty()) { "Must provide at least one colour" }
+
     Box(
             modifier = modifier
-                    .matchParentSize()
+                    .getSizeModifier(this, state.forceSize)
                     .clip(state
                             .copy(segmentWeights = listOf(1))
                             .getShape())
@@ -95,7 +105,7 @@ fun BoxScope.CornerTriangleBox(
 ) {
     Box(
             modifier = modifier
-                    .matchParentSize()
+                    .getSizeModifier(this, state.forceSize)
                     .clip(state.getShape(segmentIndex))
                     .background(color)
     )

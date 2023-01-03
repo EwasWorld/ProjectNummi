@@ -12,6 +12,9 @@ data class Cartesian(
     )
 }
 
+/**
+ * @param theta in radians
+ */
 data class Polar(
         val r: Float,
         val theta: Float,
