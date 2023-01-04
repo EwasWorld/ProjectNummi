@@ -6,10 +6,10 @@ import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialo
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
+import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
-import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogIntent
-import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogIntent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

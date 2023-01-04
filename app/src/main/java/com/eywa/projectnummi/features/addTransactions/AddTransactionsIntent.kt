@@ -2,8 +2,8 @@ package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
-import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogIntent
-import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogIntent
+import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
+import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
 import java.util.*
 
 sealed class AddTransactionsIntent {

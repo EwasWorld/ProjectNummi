@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.common.ColorHelper
+import com.eywa.projectnummi.common.ColorUtils
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent.*
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
@@ -46,7 +46,7 @@ fun CreateCategoryDialog(
                     modifier = Modifier
                             .fillMaxWidth()
                             .height(40.dp)
-                            .background(ColorHelper.asCategoryColor(state?.hue ?: 0.5f))
+                            .background(ColorUtils.asCategoryColor(state?.hue ?: 0.5f))
             )
             Slider(
                     value = state?.hue ?: 0.5f,

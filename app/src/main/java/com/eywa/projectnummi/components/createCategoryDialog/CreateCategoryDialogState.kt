@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.components.createCategoryDialog
 
-import com.eywa.projectnummi.common.ColorHelper
+import com.eywa.projectnummi.common.ColorUtils
 import com.eywa.projectnummi.model.Category
 
 data class CreateCategoryDialogState(
@@ -10,6 +10,6 @@ data class CreateCategoryDialogState(
     fun asCategory() = Category(
             id = 0,
             name = name,
-            color = ColorHelper.asCategoryColor(hue),
+            color = ColorUtils.asCategoryColor(hue),
     )
 }

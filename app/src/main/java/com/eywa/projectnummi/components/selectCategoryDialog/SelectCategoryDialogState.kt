@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.features.addTransactions.selectCategoryDialog
+package com.eywa.projectnummi.components.selectCategoryDialog
 
 import com.eywa.projectnummi.model.Category
 

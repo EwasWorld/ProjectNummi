@@ -5,11 +5,11 @@ import android.content.Context
 import java.util.*
 
 // TODO Set colour
-object DatePicker {
+object NummiDatePicker {
     fun createDialog(
             context: Context,
             date: Calendar,
-            onDateChanged: (Calendar) -> Unit
+            onDateChanged: (Calendar) -> Unit,
     ) = DatePickerDialog(
             context,
             { _, year, month, day ->

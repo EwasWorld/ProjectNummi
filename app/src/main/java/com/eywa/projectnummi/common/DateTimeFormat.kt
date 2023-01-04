@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.ui.utils
+package com.eywa.projectnummi.common
 
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,6 +21,6 @@ enum class DateTimeFormat(val pattern: String) {
     SHORT_DATE_TIME("${SHORT_DATE.pattern} ${TIME_24_HOUR.pattern}"),
     ;
 
-    fun format(date: Calendar, locale: Locale = Locale.getDefault()) =
+    fun format(date: Calendar, locale: Locale = Locale.getDefault()): String =
             SimpleDateFormat(pattern, locale).format(date.time)
 }

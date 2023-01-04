@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.ui.utils
+package com.eywa.projectnummi.common
 
 import java.util.*
 

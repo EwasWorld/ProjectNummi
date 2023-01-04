@@ -1,5 +1,6 @@
 package com.eywa.projectnummi.features.addTransactions
 
+import com.eywa.projectnummi.common.DateUtils
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.database.TempInMemoryDb
@@ -7,7 +8,6 @@ import com.eywa.projectnummi.model.Amount
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
 import com.eywa.projectnummi.model.Transaction
-import com.eywa.projectnummi.ui.utils.DateUtils
 import java.util.*
 import kotlin.math.roundToInt
 

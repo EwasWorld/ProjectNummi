@@ -4,7 +4,7 @@ import androidx.annotation.FloatRange
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ExperimentalGraphicsApi
 
-object ColorHelper {
+object ColorUtils {
     private const val MAX_HUE_VALUE = 360f
 
     @OptIn(ExperimentalGraphicsApi::class)

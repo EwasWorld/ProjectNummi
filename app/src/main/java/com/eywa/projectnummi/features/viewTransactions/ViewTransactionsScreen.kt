@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.pennyAmountAsString
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
@@ -29,7 +30,6 @@ import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
-import com.eywa.projectnummi.ui.utils.DateTimeFormat
 
 @Composable
 fun ViewTransactionsScreen(

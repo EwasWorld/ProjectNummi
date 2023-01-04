@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.common.ColorHelper
+import com.eywa.projectnummi.common.ColorUtils
 import com.eywa.projectnummi.common.Polar
 import com.eywa.projectnummi.common.sortPreviewParameters
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -215,19 +215,19 @@ class CornerTriangleShapePreviewProvider : CollectionPreviewParameterProvider<Co
                 CornerTriangleShapePreviewParams("forceSize", CornerTriangleShapeState(false, false, forceSize = 100f)),
                 CornerTriangleShapePreviewParams("null colour",
                         CornerTriangleShapeState(),
-                        colors = listOf(0f, null, 0.6f, 0.8f).map { v -> v?.let { ColorHelper.asCategoryColor(it) } }),
+                        colors = listOf(0f, null, 0.6f, 0.8f).map { v -> v?.let { ColorUtils.asCategoryColor(it) } }),
                 CornerTriangleShapePreviewParams("weighted percentage",
                         CornerTriangleShapeState(segmentWeights = listOf(3, 1, 2)),
-                        listOf(0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
+                        listOf(0.3f, 0.6f, 0.8f).map { ColorUtils.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("percentage",
                         CornerTriangleShapeState(usePercentage = true),
-                        colors = listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
+                        colors = listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorUtils.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("arc",
                         CornerTriangleShapeState(usePercentage = false),
-                        listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
+                        listOf(0f, 0.3f, 0.6f, 0.8f).map { ColorUtils.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("weighted arc",
                         CornerTriangleShapeState(usePercentage = false, segmentWeights = listOf(3, 1, 2)),
-                        listOf(0.3f, 0.6f, 0.8f).map { ColorHelper.asCategoryColor(it) }),
+                        listOf(0.3f, 0.6f, 0.8f).map { ColorUtils.asCategoryColor(it) }),
                 CornerTriangleShapePreviewParams("topLeft", CornerTriangleShapeState(true, true, 1f, 1f)),
                 CornerTriangleShapePreviewParams("topRight", CornerTriangleShapeState(true, false, 1f, 1f)),
                 CornerTriangleShapePreviewParams("bottomLeft", CornerTriangleShapeState(false, true, 1f, 1f)),

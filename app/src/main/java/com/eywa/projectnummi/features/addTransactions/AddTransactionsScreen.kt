@@ -28,14 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.R
+import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.pennyAmountAsString
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
+import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialog
+import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogState
+import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialog
+import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogState
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
-import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialog
-import com.eywa.projectnummi.features.addTransactions.selectCategoryDialog.SelectCategoryDialogState
-import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialog
-import com.eywa.projectnummi.features.addTransactions.selectPersonDialog.SelectPersonDialogState
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
 import com.eywa.projectnummi.model.providers.CategoryProvider
@@ -43,7 +44,6 @@ import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.*
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
-import com.eywa.projectnummi.ui.utils.DateTimeFormat
 import java.util.*
 
 
@@ -210,7 +210,7 @@ private fun DateInput(
 ) {
     val context = LocalContext.current
     val datePicker by lazy {
-        DatePicker.createDialog(context, date) { onChange(it) }
+        NummiDatePicker.createDialog(context, date) { onChange(it) }
     }
 
     Row(
