@@ -59,7 +59,14 @@ class AddTransactionsViewModel : ViewModel() {
             is CreatePersonDialogAction -> handleCreatePersonIntent(action.action)
             is SelectPersonDialogAction -> handleSelectPersonIntent(action.action)
 
-            CreateTransaction -> viewModelScope.launch {
+            Clear -> _state.update {
+                AddTransactionsState(
+                        defaultPersonId = it.defaultPersonId,
+                        categories = it.categories,
+                        people = it.people,
+                )
+            }
+            Submit -> viewModelScope.launch {
                 val oldState = state.value
                 if (oldState.name.isBlank()) return@launch
 

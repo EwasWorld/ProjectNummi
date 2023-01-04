@@ -70,8 +70,8 @@ fun AddTransactionsScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                     .fillMaxSize()
-                    .padding(NummiTheme.dimens.screenPadding)
                     .verticalScroll(rememberScrollState())
+                    .padding(NummiTheme.dimens.screenPadding)
     ) {
         MainInfo(state, listener)
 
@@ -95,7 +95,7 @@ fun AddTransactionsScreen(
             AddRowButton { listener(AddAmountRow) }
         }
 
-        SubmitButton { listener(CreateTransaction) }
+        FinalButtons({ listener(Submit) }, { listener(Clear) })
     }
 }
 
@@ -364,17 +364,32 @@ private fun OutgoingInput(
 }
 
 @Composable
-private fun SubmitButton(
-        onClick: () -> Unit,
+private fun FinalButtons(
+        onCreateClick: () -> Unit,
+        onClearClick: () -> Unit,
 ) {
-    Button(
-            colors = NummiTheme.colors.generalButton(),
-            shape = NummiTheme.shapes.generalButton,
-            onClick = onClick,
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text(
-                text = "Create"
-        )
+        Button(
+                colors = NummiTheme.colors.secondaryTextButton(),
+                elevation = NummiTheme.dimens.buttonElevationNone(),
+                onClick = onClearClick,
+        ) {
+            Text(
+                    text = "Clear"
+            )
+        }
+        Button(
+                colors = NummiTheme.colors.generalButton(),
+                shape = NummiTheme.shapes.generalButton,
+                onClick = onCreateClick,
+        ) {
+            Text(
+                    text = "Create"
+            )
+        }
     }
 }
 

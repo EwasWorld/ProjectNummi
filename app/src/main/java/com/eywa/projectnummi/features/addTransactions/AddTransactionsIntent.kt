@@ -7,7 +7,8 @@ import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogInt
 import java.util.*
 
 sealed class AddTransactionsIntent {
-    object CreateTransaction : AddTransactionsIntent()
+    object Submit : AddTransactionsIntent()
+    object Clear : AddTransactionsIntent()
     object Split : AddTransactionsIntent()
     object AddAmountRow : AddTransactionsIntent()
 
