@@ -8,19 +8,23 @@ import java.util.*
 
 sealed class AddTransactionsIntent {
     object CreateTransaction : AddTransactionsIntent()
+    object Split : AddTransactionsIntent()
+    object AddAmountRow : AddTransactionsIntent()
 
     sealed class ValueChangedIntent : AddTransactionsIntent()
     object ToggleIsOutgoing : ValueChangedIntent()
     data class DateChanged(val date: Calendar) : ValueChangedIntent()
     data class DateIncremented(val daysAdded: Int) : ValueChangedIntent()
-    data class AmountChanged(val amount: String) : ValueChangedIntent()
     data class NameChanged(val name: String) : ValueChangedIntent()
+    data class AmountChanged(val rowIndex: Int, val amount: String) : ValueChangedIntent()
 
-    object StartChangeCategory : AddTransactionsIntent()
+    data class DeleteAmountRow(val rowIndex: Int) : AddTransactionsIntent()
+
+    data class StartChangeCategory(val rowIndex: Int) : AddTransactionsIntent()
     data class CreateCategoryDialogAction(val action: CreateCategoryDialogIntent) : AddTransactionsIntent()
     data class SelectCategoryDialogAction(val action: SelectCategoryDialogIntent) : AddTransactionsIntent()
 
-    object StartChangePerson : AddTransactionsIntent()
+    data class StartChangePerson(val rowIndex: Int) : AddTransactionsIntent()
     data class CreatePersonDialogAction(val action: CreatePersonDialogIntent) : AddTransactionsIntent()
     data class SelectPersonDialogAction(val action: SelectPersonDialogIntent) : AddTransactionsIntent()
 }

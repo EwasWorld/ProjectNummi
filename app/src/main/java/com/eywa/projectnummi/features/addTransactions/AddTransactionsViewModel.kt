@@ -37,23 +37,23 @@ class AddTransactionsViewModel : ViewModel() {
         when (action) {
             is ValueChangedIntent -> handleValueChangedIntent(action)
 
-            StartChangeCategory -> _state.update {
+            is StartChangeCategory -> _state.update {
                 if (it.categories == null || it.categories.isNotEmpty()) {
-                    it.copy(selectCategoryDialogIsShown = true)
+                    it.copy(currentRow = action.rowIndex, selectCategoryDialogIsShown = true)
                 }
                 else {
-                    it.copy(createCategoryDialogState = CreateCategoryDialogState())
+                    it.copy(currentRow = action.rowIndex, createCategoryDialogState = CreateCategoryDialogState())
                 }
             }
             is CreateCategoryDialogAction -> handleCreateCategoryIntent(action.action)
             is SelectCategoryDialogAction -> handleSelectCategoryIntent(action.action)
 
-            StartChangePerson -> _state.update {
+            is StartChangePerson -> _state.update {
                 if (it.people == null || it.people.isNotEmpty()) {
-                    it.copy(selectPersonDialogIsShown = true)
+                    it.copy(currentRow = action.rowIndex, selectPersonDialogIsShown = true)
                 }
                 else {
-                    it.copy(createPersonDialogState = CreatePersonDialogState())
+                    it.copy(currentRow = action.rowIndex, createPersonDialogState = CreatePersonDialogState())
                 }
             }
             is CreatePersonDialogAction -> handleCreatePersonIntent(action.action)
@@ -63,8 +63,25 @@ class AddTransactionsViewModel : ViewModel() {
                 val oldState = state.value
                 if (oldState.name.isBlank()) return@launch
 
-                _state.update { it.copy(amount = "", name = "") }
+                _state.update {
+                    it.copy(
+                            name = "",
+                            amountRows = listOf(it.amountRows[0].copy(amount = "")),
+                    )
+                }
                 TempInMemoryDb.addTransaction(oldState.asTransaction())
+            }
+
+            AddAmountRow ->
+                _state.update { it.copy(amountRows = it.amountRows.plus(it.amountRows.last().copy(amount = ""))) }
+            is DeleteAmountRow ->
+                _state.update {
+                    val rows = it.amountRows
+                    it.copy(amountRows = rows.take(action.rowIndex).plus(rows.drop(action.rowIndex + 1)))
+                }
+            Split -> {
+                if (_state.value.amountRows.size > 1) return
+                // TODO
             }
         }
     }
@@ -78,16 +95,25 @@ class AddTransactionsViewModel : ViewModel() {
                 }
             }
             is DateChanged -> _state.update { it.copy(date = action.date) }
-            is AmountChanged -> _state.update { it.copy(amount = action.amount) }
+            is AmountChanged ->
+                _state.update {
+                    it.copy(amountRows = it.amountRows.updateAt(action.rowIndex) { copy(amount = action.amount) })
+                }
             is NameChanged -> _state.update { it.copy(name = action.name) }
             ToggleIsOutgoing -> _state.update { it.copy(isOutgoing = !it.isOutgoing) }
         }
     }
 
+    private fun List<AmountInputState>.updateAt(index: Int, mutator: AmountInputState.() -> AmountInputState) =
+            take(index)
+                    .plus(get(index).mutator())
+                    .plus(drop(index + 1))
+
     private fun handleCreateCategoryIntent(action: CreateCategoryDialogIntent) {
         when (action) {
             is CreateCategoryDialogIntent.HueChanged,
-            is CreateCategoryDialogIntent.NameChanged ->
+            is CreateCategoryDialogIntent.NameChanged,
+            ->
                 _state.update {
                     val createState = it.createCategoryDialogState ?: return
                     it.copy(createCategoryDialogState = action.updateState(createState))
@@ -97,29 +123,31 @@ class AddTransactionsViewModel : ViewModel() {
                 val category = _state.value.createCategoryDialogState?.asCategory() ?: return
                 viewModelScope.launch {
                     val id = TempInMemoryDb.addCategory(category)
-                    _state.update { it.copy(categoryId = id, createCategoryDialogState = null) }
+                    _state.update { it.setCategoryId(id) }
                 }
             }
         }
     }
 
+    private fun AddTransactionsState.setPersonId(id: Int) = updateRowAndCloseDialogs { copy(personId = id) }
+    private fun AddTransactionsState.setCategoryId(id: Int?) = updateRowAndCloseDialogs { copy(categoryId = id) }
+
+    private fun AddTransactionsState.updateRowAndCloseDialogs(mutator: AmountInputState.() -> AmountInputState) =
+            copy(
+                    amountRows = _state.value.currentRow?.let { amountRows.updateAt(it, mutator) }
+                            ?: amountRows,
+                    createCategoryDialogState = null,
+                    selectCategoryDialogIsShown = false,
+                    createPersonDialogState = null,
+                    selectPersonDialogIsShown = false,
+                    currentRow = null,
+            )
+
     private fun handleSelectCategoryIntent(action: SelectCategoryDialogIntent) {
         when (action) {
             SelectCategoryDialogIntent.Close -> _state.update { it.copy(selectCategoryDialogIsShown = false) }
-            is SelectCategoryDialogIntent.CategoryClicked ->
-                _state.update {
-                    it.copy(
-                            selectCategoryDialogIsShown = false,
-                            categoryId = action.category.id,
-                    )
-                }
-            SelectCategoryDialogIntent.NoCategoryClicked ->
-                _state.update {
-                    it.copy(
-                            selectCategoryDialogIsShown = false,
-                            categoryId = null,
-                    )
-                }
+            is SelectCategoryDialogIntent.CategoryClicked -> _state.update { it.setCategoryId(action.category.id) }
+            is SelectCategoryDialogIntent.NoCategoryClicked -> _state.update { it.setCategoryId(null) }
             SelectCategoryDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(
@@ -142,7 +170,7 @@ class AddTransactionsViewModel : ViewModel() {
                 val person = _state.value.createPersonDialogState?.asPerson() ?: return
                 viewModelScope.launch {
                     val id = TempInMemoryDb.addPerson(person)
-                    _state.update { it.copy(personId = id, createPersonDialogState = null) }
+                    _state.update { it.setPersonId(id) }
                 }
             }
         }
@@ -151,13 +179,7 @@ class AddTransactionsViewModel : ViewModel() {
     private fun handleSelectPersonIntent(action: SelectPersonDialogIntent) {
         when (action) {
             SelectPersonDialogIntent.Close -> _state.update { it.copy(selectPersonDialogIsShown = false) }
-            is SelectPersonDialogIntent.PersonClicked ->
-                _state.update {
-                    it.copy(
-                            selectPersonDialogIsShown = false,
-                            personId = action.person.id,
-                    )
-                }
+            is SelectPersonDialogIntent.PersonClicked -> _state.update { it.setPersonId(action.person.id) }
             SelectPersonDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(

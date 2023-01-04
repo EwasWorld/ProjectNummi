@@ -76,21 +76,23 @@ fun AddTransactionsScreen(
         MainInfo(state, listener)
 
         Text(
-                text = "Total: " + 100_00.pennyAmountAsString(),
+                text = "Total: " + state.totalAmount.pennyAmountAsString(),
                 color = NummiTheme.colors.appBackground.content,
                 style = NummiTheme.typography.h5,
         )
 
-        repeat(3) {
-            AmountSection(state, listener)
+        repeat(state.amountRows.size) { index ->
+            AmountRow(index, state, listener)
         }
 
         Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(35.dp),
         ) {
-//            SplitButton { /* TODO */ }
-            AddRowButton { /* TODO */ }
+            if (state.amountRows.size <= 1) {
+                SplitButton { listener(Split) }
+            }
+            AddRowButton { listener(AddAmountRow) }
         }
 
         SubmitButton { listener(CreateTransaction) }
@@ -125,12 +127,15 @@ private fun Dialogs(
 }
 
 @Composable
-private fun AmountSection(
+private fun AmountRow(
+        rowIndex: Int,
         state: AddTransactionsState,
         listener: (AddTransactionsIntent) -> Unit,
 ) {
+    val rowState = state.amountRows[rowIndex]
+
     Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {
         Column(
@@ -138,29 +143,31 @@ private fun AmountSection(
                 horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             AmountInput(
-                    amount = state.amount,
-                    onChange = { listener(AmountChanged(it)) },
+                    amount = rowState.amount,
+                    onChange = { listener(AmountChanged(rowIndex, it)) },
             )
             Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 CategoryInput(
-                        category = state.category,
-                        onClick = { listener(StartChangeCategory) },
+                        category = state.getCategory(rowState.categoryId),
+                        onClick = { listener(StartChangeCategory(rowIndex)) },
                 )
                 PersonInput(
-                        person = state.person,
-                        onClick = { listener(StartChangePerson) },
+                        person = state.getPerson(rowState.personId),
+                        onClick = { listener(StartChangePerson(rowIndex)) },
                 )
             }
         }
-        IconButton(onClick = { /*TODO*/ }) {
-            Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Remove row",
-                    tint = NummiTheme.colors.appBackground.content,
-            )
+        if (state.amountRows.size > 1) {
+            IconButton(onClick = { listener(DeleteAmountRow(rowIndex)) }) {
+                Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove row",
+                        tint = NummiTheme.colors.appBackground.content,
+                )
+            }
         }
     }
 }
@@ -421,10 +428,20 @@ fun AddTransactionsScreen_Preview() {
     NummiScreenPreviewWrapper {
         AddTransactionsScreen(
                 AddTransactionsState(
-                        amount = "12.05",
-                        categoryId = 1,
                         categories = CategoryProvider.basic,
-                        personId = 0,
+                        amountRows = listOf(
+                                AmountInputState(
+                                        amount = "12.05",
+                                        categoryId = 1,
+                                        personId = 0,
+                                ),
+                                AmountInputState(
+                                        amount = "12.05",
+                                        categoryId = 0,
+                                        personId = 1,
+                                ),
+                                AmountInputState(personId = 0)
+                        ),
                         people = PeopleProvider.basic,
                 )
         ) {}
