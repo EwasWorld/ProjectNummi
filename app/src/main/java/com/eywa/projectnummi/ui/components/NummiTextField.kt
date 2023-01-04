@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import com.eywa.projectnummi.ui.theme.NummiTheme
 
@@ -15,6 +16,7 @@ fun NummiTextField(
         onTextChanged: (String) -> Unit,
         label: String,
         placeholderText: String,
+        modifier: Modifier = Modifier,
         imeAction: ImeAction = ImeAction.Next,
 ) = OutlinedTextField(
         value = text,
@@ -32,5 +34,6 @@ fun NummiTextField(
                     text = placeholderText
             )
         },
-        colors = NummiTheme.colors.outlinedTextField()
+        colors = NummiTheme.colors.outlinedTextField(),
+        modifier = modifier
 )

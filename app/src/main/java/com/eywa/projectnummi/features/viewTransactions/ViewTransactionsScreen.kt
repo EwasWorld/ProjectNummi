@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.features.viewTransactions
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,11 +14,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eywa.projectnummi.common.pennyAmountAsString
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
@@ -57,30 +61,33 @@ fun ViewTransactionsScreen(
                     modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                 ) {
+                    val colorTriangleSize =
+                            with(LocalDensity.current) { NummiTheme.dimens.viewTransactionTriangleSize.toPx() }
+
+                    CornerTriangleBox(
+                            color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
+                            state = CornerTriangleShapeState(
+                                    isTop = false,
+                                    isLeft = false,
+                                    forceSize = colorTriangleSize,
+                                    xScale = 0.8f,
+                                    yScale = 0.8f,
+                            ),
+                            modifier = Modifier.alpha(0.3f)
+                    )
                     if (item.amount.any { it.category != null }) {
                         CornerTriangleBox(
                                 colors = item.amount.map { it.category?.color },
                                 state = CornerTriangleShapeState(
                                         isTop = false,
                                         segmentWeights = item.amount.map { it.amount },
-                                        forceSize = 100.dp,
+                                        forceSize = colorTriangleSize,
+                                        yScale = 2f,
                                 ),
-                                modifier = Modifier.align(Alignment.BottomStart)
                         )
                     }
-                    CornerTriangleBox(
-                            color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
-                            state = CornerTriangleShapeState(
-                                    isTop = false,
-                                    isLeft = false,
-                                    forceSize = 100.dp,
-                            ),
-                            modifier = Modifier
-                                    .alpha(0.3f)
-                                    .align(Alignment.BottomEnd)
-                    )
                     Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(5.dp),
@@ -131,9 +138,37 @@ fun ViewTransactionsScreen(
                                     }
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(
-                                            text = "£%.2f".format(amount.amount / 100.0),
+                                            text = amount.amount.pennyAmountAsString(),
                                             color = NummiTheme.colors.appBackground.content,
                                     )
+                                }
+                            }
+                        }
+                        if (item.amount.size > 1) {
+                            val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
+                            Box(
+                                    modifier = Modifier
+                                            .align(Alignment.End)
+                                            .padding(end = 6.dp, bottom = 5.dp)
+                            ) {
+                                Text(
+                                        text = item.amount.sumOf { it.amount }.pennyAmountAsString(),
+                                        color = NummiTheme.colors.appBackground.content,
+                                        modifier = Modifier
+                                                .padding(bottom = 4.dp)
+                                                .padding(horizontal = 8.dp)
+                                )
+                                Canvas(
+                                        modifier = Modifier.matchParentSize()
+                                ) {
+                                    fun customLine(height: Float) = drawLine(BaseColor.GREY_300,
+                                            Offset(0f, height),
+                                            Offset(size.width, height),
+                                            strokeWidth = oneDpWidth / 2f)
+
+                                    customLine(0f)
+                                    customLine(size.height)
+                                    customLine(size.height - oneDpWidth * 1)
                                 }
                             }
                         }

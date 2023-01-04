@@ -8,3 +8,10 @@ import androidx.compose.ui.platform.LocalInspectionMode
  */
 @Composable
 fun isInEditMode() = LocalInspectionMode.current
+
+/**
+ * @returns the collection rearranged so that the result of sorting the items by index.toString()
+ * is the input order
+ */
+fun <E> Collection<E>.sortPreviewParameters() =
+        indices.sortedBy { it.toString() }.zip(this).sortedBy { it.first }.map { it.second }

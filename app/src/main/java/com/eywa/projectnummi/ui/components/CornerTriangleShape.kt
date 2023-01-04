@@ -11,14 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.common.ColorHelper
 import com.eywa.projectnummi.common.Polar
+import com.eywa.projectnummi.common.sortPreviewParameters
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
 
@@ -34,11 +35,17 @@ data class CornerTriangleShapeState(
          */
         val usePercentage: Boolean = true,
         /**
-         * If no size is provided, matches parent size
+         * If no size is provided, matches parent size. Scaling is applied after sizing
          */
-        val forceSize: Dp? = null,
+        val forceSize: Float? = null,
 ) {
     private val percentage = 1f / (segmentWeights.sum())
+
+    val alignment =
+            if (isLeft && isTop) Alignment.TopStart
+            else if (isLeft) Alignment.BottomStart
+            else if (isTop) Alignment.TopEnd
+            else Alignment.BottomEnd
 
     fun getShape(segmentIndex: Int = 0): GenericShape =
             if (usePercentage) {
@@ -58,9 +65,6 @@ data class CornerTriangleShapeState(
 
 }
 
-private fun Modifier.getSizeModifier(scope: BoxScope, forceSize: Dp? = null) =
-        if (forceSize == null) with(scope) { matchParentSize() } else size(forceSize)
-
 /**
  * Note: if [colors] length doesn't match [CornerTriangleShapeState.segmentWeights] length,
  * all segments will be weighted equally
@@ -76,7 +80,7 @@ fun BoxScope.CornerTriangleBox(
 
     Box(
             modifier = modifier
-                    .getSizeModifier(this, state.forceSize)
+                    .matchParentSize()
                     .clip(state
                             .copy(segmentWeights = listOf(1))
                             .getShape())
@@ -102,14 +106,14 @@ fun BoxScope.CornerTriangleBox(
         modifier: Modifier = Modifier,
         state: CornerTriangleShapeState = CornerTriangleShapeState(),
         segmentIndex: Int = 0,
-) {
-    Box(
-            modifier = modifier
-                    .getSizeModifier(this, state.forceSize)
-                    .clip(state.getShape(segmentIndex))
-                    .background(color)
-    )
-}
+) =
+        Box(
+                modifier = modifier
+                        .matchParentSize()
+                        .clip(state.getShape(segmentIndex))
+                        .background(color)
+                        .align(state.alignment)
+        )
 
 /**
  * Each segment is given the same percentage distance along the tangent
@@ -119,9 +123,12 @@ fun CornerTriangleShapePercentage(
         state: CornerTriangleShapeState,
         startPercentage: Float = 0f,
         percentage: Float = 0f,
-) = GenericShape { size, _ ->
-    fun xModifier(x: Float) = if (state.isLeft) state.xScale * x else (size.width - state.xScale * x)
-    fun yModifier(y: Float) = if (state.isTop) state.yScale * y else (size.height - state.yScale * y)
+) = GenericShape { fullSize, _ ->
+    val size = state.forceSize?.let { Size(it, it) } ?: fullSize
+
+    fun xModifier(x: Float) = if (state.isLeft) state.xScale * x else (fullSize.width - state.xScale * x)
+    fun yModifier(y: Float) = if (state.isTop) state.yScale * y else (fullSize.height - state.yScale * y)
+
     val xRelativeModifier = if (state.isLeft) 1f else -1f
     val yRelativeModifier = if (state.isTop) 1f else -1f
 
@@ -152,9 +159,11 @@ fun CornerTriangleShapeArc(
         state: CornerTriangleShapeState,
         startPercentage: Float = 0f,
         percentage: Float = 0f,
-) = GenericShape { size, _ ->
-    fun xModifier(x: Float) = if (state.isLeft) state.xScale * x else (size.width - state.xScale * x)
-    fun yModifier(y: Float) = if (state.isTop) state.yScale * y else (size.height - state.yScale * y)
+) = GenericShape { fullSize, _ ->
+    val size = state.forceSize?.let { Size(it, it) } ?: fullSize
+
+    fun xModifier(x: Float) = if (state.isLeft) state.xScale * x else (fullSize.width - state.xScale * x)
+    fun yModifier(y: Float) = if (state.isTop) state.yScale * y else (fullSize.height - state.yScale * y)
 
     val segmentArc = Math.PI.toFloat() / 2f
     val pointOne = Polar(size.height, startPercentage * segmentArc).toCartesian()
@@ -203,6 +212,7 @@ data class CornerTriangleShapePreviewParams(
 @Suppress("BooleanLiteralArgument")
 class CornerTriangleShapePreviewProvider : CollectionPreviewParameterProvider<CornerTriangleShapePreviewParams>(
         listOf(
+                CornerTriangleShapePreviewParams("forceSize", CornerTriangleShapeState(false, false, forceSize = 100f)),
                 CornerTriangleShapePreviewParams("null colour",
                         CornerTriangleShapeState(),
                         colors = listOf(0f, null, 0.6f, 0.8f).map { v -> v?.let { ColorHelper.asCategoryColor(it) } }),
@@ -226,5 +236,5 @@ class CornerTriangleShapePreviewProvider : CollectionPreviewParameterProvider<Co
                 CornerTriangleShapePreviewParams("doubleY", CornerTriangleShapeState(true, true, 1f, 2f)),
                 CornerTriangleShapePreviewParams("halfSize", CornerTriangleShapeState(true, true, 0.5f, 0.5f)),
                 CornerTriangleShapePreviewParams("negative", CornerTriangleShapeState(false, false, 3.5f, 3f)),
-        )
+        ).sortPreviewParameters()
 )

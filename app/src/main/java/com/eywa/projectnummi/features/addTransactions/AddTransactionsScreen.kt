@@ -3,12 +3,16 @@ package com.eywa.projectnummi.features.addTransactions
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -17,11 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eywa.projectnummi.R
+import com.eywa.projectnummi.common.pennyAmountAsString
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
@@ -56,6 +63,45 @@ fun AddTransactionsScreen(
         state: AddTransactionsState,
         listener: (AddTransactionsIntent) -> Unit,
 ) {
+    Dialogs(state, listener)
+
+    Column(
+            verticalArrangement = Arrangement.spacedBy(25.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                    .fillMaxSize()
+                    .padding(NummiTheme.dimens.screenPadding)
+                    .verticalScroll(rememberScrollState())
+    ) {
+        MainInfo(state, listener)
+
+        Text(
+                text = "Total: " + 100_00.pennyAmountAsString(),
+                color = NummiTheme.colors.appBackground.content,
+                style = NummiTheme.typography.h5,
+        )
+
+        repeat(3) {
+            AmountSection(state, listener)
+        }
+
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(35.dp),
+        ) {
+//            SplitButton { /* TODO */ }
+            AddRowButton { /* TODO */ }
+        }
+
+        SubmitButton { listener(CreateTransaction) }
+    }
+}
+
+@Composable
+private fun Dialogs(
+        state: AddTransactionsState,
+        listener: (AddTransactionsIntent) -> Unit,
+) {
     SelectCategoryDialog(
             isShown = state.selectCategoryDialogIsShown,
             state = SelectCategoryDialogState(state.categories ?: listOf()),
@@ -76,47 +122,81 @@ fun AddTransactionsScreen(
             state = state.createPersonDialogState,
             listener = { listener(CreatePersonDialogAction(it)) },
     )
+}
 
-    Column(
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                    .fillMaxSize()
-                    .padding(NummiTheme.dimens.screenPadding)
+@Composable
+private fun AmountSection(
+        state: AddTransactionsState,
+        listener: (AddTransactionsIntent) -> Unit,
+) {
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
     ) {
-        DateRow(
-                date = state.date,
-                onIncrement = { listener(DateIncremented(it)) },
-                onChange = { listener(DateChanged(it)) },
-        )
-        NameRow(
+        Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            AmountInput(
+                    amount = state.amount,
+                    onChange = { listener(AmountChanged(it)) },
+            )
+            Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                CategoryInput(
+                        category = state.category,
+                        onClick = { listener(StartChangeCategory) },
+                )
+                PersonInput(
+                        person = state.person,
+                        onClick = { listener(StartChangePerson) },
+                )
+            }
+        }
+        IconButton(onClick = { /*TODO*/ }) {
+            Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Remove row",
+                    tint = NummiTheme.colors.appBackground.content,
+            )
+        }
+    }
+}
+
+@Composable
+private fun MainInfo(
+        state: AddTransactionsState,
+        listener: (AddTransactionsIntent) -> Unit,
+) {
+    Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+        ) {
+            DateInput(
+                    date = state.date,
+                    onIncrement = { listener(DateIncremented(it)) },
+                    onChange = { listener(DateChanged(it)) },
+            )
+            OutgoingInput(
+                    isOutgoing = state.isOutgoing,
+                    onClick = { listener(ToggleIsOutgoing) },
+            )
+        }
+        NameInput(
                 name = state.name,
                 onChange = { listener(NameChanged(it)) },
-        )
-        AmountRow(
-                amount = state.amount,
-                onChange = { listener(AmountChanged(it)) },
-        )
-        CategoryRow(
-                category = state.category,
-                onClick = { listener(StartChangeCategory) },
-        )
-        PersonRow(
-                person = state.person,
-                onClick = { listener(StartChangePerson) },
-        )
-        OutgoingRow(
-                isOutgoing = state.isOutgoing,
-                onClick = { listener(ToggleIsOutgoing) },
-        )
-        SubmitRow(
-                onClick = { listener(CreateTransaction) },
         )
     }
 }
 
 @Composable
-private fun DateRow(
+private fun DateInput(
         date: Calendar,
         onIncrement: (Int) -> Unit,
         onChange: (Calendar) -> Unit,
@@ -153,7 +233,7 @@ private fun DateRow(
 }
 
 @Composable
-private fun NameRow(
+private fun NameInput(
         name: String,
         onChange: (String) -> Unit,
 ) {
@@ -162,12 +242,15 @@ private fun NameRow(
             onTextChanged = { onChange(it) },
             label = "Name",
             placeholderText = "Tesco",
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
     )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun AmountRow(
+private fun AmountInput(
         amount: String,
         onChange: (String) -> Unit,
 ) {
@@ -192,13 +275,12 @@ private fun AmountRow(
                 )
             },
             colors = NummiTheme.colors.outlinedTextField(),
-            modifier = Modifier.padding(bottom = 10.dp)
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun CategoryRow(
+private fun CategoryInput(
         category: Category?,
         onClick: () -> Unit,
 ) {
@@ -230,7 +312,7 @@ private fun CategoryRow(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun PersonRow(
+private fun PersonInput(
         person: Person?,
         onClick: () -> Unit,
 ) {
@@ -253,7 +335,7 @@ private fun PersonRow(
 }
 
 @Composable
-private fun OutgoingRow(
+private fun OutgoingInput(
         isOutgoing: Boolean,
         onClick: () -> Unit,
 ) {
@@ -275,7 +357,7 @@ private fun OutgoingRow(
 }
 
 @Composable
-private fun SubmitRow(
+private fun SubmitButton(
         onClick: () -> Unit,
 ) {
     Button(
@@ -285,6 +367,50 @@ private fun SubmitRow(
     ) {
         Text(
                 text = "Create"
+        )
+    }
+}
+
+@Composable
+private fun SplitButton(
+        onClick: () -> Unit,
+) {
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            modifier = Modifier.clickable(onClick = onClick)
+    ) {
+        Icon(
+                painter = painterResource(R.drawable.ic_tenancy_outline_300),
+                contentDescription = "Split",
+                tint = NummiTheme.colors.appBackground.content,
+        )
+        Text(
+                text = "Split",
+                color = NummiTheme.colors.appBackground.content,
+        )
+    }
+}
+
+@Composable
+private fun AddRowButton(
+        onClick: () -> Unit,
+) {
+    Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            modifier = Modifier
+                    .clickable(onClick = onClick)
+                    .padding(end = 5.dp)
+    ) {
+        Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add row",
+                tint = NummiTheme.colors.appBackground.content,
+        )
+        Text(
+                text = "Add row",
+                color = NummiTheme.colors.appBackground.content,
         )
     }
 }
