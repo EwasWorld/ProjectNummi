@@ -2,6 +2,7 @@ package com.eywa.projectnummi.features.addTransactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eywa.projectnummi.common.div100String
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
@@ -48,14 +49,7 @@ class AddTransactionsViewModel : ViewModel() {
             is CreateCategoryDialogAction -> handleCreateCategoryIntent(action.action)
             is SelectCategoryDialogAction -> handleSelectCategoryIntent(action.action)
 
-            is StartChangePerson -> _state.update {
-                if (it.people == null || it.people.isNotEmpty()) {
-                    it.copy(currentRow = action.rowIndex, selectPersonDialogIsShown = true)
-                }
-                else {
-                    it.copy(currentRow = action.rowIndex, createPersonDialogState = CreatePersonDialogState())
-                }
-            }
+            is StartChangePerson -> openSelectPersonDialog(action.rowIndex, SelectPersonDialogPurpose.SELECT)
             is CreatePersonDialogAction -> handleCreatePersonIntent(action.action)
             is SelectPersonDialogAction -> handleSelectPersonIntent(action.action)
 
@@ -73,7 +67,7 @@ class AddTransactionsViewModel : ViewModel() {
                 _state.update {
                     it.copy(
                             name = "",
-                            amountRows = listOf(it.amountRows[0].copy(amount = "")),
+                            amountRows = listOf(it.amountRows[0].copy(amount = "", personId = it.defaultPersonId)),
                     )
                 }
                 TempInMemoryDb.addTransaction(oldState.asTransaction())
@@ -88,7 +82,22 @@ class AddTransactionsViewModel : ViewModel() {
                 }
             Split -> {
                 if (_state.value.amountRows.size > 1) return
-                // TODO
+                openSelectPersonDialog(null, SelectPersonDialogPurpose.SPLIT)
+            }
+        }
+    }
+
+    private fun openSelectPersonDialog(rowIndex: Int?, select: SelectPersonDialogPurpose) {
+        require(rowIndex != null || select != SelectPersonDialogPurpose.SELECT) {
+            "rowIndex cannot be null for SELECT purpose"
+        }
+
+        _state.update {
+            if (it.people == null || it.people.isNotEmpty()) {
+                it.copy(currentRow = rowIndex, selectPersonDialogIsShown = select)
+            }
+            else {
+                it.copy(currentRow = rowIndex, createPersonDialogState = CreatePersonDialogState())
             }
         }
     }
@@ -143,10 +152,14 @@ class AddTransactionsViewModel : ViewModel() {
             copy(
                     amountRows = _state.value.currentRow?.let { amountRows.updateAt(it, mutator) }
                             ?: amountRows,
+            ).closeDialogs()
+
+    private fun AddTransactionsState.closeDialogs() =
+            copy(
                     createCategoryDialogState = null,
                     selectCategoryDialogIsShown = false,
                     createPersonDialogState = null,
-                    selectPersonDialogIsShown = false,
+                    selectPersonDialogIsShown = null,
                     currentRow = null,
             )
 
@@ -177,7 +190,11 @@ class AddTransactionsViewModel : ViewModel() {
                 val person = _state.value.createPersonDialogState?.asPerson() ?: return
                 viewModelScope.launch {
                     val id = TempInMemoryDb.addPerson(person)
-                    _state.update { it.setPersonId(id) }
+                    // Create person can only be triggered from the select person action
+                    //      so after the person is created, select them
+                    handleSelectPersonIntent(
+                            SelectPersonDialogIntent.PersonClicked(person.copy(id = id))
+                    )
                 }
             }
         }
@@ -185,12 +202,37 @@ class AddTransactionsViewModel : ViewModel() {
 
     private fun handleSelectPersonIntent(action: SelectPersonDialogIntent) {
         when (action) {
-            SelectPersonDialogIntent.Close -> _state.update { it.copy(selectPersonDialogIsShown = false) }
-            is SelectPersonDialogIntent.PersonClicked -> _state.update { it.setPersonId(action.person.id) }
+            SelectPersonDialogIntent.Close -> _state.update { it.copy(selectPersonDialogIsShown = null) }
+            is SelectPersonDialogIntent.PersonClicked ->
+                _state.update {
+                    if (it.selectPersonDialogIsShown == SelectPersonDialogPurpose.SELECT) {
+                        it.setPersonId(action.person.id)
+                    }
+                    else {
+                        val people = listOf(
+                                it.amountRows[0].personId,
+                                action.person.id
+                        )
+                        val floorAmount = it.totalAmount / people.size
+                        val remainder = it.totalAmount - floorAmount * people.size
+                        val amounts = List(people.size) { index ->
+                            floorAmount + if (index < remainder) 1 else 0
+                        }.shuffled()
+                        it.copy(
+                                amountRows = people
+                                        .mapIndexed { index, personId ->
+                                            it.amountRows[0].copy(
+                                                    amount = amounts[index].div100String(),
+                                                    personId = personId
+                                            )
+                                        }
+                        ).closeDialogs()
+                    }
+                }
             SelectPersonDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(
-                            selectPersonDialogIsShown = false,
+                            selectPersonDialogIsShown = null,
                             createPersonDialogState = CreatePersonDialogState(),
                     )
                 }

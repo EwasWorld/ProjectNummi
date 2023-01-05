@@ -29,7 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.R
 import com.eywa.projectnummi.common.DateTimeFormat
-import com.eywa.projectnummi.common.pennyAmountAsString
+import com.eywa.projectnummi.common.asCurrency
+import com.eywa.projectnummi.common.div100String
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialog
@@ -76,7 +77,7 @@ fun AddTransactionsScreen(
         MainInfo(state, listener)
 
         Text(
-                text = "Total: " + state.totalAmount.pennyAmountAsString(),
+                text = "Total: " + state.totalAmount.div100String().asCurrency(),
                 color = NummiTheme.colors.appBackground.content,
                 style = NummiTheme.typography.h5,
         )
@@ -115,7 +116,7 @@ private fun Dialogs(
             listener = { listener(CreateCategoryDialogAction(it)) },
     )
     SelectPersonDialog(
-            isShown = state.selectPersonDialogIsShown,
+            isShown = state.selectPersonDialogIsShown != null,
             state = SelectPersonDialogState(state.people ?: listOf()),
             listener = { listener(SelectPersonDialogAction(it)) },
     )

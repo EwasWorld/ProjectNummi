@@ -22,7 +22,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.common.DateTimeFormat
-import com.eywa.projectnummi.common.pennyAmountAsString
+import com.eywa.projectnummi.common.asCurrency
+import com.eywa.projectnummi.common.div100String
 import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
@@ -139,7 +140,7 @@ fun ViewTransactionsScreen(
                                     }
                                     Spacer(modifier = Modifier.weight(1f))
                                     Text(
-                                            text = amount.amount.pennyAmountAsString(),
+                                            text = amount.amount.div100String().asCurrency(),
                                             color = NummiTheme.colors.appBackground.content,
                                     )
                                 }
@@ -153,7 +154,7 @@ fun ViewTransactionsScreen(
                                             .padding(end = 6.dp, bottom = 5.dp)
                             ) {
                                 Text(
-                                        text = item.amount.sumOf { it.amount }.pennyAmountAsString(),
+                                        text = item.amount.sumOf { it.amount }.div100String().asCurrency(),
                                         color = NummiTheme.colors.appBackground.content,
                                         modifier = Modifier
                                                 .padding(bottom = 4.dp)

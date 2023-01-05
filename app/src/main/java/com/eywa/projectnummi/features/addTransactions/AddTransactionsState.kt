@@ -30,7 +30,7 @@ data class AddTransactionsState(
          */
         val people: List<Person>? = null,
         val createPersonDialogState: CreatePersonDialogState? = null,
-        val selectPersonDialogIsShown: Boolean = false,
+        val selectPersonDialogIsShown: SelectPersonDialogPurpose? = null,
 
         val amountRows: List<AmountInputState> = listOf(AmountInputState(personId = defaultPersonId)),
         val currentRow: Int? = null,
@@ -73,3 +73,15 @@ data class AmountInputState(
         val categoryId: Int? = null,
         val personId: Int,
 )
+
+enum class SelectPersonDialogPurpose {
+    /**
+     * Selecting a person for an [Amount]
+     */
+    SELECT,
+
+    /**
+     * Selecting a person to split the current [Amount] with
+     */
+    SPLIT,
+}
