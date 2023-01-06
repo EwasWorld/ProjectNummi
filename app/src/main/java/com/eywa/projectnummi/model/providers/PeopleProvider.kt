@@ -4,8 +4,8 @@ import com.eywa.projectnummi.model.Person
 
 object PeopleProvider {
     val basic = listOf(
-            "Default",
             "Person 1",
             "Person 2",
+            "Person 3",
     ).mapIndexed { index, name -> Person(index, name) }
 }

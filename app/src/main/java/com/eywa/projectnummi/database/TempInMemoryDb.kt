@@ -16,8 +16,6 @@ object TempInMemoryDb {
     val categories = MutableStateFlow(CategoryProvider.basic)
     val people = MutableStateFlow(PeopleProvider.basic)
 
-    val defaultPersonId = people.value.first().id
-
     suspend fun addTransaction(transaction: Transaction) = withContext(Dispatchers.IO) {
         transactions.update { it.plus(transaction) }
     }

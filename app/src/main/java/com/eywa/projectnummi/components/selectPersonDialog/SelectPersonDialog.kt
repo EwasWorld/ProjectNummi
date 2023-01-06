@@ -39,26 +39,18 @@ fun SelectPersonDialog(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(5.dp),
         ) {
+            item {
+                PersonRow(
+                        name = "Default",
+                        onClick = { listener(PersonClicked(null)) }
+                )
+            }
+
             items(state?.people?.sortedBy { it.name } ?: listOf()) { item ->
-                Surface(
-                        color = Color.Transparent,
-                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-                        shape = NummiTheme.shapes.generalListItem,
-                        onClick = { listener(PersonClicked(item)) },
-                        modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(10.dp)
-                    ) {
-                        Text(
-                                text = item.name,
-                                color = NummiTheme.colors.appBackground.content,
-                        )
-                    }
-                }
+                PersonRow(
+                        name = item.name,
+                        onClick = { listener(PersonClicked(item)) }
+                )
             }
 
             item {
@@ -81,6 +73,33 @@ fun SelectPersonDialog(
                     )
                 }
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun PersonRow(
+        name: String,
+        onClick: () -> Unit,
+) {
+    Surface(
+            color = Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+            shape = NummiTheme.shapes.generalListItem,
+            onClick = onClick,
+            modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp)
+        ) {
+            Text(
+                    text = name,
+                    color = NummiTheme.colors.appBackground.content,
+            )
         }
     }
 }

@@ -13,7 +13,7 @@ object TransactionProvider {
                     amount = listOf(
                             Amount(
                                     CategoryProvider.basic[1],
-                                    PeopleProvider.basic[0],
+                                    null,
                                     1_50,
                             ),
                     ),
@@ -25,7 +25,7 @@ object TransactionProvider {
                     amount = listOf(
                             Amount(
                                     null,
-                                    PeopleProvider.basic[2],
+                                    PeopleProvider.basic[1],
                                     30,
                             ),
                     ),
@@ -37,7 +37,7 @@ object TransactionProvider {
                     amount = listOf(
                             Amount(
                                     CategoryProvider.basic[2],
-                                    PeopleProvider.basic[0],
+                                    null,
                                     1000_00,
                             ),
                     ),
@@ -50,12 +50,12 @@ object TransactionProvider {
                     amount = listOf(
                             Amount(
                                     CategoryProvider.basic[0],
-                                    PeopleProvider.basic[1],
+                                    PeopleProvider.basic[0],
                                     13_59,
                             ),
                             Amount(
                                     CategoryProvider.basic[3],
-                                    PeopleProvider.basic[0],
+                                    null,
                                     29_99,
                             ),
                     ),
@@ -67,7 +67,7 @@ object TransactionProvider {
                     amount = listOf(
                             Amount(
                                     null,
-                                    PeopleProvider.basic[0],
+                                    null,
                                     20_00,
                             ),
                     ),

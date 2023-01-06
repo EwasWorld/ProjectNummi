@@ -55,7 +55,6 @@ class AddTransactionsViewModel : ViewModel() {
 
             Clear -> _state.update {
                 AddTransactionsState(
-                        defaultPersonId = it.defaultPersonId,
                         categories = it.categories,
                         people = it.people,
                 )
@@ -64,13 +63,14 @@ class AddTransactionsViewModel : ViewModel() {
                 val oldState = state.value
                 if (oldState.name.isBlank()) return@launch
 
+                TempInMemoryDb.addTransaction(oldState.asTransaction())
                 _state.update {
                     it.copy(
                             name = "",
-                            amountRows = listOf(it.amountRows[0].copy(amount = "", personId = it.defaultPersonId)),
+                            isOutgoing = true,
+                            amountRows = listOf(AmountInputState()),
                     )
                 }
-                TempInMemoryDb.addTransaction(oldState.asTransaction())
             }
 
             AddAmountRow ->
@@ -145,7 +145,7 @@ class AddTransactionsViewModel : ViewModel() {
         }
     }
 
-    private fun AddTransactionsState.setPersonId(id: Int) = updateRowAndCloseDialogs { copy(personId = id) }
+    private fun AddTransactionsState.setPersonId(id: Int?) = updateRowAndCloseDialogs { copy(personId = id) }
     private fun AddTransactionsState.setCategoryId(id: Int?) = updateRowAndCloseDialogs { copy(categoryId = id) }
 
     private fun AddTransactionsState.updateRowAndCloseDialogs(mutator: AmountInputState.() -> AmountInputState) =
@@ -206,12 +206,12 @@ class AddTransactionsViewModel : ViewModel() {
             is SelectPersonDialogIntent.PersonClicked ->
                 _state.update {
                     if (it.selectPersonDialogIsShown == SelectPersonDialogPurpose.SELECT) {
-                        it.setPersonId(action.person.id)
+                        it.setPersonId(action.person?.id)
                     }
                     else {
                         val people = listOf(
                                 it.amountRows[0].personId,
-                                action.person.id
+                                action.person?.id
                         )
                         val floorAmount = it.totalAmount / people.size
                         val remainder = it.totalAmount - floorAmount * people.size

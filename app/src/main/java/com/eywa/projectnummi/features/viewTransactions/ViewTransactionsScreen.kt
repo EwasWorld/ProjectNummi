@@ -24,7 +24,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
-import com.eywa.projectnummi.database.TempInMemoryDb
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
@@ -128,7 +127,7 @@ fun ViewTransactionsScreen(
                                                 modifier = Modifier.padding(end = 10.dp)
                                         )
                                     }
-                                    if (amount.person.id != TempInMemoryDb.defaultPersonId) {
+                                    if (amount.person?.id != null) {
                                         Text(
                                                 text = amount.person.name,
                                                 color = NummiTheme.colors.appBackground.content,

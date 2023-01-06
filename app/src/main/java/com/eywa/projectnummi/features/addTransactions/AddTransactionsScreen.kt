@@ -335,7 +335,7 @@ private fun PersonInput(
                 modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
         ) {
             Text(
-                    text = person?.name ?: "No person",
+                    text = person?.name ?: "Default",
                     color = NummiTheme.colors.appBackground.content,
             )
         }
