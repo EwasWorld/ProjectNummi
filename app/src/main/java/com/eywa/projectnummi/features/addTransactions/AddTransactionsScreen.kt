@@ -26,7 +26,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.R
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
@@ -50,7 +50,7 @@ import java.util.*
 
 @Composable
 fun AddTransactionsScreen(
-        viewModel: AddTransactionsViewModel = viewModel(),
+        viewModel: AddTransactionsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     AddTransactionsScreen(

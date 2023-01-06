@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction
@@ -27,7 +27,7 @@ import com.eywa.projectnummi.ui.theme.NummiTheme
 
 @Composable
 fun ManagePeopleScreen(
-        viewModel: ManagePeopleViewModel = viewModel(),
+        viewModel: ManagePeopleViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     ManagePeopleScreen(state = state.value, listener = { viewModel.handle(it) })

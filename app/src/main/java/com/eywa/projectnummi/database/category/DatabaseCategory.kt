@@ -21,7 +21,7 @@ data class DatabaseCategory(
         @PrimaryKey(autoGenerate = true) val id: Int,
         val name: String,
         val color: DbColor,
-        @ColumnInfo(index = true) val parentCategoryId: Int?,
+        @ColumnInfo(index = true) val parentCategoryId: Int? = null,
 ) {
     companion object {
         const val TABLE_NAME = "categories"

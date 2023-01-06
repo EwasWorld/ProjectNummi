@@ -4,22 +4,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
-import com.eywa.projectnummi.database.TempInMemoryDb
+import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
+import com.eywa.projectnummi.model.Category
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ManageCategoriesViewModel : ViewModel() {
+@HiltViewModel
+class ManageCategoriesViewModel @Inject constructor(
+        db: NummiDatabase,
+) : ViewModel() {
+    private val categoryRepo = db.categoryRepo()
+
     private val _state = MutableStateFlow(ManageCategoriesState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            TempInMemoryDb.categories.collect { categories ->
-                _state.update { it.copy(categories = categories) }
+            categoryRepo.get().collect { categories ->
+                _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }
     }
@@ -44,7 +52,7 @@ class ManageCategoriesViewModel : ViewModel() {
                 val category = _state.value.createDialogState?.asCategory() ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                viewModelScope.launch { TempInMemoryDb.addCategory(category) }
+                viewModelScope.launch { categoryRepo.insert(category.asDbCategory()) }
             }
         }
     }

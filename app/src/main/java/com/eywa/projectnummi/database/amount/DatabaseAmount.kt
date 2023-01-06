@@ -4,7 +4,6 @@ import androidx.room.*
 import com.eywa.projectnummi.database.category.DatabaseCategory
 import com.eywa.projectnummi.database.person.DatabasePerson
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
-import com.eywa.projectnummi.model.Amount
 
 @Entity(
         tableName = DatabaseAmount.TABLE_NAME,
@@ -51,7 +50,7 @@ data class DatabaseAmount(
 }
 
 data class FullDatabaseAmount(
-        @Embedded val amount: Amount,
+        @Embedded val amount: DatabaseAmount,
 
         @Relation(
                 parentColumn = "categoryId",
@@ -63,5 +62,5 @@ data class FullDatabaseAmount(
                 parentColumn = "personId",
                 entityColumn = "id",
         )
-        val person: DatabasePerson,
+        val person: DatabasePerson?,
 )

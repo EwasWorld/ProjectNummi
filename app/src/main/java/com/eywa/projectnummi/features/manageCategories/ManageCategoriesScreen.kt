@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
@@ -29,7 +29,7 @@ import com.eywa.projectnummi.ui.theme.NummiTheme
 
 @Composable
 fun ManageCategoriesScreen(
-        viewModel: ManageCategoriesViewModel = viewModel(),
+        viewModel: ManageCategoriesViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     ManageCategoriesScreen(state = state.value, listener = { viewModel.handle(it) })

@@ -5,15 +5,16 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TransactionDao {
+    @Transaction
     @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME}")
-    fun getAll(): Flow<List<DatabaseTransaction>>
+    fun getFull(): Flow<List<FullDatabaseTransaction>>
 
     @Insert
-    suspend fun insert(vararg courts: DatabaseTransaction)
+    suspend fun insert(transaction: DatabaseTransaction): Long
 
     @Delete
-    suspend fun delete(court: DatabaseTransaction)
+    suspend fun delete(transaction: DatabaseTransaction)
 
     @Update
-    suspend fun update(vararg courts: DatabaseTransaction)
+    suspend fun update(vararg transactions: DatabaseTransaction)
 }

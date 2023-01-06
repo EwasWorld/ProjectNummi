@@ -9,27 +9,38 @@ import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogInt
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
 import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
-import com.eywa.projectnummi.database.TempInMemoryDb
+import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
+import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.model.Person
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
+import javax.inject.Inject
 
-class AddTransactionsViewModel : ViewModel() {
+@HiltViewModel
+class AddTransactionsViewModel @Inject constructor(
+        db: NummiDatabase,
+) : ViewModel() {
+    private val categoryRepo = db.categoryRepo()
+    private val personRepo = db.personRepo()
+    private val transactionRepo = db.transactionRepo()
+
     private val _state = MutableStateFlow(AddTransactionsState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            TempInMemoryDb.categories.collect { categories ->
-                _state.update { it.copy(categories = categories) }
+            categoryRepo.get().collect { categories ->
+                _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }
         viewModelScope.launch {
-            TempInMemoryDb.people.collect { people ->
-                _state.update { it.copy(people = people) }
+            personRepo.get().collect { people ->
+                _state.update { it.copy(people = people.map { dbPerson -> Person(dbPerson) }) }
             }
         }
     }
@@ -60,10 +71,13 @@ class AddTransactionsViewModel : ViewModel() {
                 )
             }
             Submit -> viewModelScope.launch {
-                val oldState = state.value
-                if (oldState.name.isBlank()) return@launch
+                val transaction = state.value.takeIf { it.name.isNotBlank() }?.asTransaction()
+                        ?: return@launch
 
-                TempInMemoryDb.addTransaction(oldState.asTransaction())
+                transactionRepo.insert(
+                        transaction.asDbTransaction(),
+                        transaction.amount.map { it.asDatabaseAmount(null) },
+                )
                 _state.update {
                     it.copy(
                             name = "",
@@ -138,7 +152,7 @@ class AddTransactionsViewModel : ViewModel() {
             CreateCategoryDialogIntent.Submit -> {
                 val category = _state.value.createCategoryDialogState?.asCategory() ?: return
                 viewModelScope.launch {
-                    val id = TempInMemoryDb.addCategory(category)
+                    val id = categoryRepo.insert(category.asDbCategory()).toInt()
                     _state.update { it.setCategoryId(id) }
                 }
             }
@@ -189,7 +203,7 @@ class AddTransactionsViewModel : ViewModel() {
             CreatePersonDialogIntent.Submit -> {
                 val person = _state.value.createPersonDialogState?.asPerson() ?: return
                 viewModelScope.launch {
-                    val id = TempInMemoryDb.addPerson(person)
+                    val id = personRepo.insert(person.asDbPerson()).toInt()
                     // Create person can only be triggered from the select person action
                     //      so after the person is created, select them
                     handleSelectPersonIntent(

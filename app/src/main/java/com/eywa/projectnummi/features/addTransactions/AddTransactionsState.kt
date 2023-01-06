@@ -54,9 +54,11 @@ data class AddTransactionsState(
             id = 0,
             date = date,
             name = name,
-            amount = amountRows.map {
+            amount = amountRows.mapNotNull {
                 // TODO ERROR_HANDLING Prevent same category/person combination appearing more than once
+                if (it.amount.isBlank()) return@mapNotNull null
                 Amount(
+                        id = 0,
                         amount = it.amount.asPennyValue(),
                         category = getCategory(it.categoryId),
                         person = getPerson(it.personId),

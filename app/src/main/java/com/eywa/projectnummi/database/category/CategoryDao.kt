@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CategoryDao {
     @Query("SELECT * FROM ${DatabaseCategory.TABLE_NAME}")
-    fun getAll(): Flow<List<DatabaseCategory>>
+    fun get(): Flow<List<DatabaseCategory>>
 
     @Insert
-    suspend fun insert(vararg courts: DatabaseCategory)
+    suspend fun insert(category: DatabaseCategory): Long
 
     @Delete
-    suspend fun delete(court: DatabaseCategory)
+    suspend fun delete(category: DatabaseCategory)
 
     @Update
-    suspend fun update(vararg courts: DatabaseCategory)
+    suspend fun update(vararg categories: DatabaseCategory)
 }

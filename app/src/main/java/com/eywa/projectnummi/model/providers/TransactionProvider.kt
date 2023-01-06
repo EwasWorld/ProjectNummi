@@ -12,6 +12,7 @@ object TransactionProvider {
                     name = "Sainsburys",
                     amount = listOf(
                             Amount(
+                                    0,
                                     CategoryProvider.basic[1],
                                     null,
                                     1_50,
@@ -24,6 +25,7 @@ object TransactionProvider {
                     name = "Gym",
                     amount = listOf(
                             Amount(
+                                    1,
                                     null,
                                     PeopleProvider.basic[1],
                                     30,
@@ -36,6 +38,7 @@ object TransactionProvider {
                     name = "Salary",
                     amount = listOf(
                             Amount(
+                                    2,
                                     CategoryProvider.basic[2],
                                     null,
                                     1000_00,
@@ -49,11 +52,13 @@ object TransactionProvider {
                     name = "Amazon",
                     amount = listOf(
                             Amount(
+                                    3,
                                     CategoryProvider.basic[0],
                                     PeopleProvider.basic[0],
                                     13_59,
                             ),
                             Amount(
+                                    4,
                                     CategoryProvider.basic[3],
                                     null,
                                     29_99,
@@ -66,6 +71,7 @@ object TransactionProvider {
                     name = "Toaster",
                     amount = listOf(
                             Amount(
+                                    5,
                                     null,
                                     null,
                                     20_00,

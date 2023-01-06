@@ -8,11 +8,14 @@ import com.eywa.projectnummi.database.account.DatabaseAccount
 import com.eywa.projectnummi.database.amount.AmountDao
 import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.category.CategoryDao
+import com.eywa.projectnummi.database.category.CategoryRepo
 import com.eywa.projectnummi.database.category.DatabaseCategory
 import com.eywa.projectnummi.database.person.DatabasePerson
 import com.eywa.projectnummi.database.person.PersonDao
+import com.eywa.projectnummi.database.person.PersonRepo
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
 import com.eywa.projectnummi.database.transaction.TransactionDao
+import com.eywa.projectnummi.database.transaction.TransactionRepo
 
 @Database(
         entities = [
@@ -35,6 +38,10 @@ abstract class NummiDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun personDao(): PersonDao
     abstract fun transactionDao(): TransactionDao
+
+    fun categoryRepo() = CategoryRepo(categoryDao())
+    fun personRepo() = PersonRepo(personDao())
+    fun transactionRepo() = TransactionRepo(transactionDao(), amountDao())
 
     companion object {
         const val DATABASE_NAME = "nummi_database"

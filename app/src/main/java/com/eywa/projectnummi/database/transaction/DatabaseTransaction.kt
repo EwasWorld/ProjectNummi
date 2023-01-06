@@ -2,6 +2,7 @@ package com.eywa.projectnummi.database.transaction
 
 import androidx.room.*
 import com.eywa.projectnummi.database.account.DatabaseAccount
+import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import java.util.*
 
@@ -45,6 +46,7 @@ data class FullDatabaseTransaction(
         @Relation(
                 parentColumn = "id",
                 entityColumn = "transactionId",
+                entity = DatabaseAmount::class,
         )
         val amounts: List<FullDatabaseAmount>,
 

@@ -4,22 +4,30 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
-import com.eywa.projectnummi.database.TempInMemoryDb
+import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction
+import com.eywa.projectnummi.model.Person
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ManagePeopleViewModel : ViewModel() {
+@HiltViewModel
+class ManagePeopleViewModel @Inject constructor(
+        db: NummiDatabase,
+) : ViewModel() {
+    private val personRepo = db.personRepo()
+
     private val _state = MutableStateFlow(ManagePeopleState())
     val state = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            TempInMemoryDb.people.collect { people ->
-                _state.update { it.copy(people = people) }
+            personRepo.get().collect { people ->
+                _state.update { it.copy(people = people.map { dbPerson -> Person(dbPerson) }) }
             }
         }
     }
@@ -43,7 +51,7 @@ class ManagePeopleViewModel : ViewModel() {
                 val person = _state.value.createDialogState?.asPerson() ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                viewModelScope.launch { TempInMemoryDb.addPerson(person) }
+                viewModelScope.launch { personRepo.insert(person.asDbPerson()) }
             }
         }
     }

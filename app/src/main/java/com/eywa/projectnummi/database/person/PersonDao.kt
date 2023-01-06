@@ -6,14 +6,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PersonDao {
     @Query("SELECT * FROM ${DatabasePerson.TABLE_NAME}")
-    fun getAll(): Flow<List<DatabasePerson>>
+    fun get(): Flow<List<DatabasePerson>>
 
     @Insert
-    suspend fun insert(vararg courts: DatabasePerson)
+    suspend fun insert(person: DatabasePerson): Long
 
     @Delete
-    suspend fun delete(court: DatabasePerson)
+    suspend fun delete(person: DatabasePerson)
 
     @Update
-    suspend fun update(vararg courts: DatabasePerson)
+    suspend fun update(vararg people: DatabasePerson)
 }

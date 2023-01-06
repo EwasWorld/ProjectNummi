@@ -20,7 +20,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
@@ -33,7 +33,7 @@ import com.eywa.projectnummi.ui.theme.colors.BaseColor
 
 @Composable
 fun ViewTransactionsScreen(
-        viewModel: ViewTransactionsViewModel = viewModel(),
+        viewModel: ViewTransactionsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
     ViewTransactionsScreen(
