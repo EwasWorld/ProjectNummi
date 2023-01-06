@@ -1,9 +1,11 @@
 package com.eywa.projectnummi.ui.theme.colors.colorPalettes
 
+import androidx.annotation.StyleRes
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import com.eywa.projectnummi.R
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
 import com.eywa.projectnummi.ui.theme.colors.ThemeColor
 
@@ -19,6 +21,8 @@ data class ColorPalette(
         val fab: ThemeColor = ThemeColor(main = BaseColor.BASE_BLUE, content = BaseColor.BASE_SPACE),
         val dialog: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
         val listItemBorder: Color = BaseColor.GREY_500,
+
+        @StyleRes val dialogThemeId: Int = R.style.DialogMainTheme,
 
         val link: Color = BaseColor.BLUE,
 

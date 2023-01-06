@@ -210,8 +210,9 @@ private fun DateInput(
         onChange: (Calendar) -> Unit,
 ) {
     val context = LocalContext.current
+    val dialogTheme = NummiTheme.colors.dialogThemeId
     val datePicker by lazy {
-        NummiDatePicker.createDialog(context, date) { onChange(it) }
+        NummiDatePicker.createDialog(context, date, dialogTheme) { onChange(it) }
     }
 
     Row(

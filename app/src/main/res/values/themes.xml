@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.ProjectNummi" parent="android:Theme.Material.NoActionBar"></style>
+
+    <style name="DialogMainTheme" parent="android:Theme.Material.Dialog">
+        <item name="android:colorAccent">@color/base_green</item>
+    </style>
+</resources>

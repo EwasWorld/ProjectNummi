@@ -2,16 +2,18 @@ package com.eywa.projectnummi.ui.components
 
 import android.app.DatePickerDialog
 import android.content.Context
+import androidx.annotation.StyleRes
 import java.util.*
 
-// TODO Set colour
 object NummiDatePicker {
     fun createDialog(
             context: Context,
             date: Calendar,
+            @StyleRes themeId: Int,
             onDateChanged: (Calendar) -> Unit,
     ) = DatePickerDialog(
             context,
+            themeId,
             { _, year, month, day ->
                 onDateChanged(
                         (date.clone() as Calendar).apply {
