@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createPersonDialog
+package com.eywa.projectnummi.components.person.createPersonDialog
 
 sealed class CreatePersonDialogIntent {
     data class NameChanged(val name: String) : CreatePersonDialogIntent()

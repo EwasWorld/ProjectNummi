@@ -1,9 +1,9 @@
 package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.common.DateUtils
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogState
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.model.*
 import java.util.*
 import kotlin.math.roundToInt

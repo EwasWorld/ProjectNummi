@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.selectCategoryDialog
+package com.eywa.projectnummi.components.category.selectCategoryDialog
 
 import com.eywa.projectnummi.model.Category
 

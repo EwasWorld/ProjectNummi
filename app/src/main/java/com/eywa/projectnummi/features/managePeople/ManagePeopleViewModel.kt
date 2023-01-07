@@ -2,8 +2,8 @@ package com.eywa.projectnummi.features.managePeople
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction

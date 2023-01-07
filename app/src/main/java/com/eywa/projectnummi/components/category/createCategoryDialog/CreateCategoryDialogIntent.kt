@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createCategoryDialog
+package com.eywa.projectnummi.components.category.createCategoryDialog
 
 sealed class CreateCategoryDialogIntent {
     data class NameChanged(val name: String) : CreateCategoryDialogIntent()

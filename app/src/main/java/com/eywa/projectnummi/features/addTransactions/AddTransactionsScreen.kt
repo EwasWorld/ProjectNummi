@@ -1,6 +1,5 @@
 package com.eywa.projectnummi.features.addTransactions
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -18,11 +17,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,23 +29,26 @@ import com.eywa.projectnummi.R
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialog
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
-import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialog
-import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogState
-import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialog
-import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogState
-import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialog
-import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogState
+import com.eywa.projectnummi.components.account.AccountItem
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialog
+import com.eywa.projectnummi.components.account.selectAccountDialog.SelectAccountDialog
+import com.eywa.projectnummi.components.account.selectAccountDialog.SelectAccountDialogState
+import com.eywa.projectnummi.components.category.CategoryItem
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialog
+import com.eywa.projectnummi.components.category.selectCategoryDialog.SelectCategoryDialog
+import com.eywa.projectnummi.components.category.selectCategoryDialog.SelectCategoryDialogState
+import com.eywa.projectnummi.components.person.PersonItem
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialog
+import com.eywa.projectnummi.components.person.selectPersonDialog.SelectPersonDialog
+import com.eywa.projectnummi.components.person.selectPersonDialog.SelectPersonDialogState
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
-import com.eywa.projectnummi.model.Account
-import com.eywa.projectnummi.model.Category
-import com.eywa.projectnummi.model.Person
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
-import com.eywa.projectnummi.ui.components.*
+import com.eywa.projectnummi.ui.components.NummiDatePicker
+import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.ui.components.NummiTextField
+import com.eywa.projectnummi.ui.components.stripNewLines
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
 import java.util.*
@@ -167,12 +167,12 @@ private fun AmountRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                CategoryInput(
+                CategoryItem(
                         category = state.getCategory(rowState.categoryId),
                         onClick = { listener(StartChangeCategory(rowIndex)) },
                 )
-                PersonInput(
-                        person = state.getPerson(rowState.personId),
+                PersonItem(
+                        person = state.getPerson(rowState.categoryId),
                         onClick = { listener(StartChangePerson(rowIndex)) },
                 )
             }
@@ -214,7 +214,7 @@ private fun MainInfo(
                     onClick = { listener(ToggleIsOutgoing) },
             )
         }
-        AccountInput(
+        AccountItem(
                 account = state.account,
                 onClick = { listener(StartChangeAccount) },
         )
@@ -309,94 +309,6 @@ private fun AmountInput(
             },
             colors = NummiTheme.colors.outlinedTextField(),
     )
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun CategoryInput(
-        category: Category?,
-        onClick: () -> Unit,
-) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
-    ) {
-        Box {
-            if (category != null) {
-                CornerTriangleBox(
-                        color = category.color,
-                        state = CornerTriangleShapeState(
-                                isTop = false,
-                                xScale = 2f,
-                                yScale = 2f,
-                        ),
-                )
-            }
-            Text(
-                    text = category?.name ?: "No category",
-                    color = NummiTheme.colors.appBackground.content,
-                    modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun PersonInput(
-        person: Person?,
-        onClick: () -> Unit,
-) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
-    ) {
-        Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
-        ) {
-            Text(
-                    text = person?.name ?: "Default",
-                    color = NummiTheme.colors.appBackground.content,
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun AccountInput(
-        account: Account?,
-        onClick: () -> Unit,
-) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
-    ) {
-        Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
-        ) {
-            Text(
-                    text = account?.name ?: "Default account",
-                    color = NummiTheme.colors.appBackground.content,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            if (account?.type != null) {
-                Text(
-                        text = account.type,
-                        color = NummiTheme.colors.appBackground.content,
-                        fontStyle = FontStyle.Italic,
-                )
-            }
-        }
-    }
 }
 
 @Composable

@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createCategoryDialog
+package com.eywa.projectnummi.components.category.createCategoryDialog
 
 import com.eywa.projectnummi.common.ColorUtils
 import com.eywa.projectnummi.model.Category

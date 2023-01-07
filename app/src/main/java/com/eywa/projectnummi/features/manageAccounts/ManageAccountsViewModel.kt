@@ -2,8 +2,8 @@ package com.eywa.projectnummi.features.manageAccounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogIntent
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogState
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogIntent
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.AddAccountClicked
 import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.CreateAccountDialogAction

@@ -2,8 +2,8 @@ package com.eywa.projectnummi.features.manageCategories
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogIntent
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction

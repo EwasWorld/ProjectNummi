@@ -1,11 +1,11 @@
 package com.eywa.projectnummi.features.addTransactions
 
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogIntent
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
-import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogIntent
-import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
-import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogIntent
+import com.eywa.projectnummi.components.account.selectAccountDialog.SelectAccountDialogIntent
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogIntent
+import com.eywa.projectnummi.components.category.selectCategoryDialog.SelectCategoryDialogIntent
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent
+import com.eywa.projectnummi.components.person.selectPersonDialog.SelectPersonDialogIntent
 import java.util.*
 
 sealed class AddTransactionsIntent {

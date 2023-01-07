@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createAccountDialog
+package com.eywa.projectnummi.components.account.createAccountDialog
 
 import com.eywa.projectnummi.model.Account
 

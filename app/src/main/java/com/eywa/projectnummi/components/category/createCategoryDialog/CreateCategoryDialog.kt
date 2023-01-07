@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createCategoryDialog
+package com.eywa.projectnummi.components.category.createCategoryDialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.common.ColorUtils
-import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent.*
+import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogIntent.*
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.components.NummiTextField

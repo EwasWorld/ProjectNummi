@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.createAccountDialog
+package com.eywa.projectnummi.components.account.createAccountDialog
 
 sealed class CreateAccountDialogIntent {
     data class TypeChanged(val type: String) : CreateAccountDialogIntent()

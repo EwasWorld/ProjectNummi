@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.selectPersonDialog
+package com.eywa.projectnummi.components.person.selectPersonDialog
 
 import com.eywa.projectnummi.model.Person
 

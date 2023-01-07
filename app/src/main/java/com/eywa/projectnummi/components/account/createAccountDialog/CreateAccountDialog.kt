@@ -1,9 +1,9 @@
-package com.eywa.projectnummi.components.createAccountDialog
+package com.eywa.projectnummi.components.account.createAccountDialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogIntent.*
+import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogIntent.*
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.components.NummiTextField

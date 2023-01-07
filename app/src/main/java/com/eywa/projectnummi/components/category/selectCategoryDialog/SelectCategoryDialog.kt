@@ -1,27 +1,24 @@
-package com.eywa.projectnummi.components.selectCategoryDialog
+package com.eywa.projectnummi.components.category.selectCategoryDialog
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent.*
+import com.eywa.projectnummi.components.category.CategoryItem
+import com.eywa.projectnummi.components.category.selectCategoryDialog.SelectCategoryDialogIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.ui.components.CornerTriangleBox
-import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -39,14 +36,22 @@ fun SelectCategoryDialog(
     ) {
         LazyColumn(
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(5.dp),
+                verticalArrangement = Arrangement.spacedBy(NummiTheme.dimens.listItemSpacedBy),
         ) {
             item {
-                CategoryRow(text = "No category", color = null) { listener(NoCategoryClicked) }
+                CategoryItem(
+                        category = null,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { listener(NoCategoryClicked) },
+                )
             }
 
             items(state?.categories?.sortedBy { it.name } ?: listOf()) { item ->
-                CategoryRow(text = item.name, color = item.color) { listener(CategoryClicked(item)) }
+                CategoryItem(
+                        category = item,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { listener(CategoryClicked(item)) },
+                )
             }
 
             item {
@@ -69,41 +74,6 @@ fun SelectCategoryDialog(
                     )
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun CategoryRow(
-        text: String,
-        color: Color?,
-        onClick: () -> Unit,
-) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
-    ) {
-        Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier.fillMaxWidth()
-        ) {
-            CornerTriangleBox(
-                    color = color ?: Color.Transparent,
-                    state = CornerTriangleShapeState(
-                            isTop = false,
-                            xScale = 2f,
-                            yScale = 2f,
-                    ),
-            )
-            Text(
-                    text = text,
-                    color = NummiTheme.colors.appBackground.content,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(10.dp)
-            )
         }
     }
 }

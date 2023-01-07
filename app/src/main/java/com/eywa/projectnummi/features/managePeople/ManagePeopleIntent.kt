@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.managePeople
 
-import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
+import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent
 
 sealed class ManagePeopleIntent {
     object AddPersonClicked : ManagePeopleIntent()
