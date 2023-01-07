@@ -19,6 +19,7 @@ object DateUtils {
         else {
             val date = Date(it)
             Calendar.getInstance(Locale.getDefault()).apply {
+                @Suppress("DEPRECATION") // Will be removed when minSdk is increased
                 set(
                         date.year + 1900,
                         date.month,

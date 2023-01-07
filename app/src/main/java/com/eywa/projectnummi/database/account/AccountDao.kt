@@ -9,7 +9,7 @@ interface AccountDao {
     fun get(): Flow<List<DatabaseAccount>>
 
     @Insert
-    suspend fun insert(vararg accounts: DatabaseAccount)
+    suspend fun insert(account: DatabaseAccount): Long
 
     @Delete
     suspend fun delete(account: DatabaseAccount)

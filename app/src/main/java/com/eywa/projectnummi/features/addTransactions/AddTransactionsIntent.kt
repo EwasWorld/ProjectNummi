@@ -1,7 +1,9 @@
 package com.eywa.projectnummi.features.addTransactions
 
+import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogIntent
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
+import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogIntent
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
 import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
 import java.util.*
@@ -28,4 +30,8 @@ sealed class AddTransactionsIntent {
     data class StartChangePerson(val rowIndex: Int) : AddTransactionsIntent()
     data class CreatePersonDialogAction(val action: CreatePersonDialogIntent) : AddTransactionsIntent()
     data class SelectPersonDialogAction(val action: SelectPersonDialogIntent) : AddTransactionsIntent()
+
+    object StartChangeAccount : AddTransactionsIntent()
+    data class CreateAccountDialogAction(val action: CreateAccountDialogIntent) : AddTransactionsIntent()
+    data class SelectAccountDialogAction(val action: SelectAccountDialogIntent) : AddTransactionsIntent()
 }

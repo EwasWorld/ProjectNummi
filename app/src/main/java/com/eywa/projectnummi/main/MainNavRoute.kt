@@ -3,6 +3,7 @@ package com.eywa.projectnummi.main
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsScreen
+import com.eywa.projectnummi.features.manageAccounts.ManageAccountsScreen
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesScreen
 import com.eywa.projectnummi.features.managePeople.ManagePeopleScreen
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsScreen
@@ -31,5 +32,11 @@ enum class MainNavRoute : NavRoute {
 
         @Composable
         override fun Screen(navController: NavHostController) = ManagePeopleScreen()
+    },
+    MANAGE_ACCOUNTS {
+        override val routeBase: String = "manage_accounts"
+
+        @Composable
+        override fun Screen(navController: NavHostController) = ManageAccountsScreen()
     },
 }

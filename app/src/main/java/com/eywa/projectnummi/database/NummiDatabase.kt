@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.eywa.projectnummi.database.account.AccountDao
+import com.eywa.projectnummi.database.account.AccountRepo
 import com.eywa.projectnummi.database.account.DatabaseAccount
 import com.eywa.projectnummi.database.amount.AmountDao
 import com.eywa.projectnummi.database.amount.DatabaseAmount
@@ -39,6 +40,7 @@ abstract class NummiDatabase : RoomDatabase() {
     abstract fun personDao(): PersonDao
     abstract fun transactionDao(): TransactionDao
 
+    fun accountRepo() = AccountRepo(accountDao())
     fun categoryRepo() = CategoryRepo(categoryDao())
     fun personRepo() = PersonRepo(personDao())
     fun transactionRepo() = TransactionRepo(transactionDao(), amountDao())

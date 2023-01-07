@@ -21,15 +21,35 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
+import com.eywa.projectnummi.model.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
+
+
+/**
+ * Sorts transactions as follows (in order):
+ * - Nulls first
+ * - Latest [Transaction.date] first
+ * - Lower [Transaction.order] first
+ */
+val descendingDateTransactionComparator: Comparator<Transaction> = object : Comparator<Transaction> {
+    override fun compare(t0: Transaction?, t1: Transaction?): Int {
+        if (t0 == null && t1 == null) return 0
+        if (t1 == null) return 1
+        if (t0 == null) return -1
+
+        val descendingDateComparison = t1.date.compareTo(t0.date)
+        if (descendingDateComparison != 0) return descendingDateComparison
+
+        return t0.order.compareTo(t1.order)
+    }
+}
 
 @Composable
 fun ViewTransactionsScreen(
@@ -45,7 +65,7 @@ fun ViewTransactionsScreen(
 fun ViewTransactionsScreen(
         state: ViewTransactionsState,
 ) {
-    val displayItems = state.transactions.sortedByDescending { it.date }
+    val displayItems = state.transactions.sortedWith(descendingDateTransactionComparator)
 
     LazyColumn(
             horizontalAlignment = Alignment.Start,
@@ -96,6 +116,13 @@ fun ViewTransactionsScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 18.dp, vertical = 12.dp)
                     ) {
+                        if (item.account != null) {
+                            Text(
+                                    text = item.account.name,
+                                    color = NummiTheme.colors.appBackground.content,
+                                    fontStyle = FontStyle.Italic,
+                            )
+                        }
                         Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -105,10 +132,6 @@ fun ViewTransactionsScreen(
                                     text = item.name,
                                     color = NummiTheme.colors.appBackground.content,
                                     style = NummiTheme.typography.h5,
-                            )
-                            Text(
-                                    text = DateTimeFormat.SHORT_DATE.format(item.date),
-                                    color = NummiTheme.colors.appBackground.content,
                             )
                         }
                         Column(
@@ -127,9 +150,9 @@ fun ViewTransactionsScreen(
                                                 modifier = Modifier.padding(end = 10.dp)
                                         )
                                     }
-                                    if (amount.person?.id != null) {
+                                    if (amount.person?.id != null || item.amount.size > 1) {
                                         Text(
-                                                text = amount.person.name,
+                                                text = amount.person?.name ?: "Default",
                                                 color = NummiTheme.colors.appBackground.content,
                                                 fontStyle = FontStyle.Italic,
                                                 modifier = Modifier

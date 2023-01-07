@@ -31,6 +31,7 @@ object TransactionProvider {
                                     30,
                             ),
                     ),
+                    account = AccountProvider.basic[1],
             ),
             Transaction(
                     id = 2,
@@ -44,7 +45,8 @@ object TransactionProvider {
                                     1000_00,
                             ),
                     ),
-                    isOutgoing = false
+                    isOutgoing = false,
+                    account = AccountProvider.basic[2],
             ),
             Transaction(
                     id = 3,
@@ -64,10 +66,11 @@ object TransactionProvider {
                                     29_99,
                             ),
                     ),
+                    order = 1,
             ),
             Transaction(
                     id = 4,
-                    date = DateProvider.getDate(-4),
+                    date = DateProvider.getDate(-3),
                     name = "Toaster",
                     amount = listOf(
                             Amount(
@@ -77,6 +80,8 @@ object TransactionProvider {
                                     20_00,
                             ),
                     ),
+                    order = 2,
+                    account = AccountProvider.basic[0],
             ),
     )
 }

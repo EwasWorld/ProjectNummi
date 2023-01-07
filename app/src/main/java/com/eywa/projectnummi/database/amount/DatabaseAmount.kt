@@ -27,7 +27,12 @@ import com.eywa.projectnummi.database.transaction.DatabaseTransaction
                     onDelete = ForeignKey.SET_NULL,
             ),
         ],
-        indices = [Index(value = ["transactionId", "categoryId", "personId"], unique = true)]
+        indices = [
+            Index(
+                    value = ["transactionId", "categoryId", "personId"],
+                    unique = true,
+            ),
+        ]
 )
 data class DatabaseAmount(
         @PrimaryKey(autoGenerate = true) val id: Int,

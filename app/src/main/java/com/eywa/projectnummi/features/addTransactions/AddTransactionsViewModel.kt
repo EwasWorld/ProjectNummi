@@ -3,14 +3,18 @@ package com.eywa.projectnummi.features.addTransactions
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.common.div100String
+import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogIntent
+import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogIntent
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogIntent
 import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
+import com.eywa.projectnummi.model.Account
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +31,7 @@ class AddTransactionsViewModel @Inject constructor(
 ) : ViewModel() {
     private val categoryRepo = db.categoryRepo()
     private val personRepo = db.personRepo()
+    private val accountRepo = db.accountRepo()
     private val transactionRepo = db.transactionRepo()
 
     private val _state = MutableStateFlow(AddTransactionsState())
@@ -41,6 +46,11 @@ class AddTransactionsViewModel @Inject constructor(
         viewModelScope.launch {
             personRepo.get().collect { people ->
                 _state.update { it.copy(people = people.map { dbPerson -> Person(dbPerson) }) }
+            }
+        }
+        viewModelScope.launch {
+            accountRepo.get().collect { accounts ->
+                _state.update { it.copy(accounts = accounts.map { dbAccount -> Account(dbAccount) }) }
             }
         }
     }
@@ -63,6 +73,17 @@ class AddTransactionsViewModel @Inject constructor(
             is StartChangePerson -> openSelectPersonDialog(action.rowIndex, SelectPersonDialogPurpose.SELECT)
             is CreatePersonDialogAction -> handleCreatePersonIntent(action.action)
             is SelectPersonDialogAction -> handleSelectPersonIntent(action.action)
+
+            StartChangeAccount -> _state.update {
+                if (it.accounts == null || it.accounts.isNotEmpty()) {
+                    it.copy(selectAccountDialogIsShown = true)
+                }
+                else {
+                    it.copy(createAccountDialogState = CreateAccountDialogState())
+                }
+            }
+            is CreateAccountDialogAction -> handleCreateAccountIntent(action.action)
+            is SelectAccountDialogAction -> handleSelectAccountIntent(action.action)
 
             Clear -> _state.update {
                 AddTransactionsState(
@@ -153,7 +174,11 @@ class AddTransactionsViewModel @Inject constructor(
                 val category = _state.value.createCategoryDialogState?.asCategory() ?: return
                 viewModelScope.launch {
                     val id = categoryRepo.insert(category.asDbCategory()).toInt()
-                    _state.update { it.setCategoryId(id) }
+                    // Create category can only be triggered from the select category action
+                    //      so after the category is created, select them
+                    handleSelectCategoryIntent(
+                            SelectCategoryDialogIntent.CategoryClicked(category.copy(id = id))
+                    )
                 }
             }
         }
@@ -248,6 +273,50 @@ class AddTransactionsViewModel @Inject constructor(
                     it.copy(
                             selectPersonDialogIsShown = null,
                             createPersonDialogState = CreatePersonDialogState(),
+                    )
+                }
+        }
+    }
+
+    private fun handleCreateAccountIntent(action: CreateAccountDialogIntent) {
+        when (action) {
+            is CreateAccountDialogIntent.TypeChanged,
+            is CreateAccountDialogIntent.NameChanged,
+            ->
+                _state.update {
+                    val createState = it.createAccountDialogState ?: return
+                    it.copy(createAccountDialogState = action.updateState(createState))
+                }
+            CreateAccountDialogIntent.Close -> _state.update { it.copy(createAccountDialogState = null) }
+            CreateAccountDialogIntent.Submit -> {
+                val account = _state.value.createAccountDialogState?.asAccount() ?: return
+                viewModelScope.launch {
+                    val id = accountRepo.insert(account.asDbAccount()).toInt()
+                    // Create account can only be triggered from the select account action
+                    //      so after the account is created, select them
+                    handleSelectAccountIntent(
+                            SelectAccountDialogIntent.AccountClicked(account.copy(id = id))
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handleSelectAccountIntent(action: SelectAccountDialogIntent) {
+        when (action) {
+            SelectAccountDialogIntent.Close -> _state.update { it.copy(selectAccountDialogIsShown = false) }
+            is SelectAccountDialogIntent.AccountClicked ->
+                _state.update {
+                    it.copy(
+                            accountId = action.account?.id,
+                            selectAccountDialogIsShown = false,
+                    )
+                }
+            SelectAccountDialogIntent.CreateNew ->
+                _state.update {
+                    it.copy(
+                            selectAccountDialogIsShown = false,
+                            createAccountDialogState = CreateAccountDialogState(),
                     )
                 }
         }

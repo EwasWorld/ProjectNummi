@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,15 +32,20 @@ import com.eywa.projectnummi.R
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
+import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialog
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialog
+import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialog
+import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogState
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialog
 import com.eywa.projectnummi.components.selectCategoryDialog.SelectCategoryDialogState
 import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialog
 import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogState
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
+import com.eywa.projectnummi.model.Account
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.*
@@ -125,6 +131,16 @@ private fun Dialogs(
             state = state.createPersonDialogState,
             listener = { listener(CreatePersonDialogAction(it)) },
     )
+    SelectAccountDialog(
+            isShown = state.selectAccountDialogIsShown,
+            state = SelectAccountDialogState(state.accounts ?: listOf()),
+            listener = { listener(SelectAccountDialogAction(it)) },
+    )
+    CreateAccountDialog(
+            isShown = true,
+            state = state.createAccountDialogState,
+            listener = { listener(CreateAccountDialogAction(it)) },
+    )
 }
 
 @Composable
@@ -184,7 +200,9 @@ private fun MainInfo(
         Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp)
         ) {
             DateInput(
                     date = state.date,
@@ -196,9 +214,14 @@ private fun MainInfo(
                     onClick = { listener(ToggleIsOutgoing) },
             )
         }
+        AccountInput(
+                account = state.account,
+                onClick = { listener(StartChangeAccount) },
+        )
         NameInput(
                 name = state.name,
                 onChange = { listener(NameChanged(it)) },
+                modifier = Modifier.padding(top = 5.dp)
         )
     }
 }
@@ -244,6 +267,7 @@ private fun DateInput(
 @Composable
 private fun NameInput(
         name: String,
+        modifier: Modifier = Modifier,
         onChange: (String) -> Unit,
 ) {
     NummiTextField(
@@ -251,7 +275,7 @@ private fun NameInput(
             onTextChanged = { onChange(it) },
             label = "Name",
             placeholderText = "Tesco",
-            modifier = Modifier
+            modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp)
     )
@@ -339,6 +363,38 @@ private fun PersonInput(
                     text = person?.name ?: "Default",
                     color = NummiTheme.colors.appBackground.content,
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun AccountInput(
+        account: Account?,
+        onClick: () -> Unit,
+) {
+    Surface(
+            color = Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+            shape = NummiTheme.shapes.generalListItem,
+            onClick = onClick,
+    ) {
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 15.dp, horizontal = 25.dp)
+        ) {
+            Text(
+                    text = account?.name ?: "Default account",
+                    color = NummiTheme.colors.appBackground.content,
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (account?.type != null) {
+                Text(
+                        text = account.type,
+                        color = NummiTheme.colors.appBackground.content,
+                        fontStyle = FontStyle.Italic,
+                )
+            }
         }
     }
 }
@@ -460,6 +516,8 @@ fun AddTransactionsScreen_Preview() {
                                 AmountInputState(personId = 0)
                         ),
                         people = PeopleProvider.basic,
+                        accounts = AccountProvider.basic,
+                        accountId = 1,
                 )
         ) {}
     }

@@ -1,12 +1,10 @@
 package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.common.DateUtils
+import com.eywa.projectnummi.components.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.components.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.createPersonDialog.CreatePersonDialogState
-import com.eywa.projectnummi.model.Amount
-import com.eywa.projectnummi.model.Category
-import com.eywa.projectnummi.model.Person
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.*
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -29,6 +27,14 @@ data class AddTransactionsState(
         val createPersonDialogState: CreatePersonDialogState? = null,
         val selectPersonDialogIsShown: SelectPersonDialogPurpose? = null,
 
+        /**
+         * null for not loaded
+         */
+        val accounts: List<Account>? = null,
+        val accountId: Int? = null,
+        val createAccountDialogState: CreateAccountDialogState? = null,
+        val selectAccountDialogIsShown: Boolean = false,
+
         val amountRows: List<AmountInputState> = listOf(AmountInputState()),
         val currentRow: Int? = null,
 ) {
@@ -44,6 +50,8 @@ data class AddTransactionsState(
             0
         }
     }
+
+    val account = accountId?.let { accounts?.find { it.id == accountId } }
 
     fun getCategory(categoryId: Int?) = categoryId?.let { id -> categories?.find { it.id == id } }
     fun getPerson(personId: Int?) = personId?.let { id -> people?.find { it.id == id } }
@@ -65,6 +73,7 @@ data class AddTransactionsState(
                 )
             },
             isOutgoing = isOutgoing,
+            account = account,
     )
 }
 

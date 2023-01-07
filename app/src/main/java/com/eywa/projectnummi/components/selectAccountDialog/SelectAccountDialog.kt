@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.components.selectPersonDialog
+package com.eywa.projectnummi.components.selectAccountDialog
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -15,23 +15,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.components.selectPersonDialog.SelectPersonDialogIntent.*
-import com.eywa.projectnummi.model.providers.PeopleProvider
+import com.eywa.projectnummi.components.selectAccountDialog.SelectAccountDialogIntent.*
+import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 
 @Composable
-fun SelectPersonDialog(
+fun SelectAccountDialog(
         isShown: Boolean,
-        state: SelectPersonDialogState?,
-        listener: (SelectPersonDialogIntent) -> Unit,
+        state: SelectAccountDialogState?,
+        listener: (SelectAccountDialogIntent) -> Unit,
 ) {
     NummiDialog(
             isShown = isShown && state != null,
-            title = "Select a person",
+            title = "Select an account",
             onCancelListener = { listener(Close) },
     ) {
         LazyColumn(
@@ -39,16 +40,18 @@ fun SelectPersonDialog(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
         ) {
             item {
-                PersonRow(
+                AccountRow(
                         name = "Default",
-                        onClick = { listener(PersonClicked(null)) }
+                        type = null,
+                        onClick = { listener(AccountClicked(null)) }
                 )
             }
 
-            items(state?.people?.sortedBy { it.name } ?: listOf()) { item ->
-                PersonRow(
+            items(state?.accounts?.sortedBy { it.name } ?: listOf()) { item ->
+                AccountRow(
                         name = item.name,
-                        onClick = { listener(PersonClicked(item)) }
+                        type = item.type,
+                        onClick = { listener(AccountClicked(item)) }
                 )
             }
 
@@ -67,7 +70,7 @@ fun SelectPersonDialog(
                             tint = NummiTheme.colors.appBackground.content,
                     )
                     Text(
-                            text = "New person",
+                            text = "New account",
                             color = NummiTheme.colors.appBackground.content,
                     )
                 }
@@ -78,8 +81,9 @@ fun SelectPersonDialog(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun PersonRow(
+private fun AccountRow(
         name: String,
+        type: String?,
         onClick: () -> Unit,
 ) {
     Surface(
@@ -89,8 +93,8 @@ private fun PersonRow(
             onClick = onClick,
             modifier = Modifier.fillMaxWidth()
     ) {
-        Box(
-                contentAlignment = Alignment.Center,
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
@@ -99,17 +103,25 @@ private fun PersonRow(
                     text = name,
                     color = NummiTheme.colors.appBackground.content,
             )
+            Spacer(modifier = Modifier.weight(1f))
+            if (type != null) {
+                Text(
+                        text = type,
+                        color = NummiTheme.colors.appBackground.content,
+                        fontStyle = FontStyle.Italic,
+                )
+            }
         }
     }
 }
 
 @Preview
 @Composable
-fun SelectPersonDialog_Preview() {
+fun SelectAccountDialog_Preview() {
     NummiScreenPreviewWrapper {
-        SelectPersonDialog(
+        SelectAccountDialog(
                 isShown = true,
-                state = SelectPersonDialogState(PeopleProvider.basic),
+                state = SelectAccountDialogState(AccountProvider.basic),
                 listener = {},
         )
     }

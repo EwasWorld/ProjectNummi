@@ -80,6 +80,15 @@ fun NummiBottomNav(
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
+        NummiBottomNavItem(
+                icon = NummiIconInfo.PainterIcon(R.drawable.ic_account_outline),
+                selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_account_baseline),
+                label = "Accounts",
+                contentDescription = "Manage accounts",
+                destination = MainNavRoute.MANAGE_ACCOUNTS,
+                currentRoute = currentRoute,
+                onClick = onClick,
+        )
     }
 }
 
