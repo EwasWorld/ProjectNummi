@@ -44,7 +44,7 @@ fun CategoryItem(
                     ),
             )
             Text(
-                    text = category?.name ?: "Default",
+                    text = category?.name ?: "No category",
                     color = NummiTheme.colors.appBackground.content,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(contentPadding)

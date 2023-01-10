@@ -1,8 +1,6 @@
 package com.eywa.projectnummi.features.managePeople
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -13,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.eywa.projectnummi.components.ItemList
 import com.eywa.projectnummi.components.person.PersonItem
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
@@ -42,20 +41,18 @@ fun ManagePeopleScreen(
             listener = { listener(CreatePersonDialogAction(it)) },
     )
 
-    Box {
-        LazyColumn(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(NummiTheme.dimens.listItemSpacedBy),
+    Box(
+            modifier = Modifier.fillMaxSize()
+    ) {
+        ItemList(
+                items = displayItems,
                 contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-                modifier = Modifier.fillMaxSize()
         ) {
-            items(displayItems) { item ->
-                PersonItem(
-                        person = item,
-                        onClick = {},
-                        modifier = Modifier.fillMaxWidth()
-                )
-            }
+            PersonItem(
+                    person = it,
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth()
+            )
         }
 
         FloatingActionButton(

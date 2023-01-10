@@ -205,8 +205,7 @@ class AddTransactionsViewModel @Inject constructor(
     private fun handleSelectCategoryIntent(action: SelectCategoryDialogIntent) {
         when (action) {
             SelectCategoryDialogIntent.Close -> _state.update { it.copy(selectCategoryDialogIsShown = false) }
-            is SelectCategoryDialogIntent.CategoryClicked -> _state.update { it.setCategoryId(action.category.id) }
-            is SelectCategoryDialogIntent.NoCategoryClicked -> _state.update { it.setCategoryId(null) }
+            is SelectCategoryDialogIntent.CategoryClicked -> _state.update { it.setCategoryId(action.category?.id) }
             SelectCategoryDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(

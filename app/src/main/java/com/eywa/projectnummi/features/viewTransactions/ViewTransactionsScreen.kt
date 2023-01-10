@@ -152,7 +152,7 @@ fun ViewTransactionsScreen(
                                     }
                                     if (amount.person?.id != null || item.amount.size > 1) {
                                         Text(
-                                                text = amount.person?.name ?: "Default",
+                                                text = amount.person?.name ?: "Me",
                                                 color = NummiTheme.colors.appBackground.content,
                                                 fontStyle = FontStyle.Italic,
                                                 modifier = Modifier

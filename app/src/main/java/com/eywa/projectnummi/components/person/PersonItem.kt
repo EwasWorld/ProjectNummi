@@ -34,7 +34,7 @@ fun PersonItem(
                 modifier = Modifier.padding(contentPadding)
         ) {
             Text(
-                    text = person?.name ?: "Default",
+                    text = person?.name ?: "Me",
                     color = NummiTheme.colors.appBackground.content,
             )
         }
