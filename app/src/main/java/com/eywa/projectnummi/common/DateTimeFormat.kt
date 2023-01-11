@@ -4,6 +4,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 enum class DateTimeFormat(val pattern: String) {
+    // 2021/01/01
+    ISO_DATE("yyyy-MM-dd"),
+
     // 1 Jan 2021
     LONG_DATE_FULL_YEAR("d MMM yyyy"),
 

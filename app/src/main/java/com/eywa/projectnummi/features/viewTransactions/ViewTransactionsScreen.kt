@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,8 +23,14 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
 import com.eywa.projectnummi.common.div100String
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
+import com.eywa.projectnummi.main.MainNavRoute
 import com.eywa.projectnummi.model.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
@@ -30,6 +38,7 @@ import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.colors.BaseColor
+import kotlinx.coroutines.launch
 
 
 /**
@@ -53,19 +62,43 @@ val descendingDateTransactionComparator: Comparator<Transaction> = object : Comp
 
 @Composable
 fun ViewTransactionsScreen(
+        navController: NavController,
         viewModel: ViewTransactionsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(state) {
+        launch {
+            if (state.value.editTransactionInitiatedFor != null) {
+                navController.navigate(MainNavRoute.EDIT_TRANSACTIONS.routeBase)
+            }
+        }
+    }
+
     ViewTransactionsScreen(
             state = state.value,
+            listener = { viewModel.handle(it) },
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ViewTransactionsScreen(
         state: ViewTransactionsState,
+        listener: (ViewTransactionsIntent) -> Unit,
 ) {
     val displayItems = state.transactions.sortedWith(descendingDateTransactionComparator)
+
+    ManageItemDialog(
+            isShown = state.deleteDialogState == null,
+            state = state.manageItemDialogState,
+            listener = { listener(ManageItemDialogAction(it)) },
+    )
+    DeleteConfirmationDialog(
+            isShown = true,
+            state = state.deleteDialogState,
+            listener = { listener(DeleteConfirmationDialogAction(it)) },
+    )
 
     LazyColumn(
             horizontalAlignment = Alignment.Start,
@@ -78,6 +111,7 @@ fun ViewTransactionsScreen(
                     color = Color.Transparent,
                     border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
                     shape = NummiTheme.shapes.generalListItem,
+                    onClick = { listener(TransactionClicked(item)) },
                     modifier = Modifier.fillMaxWidth()
             ) {
                 Box(
@@ -132,6 +166,10 @@ fun ViewTransactionsScreen(
                                     text = item.name,
                                     color = NummiTheme.colors.appBackground.content,
                                     style = NummiTheme.typography.h5,
+                            )
+                            Text(
+                                    text = DateTimeFormat.SHORT_DATE.format(item.date),
+                                    color = NummiTheme.colors.appBackground.content,
                             )
                         }
                         Column(
@@ -211,6 +249,6 @@ fun ViewTransactionsScreen_Preview() {
                 ViewTransactionsState(
                         transactions = TransactionProvider.basic,
                 )
-        )
+        ) {}
     }
 }

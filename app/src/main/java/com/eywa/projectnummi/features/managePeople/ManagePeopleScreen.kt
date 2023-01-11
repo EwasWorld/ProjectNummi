@@ -12,10 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.components.ItemList
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.components.person.PersonItem
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialog
-import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
-import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction
+import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.*
 import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -40,6 +41,16 @@ fun ManagePeopleScreen(
             state = state.createDialogState,
             listener = { listener(CreatePersonDialogAction(it)) },
     )
+    ManageItemDialog(
+            isShown = state.deleteDialogState == null,
+            state = state.manageItemDialogState,
+            listener = { listener(ManageItemDialogAction(it)) },
+    )
+    DeleteConfirmationDialog(
+            isShown = true,
+            state = state.deleteDialogState,
+            listener = { listener(DeleteConfirmationDialogAction(it)) },
+    )
 
     Box(
             modifier = Modifier.fillMaxSize()
@@ -50,7 +61,11 @@ fun ManagePeopleScreen(
         ) {
             PersonItem(
                     person = it,
-                    onClick = {},
+                    onClick = {
+                        if (it != null) {
+                            listener(PersonClicked(it))
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
             )
         }

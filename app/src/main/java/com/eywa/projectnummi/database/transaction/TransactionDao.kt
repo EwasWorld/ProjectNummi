@@ -16,6 +16,36 @@ interface TransactionDao {
     @Query("SELECT MAX(`order`) FROM ${DatabaseTransaction.TABLE_NAME} WHERE date = :date")
     fun getMaxOrder(date: Calendar): Flow<Int?>
 
+    /**
+     * @return [DatabaseTransaction] with the highest [DatabaseTransaction.order] that is lower than [order]
+     *   where [DatabaseTransaction.date] == [date]
+     */
+    @Query(
+            """
+                SELECT * 
+                FROM ${DatabaseTransaction.TABLE_NAME} 
+                WHERE date = :date AND `order` < :order
+                ORDER BY `order` DESC
+                LIMIT 1
+            """
+    )
+    fun getOrderBelow(date: Calendar, order: Int): Flow<DatabaseTransaction?>
+
+    /**
+     * @return [DatabaseTransaction] with the lowest [DatabaseTransaction.order] that is higher than [order]
+     *   where [DatabaseTransaction.date] == [date]
+     */
+    @Query(
+            """
+                SELECT * 
+                FROM ${DatabaseTransaction.TABLE_NAME} 
+                WHERE date = :date AND `order` > :order
+                ORDER BY `order` ASC
+                LIMIT 1
+            """
+    )
+    fun getOrderAbove(date: Calendar, order: Int): Flow<DatabaseTransaction?>
+
     @Insert
     suspend fun insert(transaction: DatabaseTransaction): Long
 

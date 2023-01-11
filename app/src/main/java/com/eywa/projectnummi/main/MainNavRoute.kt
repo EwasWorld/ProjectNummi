@@ -26,9 +26,15 @@ enum class MainNavRoute : NavRoute {
             return true
         }
     },
+    EDIT_TRANSACTIONS {
+        @Composable
+        override fun Screen(navController: NavHostController) {
+            TODO("Implement")
+        }
+    },
     VIEW_TRANSACTIONS {
         @Composable
-        override fun Screen(navController: NavHostController) = ViewTransactionsScreen()
+        override fun Screen(navController: NavHostController) = ViewTransactionsScreen(navController)
     },
     MANAGE_CATEGORIES {
         @Composable

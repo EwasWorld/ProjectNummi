@@ -22,4 +22,25 @@ class TransactionRepo(
         val id = transactionDao.insert(transaction.copy(order = maxOrder + 1)).toInt()
         amountDao.insert(*amounts.map { it.copy(transactionId = id) }.toTypedArray())
     }
+
+    @Transaction
+    private suspend fun swapOrder(transaction0: DatabaseTransaction, transaction1: DatabaseTransaction) {
+        transactionDao.update(transaction0.copy(order = -1))
+        transactionDao.update(transaction1.copy(order = transaction0.order))
+        transactionDao.update(transaction0.copy(order = transaction1.order))
+    }
+
+    @Transaction
+    suspend fun decreaseOrder(transaction: DatabaseTransaction) {
+        val swapWith = transactionDao.getOrderAbove(transaction.date, transaction.order).first()
+                ?: return
+        swapOrder(transaction, swapWith)
+    }
+
+    @Transaction
+    suspend fun increaseOrder(transaction: DatabaseTransaction) {
+        val swapWith = transactionDao.getOrderBelow(transaction.date, transaction.order).first()
+                ?: return
+        swapOrder(transaction, swapWith)
+    }
 }

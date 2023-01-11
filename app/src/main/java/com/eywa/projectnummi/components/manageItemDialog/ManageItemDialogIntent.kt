@@ -1,8 +1,7 @@
 package com.eywa.projectnummi.components.manageItemDialog
 
 sealed class ManageItemDialogIntent {
-    object EditClicked : ManageItemDialogIntent()
-    object DeleteClicked : ManageItemDialogIntent()
+    data class OptionClicked(val option: ManageItemOption) : ManageItemDialogIntent()
 
     object Close : ManageItemDialogIntent()
 }

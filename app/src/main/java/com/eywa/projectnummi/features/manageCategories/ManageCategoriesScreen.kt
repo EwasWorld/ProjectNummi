@@ -14,8 +14,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.components.ItemList
 import com.eywa.projectnummi.components.category.CategoryItem
 import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialog
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -40,6 +41,16 @@ fun ManageCategoriesScreen(
             state = state.createDialogState,
             listener = { listener(CreateCategoryDialogAction(it)) },
     )
+    ManageItemDialog(
+            isShown = state.deleteDialogState == null,
+            state = state.manageItemDialogState,
+            listener = { listener(ManageItemDialogAction(it)) },
+    )
+    DeleteConfirmationDialog(
+            isShown = true,
+            state = state.deleteDialogState,
+            listener = { listener(DeleteConfirmationDialogAction(it)) },
+    )
 
     Box(
             modifier = Modifier.fillMaxSize()
@@ -50,7 +61,11 @@ fun ManageCategoriesScreen(
         ) {
             CategoryItem(
                     category = it,
-                    onClick = {},
+                    onClick = {
+                        if (it != null) {
+                            listener(CategoryClicked(it))
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth()
             )
         }

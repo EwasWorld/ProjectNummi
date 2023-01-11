@@ -20,7 +20,7 @@ data class Transaction(
          * @see [descendingDateTransactionComparator]
          */
         val order: Int = 1,
-) {
+) : NamedItem {
     constructor(
             dbTransaction: FullDatabaseTransaction,
     ) : this(
@@ -41,4 +41,6 @@ data class Transaction(
             isOutgoing = isOutgoing,
             order = order,
     )
+
+    override fun getItemName(): String = name
 }

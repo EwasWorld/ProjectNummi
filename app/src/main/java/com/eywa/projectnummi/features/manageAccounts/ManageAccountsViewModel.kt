@@ -6,6 +6,7 @@ import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccoun
 import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
 import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDefaultOption
 import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
 import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.database.NummiDatabase
@@ -27,6 +28,28 @@ class ManageAccountsViewModel @Inject constructor(
     private val _state = MutableStateFlow(ManageAccountsState())
     val state = _state.asStateFlow()
 
+    private val contextMenuOptions by lazy {
+        mapOf(
+                ManageItemDefaultOption.EDIT to {
+                    _state.update {
+                        it.copy(
+                                manageItemDialogState = null,
+                                createDialogState = it.manageItemDialogState?.item
+                                        ?.let { account -> CreateAccountDialogState(editing = account) }
+                        )
+                    }
+                },
+                ManageItemDefaultOption.DELETE to {
+                    _state.update {
+                        it.copy(
+                                deleteDialogState = it.manageItemDialogState?.item
+                                        ?.let { item -> DeleteConfirmationDialogState(item) }
+                        )
+                    }
+                },
+        )
+    }
+
     init {
         viewModelScope.launch {
             accountRepo.get().collect { accounts ->
@@ -38,7 +61,14 @@ class ManageAccountsViewModel @Inject constructor(
     fun handle(action: ManageAccountsIntent) {
         when (action) {
             is AccountClicked ->
-                _state.update { it.copy(manageItemDialogState = ManageItemDialogState(action.account)) }
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = ManageItemDialogState(
+                                    item = action.account,
+                                    options = contextMenuOptions.keys.toList(),
+                            )
+                    )
+                }
             AddAccountClicked -> _state.update { it.copy(createDialogState = CreateAccountDialogState()) }
             is CreateAccountDialogAction -> handleCreateDialogIntent(action.action)
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
@@ -76,21 +106,8 @@ class ManageAccountsViewModel @Inject constructor(
     private fun handleManageItemDialogIntent(action: ManageItemDialogIntent) {
         when (action) {
             ManageItemDialogIntent.Close -> _state.update { it.copy(manageItemDialogState = null) }
-            ManageItemDialogIntent.DeleteClicked ->
-                _state.update {
-                    it.copy(
-                            deleteDialogState = it.manageItemDialogState?.item
-                                    ?.let { item -> DeleteConfirmationDialogState(item) }
-                    )
-                }
-            ManageItemDialogIntent.EditClicked ->
-                _state.update {
-                    it.copy(
-                            manageItemDialogState = null,
-                            createDialogState = it.manageItemDialogState?.item
-                                    ?.let { account -> CreateAccountDialogState(editing = account) }
-                    )
-                }
+            is ManageItemDialogIntent.OptionClicked ->
+                contextMenuOptions[action.option]?.invoke() ?: throw NotImplementedError()
         }
     }
 

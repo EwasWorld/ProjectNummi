@@ -2,11 +2,15 @@ package com.eywa.projectnummi.features.managePeople
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDefaultOption
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.database.NummiDatabase
-import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.AddPersonClicked
-import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.CreatePersonDialogAction
+import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.*
 import com.eywa.projectnummi.model.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +28,28 @@ class ManagePeopleViewModel @Inject constructor(
     private val _state = MutableStateFlow(ManagePeopleState())
     val state = _state.asStateFlow()
 
+    private val contextMenuOptions by lazy {
+        mapOf(
+                ManageItemDefaultOption.EDIT to {
+                    _state.update {
+                        it.copy(
+                                manageItemDialogState = null,
+                                createDialogState = it.manageItemDialogState?.item
+                                        ?.let { person -> CreatePersonDialogState(editing = person) }
+                        )
+                    }
+                },
+                ManageItemDefaultOption.DELETE to {
+                    _state.update {
+                        it.copy(
+                                deleteDialogState = it.manageItemDialogState?.item
+                                        ?.let { item -> DeleteConfirmationDialogState(item) }
+                        )
+                    }
+                },
+        )
+    }
+
     init {
         viewModelScope.launch {
             personRepo.get().collect { people ->
@@ -34,8 +60,19 @@ class ManagePeopleViewModel @Inject constructor(
 
     fun handle(action: ManagePeopleIntent) {
         when (action) {
+            is PersonClicked ->
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = ManageItemDialogState(
+                                    item = action.person,
+                                    options = contextMenuOptions.keys.toList(),
+                            )
+                    )
+                }
             AddPersonClicked -> _state.update { it.copy(createDialogState = CreatePersonDialogState()) }
             is CreatePersonDialogAction -> handleCreateDialogIntent(action.action)
+            is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
+            is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
         }
     }
 
@@ -61,6 +98,32 @@ class ManagePeopleViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun handleManageItemDialogIntent(action: ManageItemDialogIntent) {
+        when (action) {
+            ManageItemDialogIntent.Close -> _state.update { it.copy(manageItemDialogState = null) }
+            is ManageItemDialogIntent.OptionClicked ->
+                contextMenuOptions[action.option]?.invoke() ?: throw NotImplementedError()
+        }
+    }
+
+    private fun handleDeleteConfirmationDialogIntent(action: DeleteConfirmationDialogIntent) {
+        when (action) {
+            DeleteConfirmationDialogIntent.Ok -> {
+                val deleteItem = _state.value.deleteDialogState?.item
+                if (deleteItem != null) {
+                    viewModelScope.launch { personRepo.delete(deleteItem.asDbPerson()) }
+                }
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = null,
+                            deleteDialogState = null,
+                    )
+                }
+            }
+            DeleteConfirmationDialogIntent.Cancel -> _state.update { it.copy(deleteDialogState = null) }
         }
     }
 }

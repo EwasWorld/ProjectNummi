@@ -11,7 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent.*
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent.Close
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent.OptionClicked
 import com.eywa.projectnummi.model.NamedItem
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.ui.components.NummiDialog
@@ -32,24 +33,17 @@ fun <I : NamedItem> ManageItemDialog(
         Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(
-                    text = "Edit",
-                    color = NummiTheme.colors.appBackground.content,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                            .clickable { listener(EditClicked) }
-                            .fillMaxWidth()
-                            .padding(vertical = 15.dp)
-            )
-            Text(
-                    text = "Delete",
-                    color = NummiTheme.colors.appBackground.content,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                            .clickable { listener(DeleteClicked) }
-                            .fillMaxWidth()
-                            .padding(vertical = 15.dp)
-            )
+            state?.options?.forEach { option ->
+                Text(
+                        text = option.text,
+                        color = NummiTheme.colors.appBackground.content,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                                .clickable { listener(OptionClicked(option)) }
+                                .fillMaxWidth()
+                                .padding(vertical = 15.dp)
+                )
+            }
         }
     }
 }
@@ -63,7 +57,10 @@ fun ManageItemDialog_Preview() {
     NummiScreenPreviewWrapper {
         ManageItemDialog(
                 isShown = true,
-                state = ManageItemDialogState(AccountProvider.basic[2])
+                state = ManageItemDialogState(
+                        item = AccountProvider.basic[2],
+                        options = ManageItemDefaultOption.values().toList(),
+                )
         ) {}
     }
 }

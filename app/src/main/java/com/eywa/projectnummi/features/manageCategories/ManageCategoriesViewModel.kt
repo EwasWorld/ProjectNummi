@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDefaultOption
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.database.NummiDatabase
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.AddCategoryClicked
-import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.CreateCategoryDialogAction
+import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
 import com.eywa.projectnummi.model.Category
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +28,28 @@ class ManageCategoriesViewModel @Inject constructor(
     private val _state = MutableStateFlow(ManageCategoriesState())
     val state = _state.asStateFlow()
 
+    private val contextMenuOptions by lazy {
+        mapOf(
+                ManageItemDefaultOption.EDIT to {
+                    _state.update {
+                        it.copy(
+                                manageItemDialogState = null,
+                                createDialogState = it.manageItemDialogState?.item
+                                        ?.let { category -> CreateCategoryDialogState(editing = category) }
+                        )
+                    }
+                },
+                ManageItemDefaultOption.DELETE to {
+                    _state.update {
+                        it.copy(
+                                deleteDialogState = it.manageItemDialogState?.item
+                                        ?.let { item -> DeleteConfirmationDialogState(item) }
+                        )
+                    }
+                },
+        )
+    }
+
     init {
         viewModelScope.launch {
             categoryRepo.get().collect { categories ->
@@ -34,8 +60,19 @@ class ManageCategoriesViewModel @Inject constructor(
 
     fun handle(action: ManageCategoriesIntent) {
         when (action) {
+            is CategoryClicked ->
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = ManageItemDialogState(
+                                    item = action.category,
+                                    options = contextMenuOptions.keys.toList(),
+                            )
+                    )
+                }
             AddCategoryClicked -> _state.update { it.copy(createDialogState = CreateCategoryDialogState()) }
             is CreateCategoryDialogAction -> handleCreateDialogIntent(action.action)
+            is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
+            is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
         }
     }
 
@@ -63,6 +100,32 @@ class ManageCategoriesViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun handleManageItemDialogIntent(action: ManageItemDialogIntent) {
+        when (action) {
+            ManageItemDialogIntent.Close -> _state.update { it.copy(manageItemDialogState = null) }
+            is ManageItemDialogIntent.OptionClicked ->
+                contextMenuOptions[action.option]?.invoke() ?: throw NotImplementedError()
+        }
+    }
+
+    private fun handleDeleteConfirmationDialogIntent(action: DeleteConfirmationDialogIntent) {
+        when (action) {
+            DeleteConfirmationDialogIntent.Ok -> {
+                val deleteItem = _state.value.deleteDialogState?.item
+                if (deleteItem != null) {
+                    viewModelScope.launch { categoryRepo.delete(deleteItem.asDbCategory()) }
+                }
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = null,
+                            deleteDialogState = null,
+                    )
+                }
+            }
+            DeleteConfirmationDialogIntent.Cancel -> _state.update { it.copy(deleteDialogState = null) }
         }
     }
 }
