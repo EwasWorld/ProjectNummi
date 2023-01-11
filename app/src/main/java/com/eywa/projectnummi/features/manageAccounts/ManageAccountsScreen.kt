@@ -17,8 +17,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.eywa.projectnummi.components.ItemList
 import com.eywa.projectnummi.components.account.AccountItem
 import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialog
-import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.AddAccountClicked
-import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.CreateAccountDialogAction
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.*
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.theme.NummiTheme
@@ -43,6 +44,16 @@ fun ManageAccountsScreen(
             state = state.createDialogState,
             listener = { listener(CreateAccountDialogAction(it)) },
     )
+    ManageItemDialog(
+            isShown = state.deleteDialogState == null,
+            state = state.manageItemDialogState,
+            listener = { listener(ManageItemDialogAction(it)) },
+    )
+    DeleteConfirmationDialog(
+            isShown = true,
+            state = state.deleteDialogState,
+            listener = { listener(DeleteConfirmationDialogAction(it)) },
+    )
 
     Box(
             modifier = Modifier.fillMaxSize()
@@ -53,7 +64,11 @@ fun ManageAccountsScreen(
         ) {
             AccountItem(
                     account = it,
-                    onClick = {},
+                    onClick = {
+                        if (it != null) {
+                            listener(AccountClicked(it))
+                        }
+                    },
             )
         }
 

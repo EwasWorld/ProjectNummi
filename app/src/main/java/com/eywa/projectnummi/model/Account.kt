@@ -9,8 +9,10 @@ data class Account(
          * Credit, debit, cash, etc.
          */
         val type: String?,
-) {
+) : NamedItem {
     constructor(dbAccount: DatabaseAccount) : this(dbAccount.id, dbAccount.name, dbAccount.type)
 
     fun asDbAccount() = DatabaseAccount(id, name, type)
+
+    override fun getItemName(): String = name
 }

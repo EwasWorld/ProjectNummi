@@ -1,9 +1,9 @@
 package com.eywa.projectnummi.components.person.createPersonDialog
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent.*
+import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.ui.components.NummiDialog
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.ui.components.NummiTextField
@@ -14,10 +14,11 @@ fun CreatePersonDialog(
         state: CreatePersonDialogState?,
         listener: (CreatePersonDialogIntent) -> Unit,
 ) {
+    val isEditing = state?.editing != null
     NummiDialog(
             isShown = isShown && state != null,
-            title = "New person",
-            okButtonText = "Create",
+            title = if (isEditing) "Editing " + state?.editing?.name else "New person",
+            okButtonText = if (isEditing) "Update" else "Create",
             onOkListener = { listener(Submit) },
             onCancelListener = { listener(Close) },
     ) {
@@ -31,7 +32,8 @@ fun CreatePersonDialog(
 }
 
 @Preview(
-        device = Devices.PIXEL_4,
+        heightDp = 300,
+        widthDp = 400,
 )
 @Composable
 fun CreatePersonDialog_Preview() {
@@ -39,6 +41,24 @@ fun CreatePersonDialog_Preview() {
         CreatePersonDialog(
                 isShown = true,
                 state = CreatePersonDialogState(),
+                listener = {},
+        )
+    }
+}
+
+
+@Preview(
+        heightDp = 300,
+        widthDp = 400,
+)
+@Composable
+fun Edit_CreatePersonDialog_Preview() {
+    NummiScreenPreviewWrapper {
+        CreatePersonDialog(
+                isShown = true,
+                state = CreatePersonDialogState(
+                        editing = PeopleProvider.basic[0],
+                ),
                 listener = {},
         )
     }

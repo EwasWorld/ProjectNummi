@@ -42,17 +42,26 @@ class ManageCategoriesViewModel @Inject constructor(
     private fun handleCreateDialogIntent(action: CreateCategoryDialogIntent) {
         when (action) {
             is CreateCategoryDialogIntent.NameChanged,
-            is CreateCategoryDialogIntent.HueChanged ->
+            is CreateCategoryDialogIntent.HueChanged,
+            ->
                 _state.update {
                     val currentState = it.createDialogState ?: return
                     it.copy(createDialogState = action.updateState(currentState))
                 }
             CreateCategoryDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             CreateCategoryDialogIntent.Submit -> {
-                val category = _state.value.createDialogState?.asCategory() ?: return
+                val dialogState = _state.value.createDialogState ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                viewModelScope.launch { categoryRepo.insert(category.asDbCategory()) }
+                val category = dialogState.asCategory().asDbCategory()
+                viewModelScope.launch {
+                    if (dialogState.isEditing) {
+                        categoryRepo.update(category)
+                    }
+                    else {
+                        categoryRepo.insert(category)
+                    }
+                }
             }
         }
     }

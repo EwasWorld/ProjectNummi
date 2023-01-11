@@ -3,11 +3,14 @@ package com.eywa.projectnummi.components.account.createAccountDialog
 import com.eywa.projectnummi.model.Account
 
 data class CreateAccountDialogState(
-        val name: String = "",
-        val type: String = "",
+        val editing: Account? = null,
+        val name: String = editing?.name ?: "",
+        val type: String = editing?.type ?: "",
 ) {
+    val isEditing = editing != null
+
     fun asAccount() = Account(
-            id = 0,
+            id = editing?.id ?: 0,
             name = name,
             type = type.takeIf { it.isNotBlank() },
     )

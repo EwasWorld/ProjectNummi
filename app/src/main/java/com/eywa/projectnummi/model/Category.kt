@@ -9,7 +9,7 @@ data class Category(
         val id: Int,
         val name: String,
         val color: Color,
-) {
+) : NamedItem {
     constructor(
             dbCategory: DatabaseCategory,
     ) : this(
@@ -17,4 +17,6 @@ data class Category(
     )
 
     fun asDbCategory() = DatabaseCategory(id, name, DbColor(color))
+
+    override fun getItemName(): String = name
 }

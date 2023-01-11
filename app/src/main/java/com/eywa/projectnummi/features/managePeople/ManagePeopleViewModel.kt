@@ -48,10 +48,18 @@ class ManagePeopleViewModel @Inject constructor(
                 }
             CreatePersonDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             CreatePersonDialogIntent.Submit -> {
-                val person = _state.value.createDialogState?.asPerson() ?: return
+                val dialogState = _state.value.createDialogState ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                viewModelScope.launch { personRepo.insert(person.asDbPerson()) }
+                val person = dialogState.asPerson().asDbPerson()
+                viewModelScope.launch {
+                    if (dialogState.isEditing) {
+                        personRepo.update(person)
+                    }
+                    else {
+                        personRepo.insert(person)
+                    }
+                }
             }
         }
     }

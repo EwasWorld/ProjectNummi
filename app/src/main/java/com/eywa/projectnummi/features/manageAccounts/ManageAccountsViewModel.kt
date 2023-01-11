@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogIntent
 import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.database.NummiDatabase
-import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.AddAccountClicked
-import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.CreateAccountDialogAction
+import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.*
 import com.eywa.projectnummi.model.Account
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,8 +37,12 @@ class ManageAccountsViewModel @Inject constructor(
 
     fun handle(action: ManageAccountsIntent) {
         when (action) {
+            is AccountClicked ->
+                _state.update { it.copy(manageItemDialogState = ManageItemDialogState(action.account)) }
             AddAccountClicked -> _state.update { it.copy(createDialogState = CreateAccountDialogState()) }
             is CreateAccountDialogAction -> handleCreateDialogIntent(action.action)
+            is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
+            is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
         }
     }
 
@@ -50,11 +57,58 @@ class ManageAccountsViewModel @Inject constructor(
                 }
             CreateAccountDialogIntent.Close -> _state.update { it.copy(createDialogState = null) }
             CreateAccountDialogIntent.Submit -> {
-                val account = _state.value.createDialogState?.asAccount() ?: return
+                val dialogState = _state.value.createDialogState ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                viewModelScope.launch { accountRepo.insert(account.asDbAccount()) }
+                val account = dialogState.asAccount().asDbAccount()
+                viewModelScope.launch {
+                    if (dialogState.isEditing) {
+                        accountRepo.update(account)
+                    }
+                    else {
+                        accountRepo.insert(account)
+                    }
+                }
             }
+        }
+    }
+
+    private fun handleManageItemDialogIntent(action: ManageItemDialogIntent) {
+        when (action) {
+            ManageItemDialogIntent.Close -> _state.update { it.copy(manageItemDialogState = null) }
+            ManageItemDialogIntent.DeleteClicked ->
+                _state.update {
+                    it.copy(
+                            deleteDialogState = it.manageItemDialogState?.item
+                                    ?.let { item -> DeleteConfirmationDialogState(item) }
+                    )
+                }
+            ManageItemDialogIntent.EditClicked ->
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = null,
+                            createDialogState = it.manageItemDialogState?.item
+                                    ?.let { account -> CreateAccountDialogState(editing = account) }
+                    )
+                }
+        }
+    }
+
+    private fun handleDeleteConfirmationDialogIntent(action: DeleteConfirmationDialogIntent) {
+        when (action) {
+            DeleteConfirmationDialogIntent.Ok -> {
+                val deleteItem = _state.value.deleteDialogState?.item
+                if (deleteItem != null) {
+                    viewModelScope.launch { accountRepo.delete(deleteItem.asDbAccount()) }
+                }
+                _state.update {
+                    it.copy(
+                            manageItemDialogState = null,
+                            deleteDialogState = null,
+                    )
+                }
+            }
+            DeleteConfirmationDialogIntent.Cancel -> _state.update { it.copy(deleteDialogState = null) }
         }
     }
 }
