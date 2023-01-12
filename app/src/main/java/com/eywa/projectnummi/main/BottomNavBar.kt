@@ -5,10 +5,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.List
-import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -51,27 +49,9 @@ fun NummiBottomNav(
         NummiBottomNavItem(
                 icon = NummiIconInfo.PainterIcon(R.drawable.ic_category_outline),
                 selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_category_baseline),
-                label = "Categories",
-                contentDescription = "Manage categories",
+                label = "Manage",
+                contentDescription = "Manage categories, people, and accounts",
                 destination = NummiNavRoute.MANAGE_CATEGORIES,
-                currentRoute = currentRoute,
-                onClick = onClick,
-        )
-        NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Outlined.Person),
-                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Person),
-                label = "People",
-                contentDescription = "Manage people",
-                destination = NummiNavRoute.MANAGE_PEOPLE,
-                currentRoute = currentRoute,
-                onClick = onClick,
-        )
-        NummiBottomNavItem(
-                icon = NummiIconInfo.PainterIcon(R.drawable.ic_account_outline),
-                selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_account_baseline),
-                label = "Accounts",
-                contentDescription = "Manage accounts",
-                destination = NummiNavRoute.MANAGE_ACCOUNTS,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )

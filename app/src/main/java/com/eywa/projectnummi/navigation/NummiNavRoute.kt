@@ -47,17 +47,17 @@ enum class NummiNavRoute : NavRoute {
     MANAGE_CATEGORIES {
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
-                ManageCategoriesScreen()
+                ManageCategoriesScreen(navController)
     },
     MANAGE_PEOPLE {
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
-                ManagePeopleScreen()
+                ManagePeopleScreen(navController)
     },
     MANAGE_ACCOUNTS {
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
-                ManageAccountsScreen()
+                ManageAccountsScreen(navController)
     },
     ;
 

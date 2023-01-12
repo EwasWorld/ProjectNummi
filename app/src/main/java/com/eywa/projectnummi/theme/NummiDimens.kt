@@ -12,6 +12,7 @@ data class NummiDimens(
         val screenPadding: Dp = 20.dp,
         val fabToScreenEdgePadding: Dp = 30.dp,
         val listItemBorder: Dp = 1.dp,
+        val pillBorder: Dp = 1.dp,
         val listItemPadding: Dp = 15.dp,
         val listItemSpacedBy: Dp = 10.dp,
         val viewTransactionTriangleSize: Dp = 130.dp,

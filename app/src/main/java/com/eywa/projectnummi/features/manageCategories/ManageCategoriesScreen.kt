@@ -1,31 +1,41 @@
 package com.eywa.projectnummi.features.manageCategories
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.sharedUi.ItemList
+import com.eywa.projectnummi.sharedUi.ManageScaffold
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.category.CategoryItem
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
-import com.eywa.projectnummi.theme.NummiTheme
+import com.eywa.projectnummi.sharedUi.navigateToManageTab
+import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
+import kotlinx.coroutines.launch
 
 @Composable
 fun ManageCategoriesScreen(
+        navController: NavController,
         viewModel: ManageCategoriesViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(state.value.navigateInitiatedFor) {
+        launch {
+            state.value.navigateInitiatedFor?.let {
+                viewModel.handle(NavigationResolved)
+                navigateToManageTab(it, navController)
+            }
+        }
+    }
+
     ManageCategoriesScreen(state = state.value, listener = { viewModel.handle(it) })
 }
 
@@ -34,8 +44,6 @@ fun ManageCategoriesScreen(
         state: ManageCategoriesState,
         listener: (ManageCategoriesIntent) -> Unit,
 ) {
-    val displayItems = state.categories?.sortedBy { it.name } ?: listOf()
-
     CreateCategoryDialog(
             isShown = true,
             state = state.createDialogState,
@@ -52,37 +60,22 @@ fun ManageCategoriesScreen(
             listener = { listener(DeleteConfirmationDialogAction(it)) },
     )
 
-    Box(
-            modifier = Modifier.fillMaxSize()
+    ManageScaffold(
+            displayItems = state.categories?.sortedBy { it.name } ?: listOf(),
+            addFabContentDescription = "Add category",
+            onAddFabClicked = { listener(AddCategoryClicked) },
+            currentTab = ManageTabSwitcherItem.CATEGORIES,
+            onTabSwitcherClicked = { listener(TabClicked(it)) },
     ) {
-        ItemList(
-                items = displayItems,
-                contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-        ) {
-            CategoryItem(
-                    category = it,
-                    onClick = {
-                        if (it != null) {
-                            listener(CategoryClicked(it))
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        FloatingActionButton(
-                backgroundColor = NummiTheme.colors.fab.main,
-                contentColor = NummiTheme.colors.fab.content,
-                onClick = { listener(AddCategoryClicked) },
-                modifier = Modifier
-                        .padding(NummiTheme.dimens.fabToScreenEdgePadding)
-                        .align(Alignment.BottomEnd)
-        ) {
-            Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add category",
-            )
-        }
+        CategoryItem(
+                category = it,
+                onClick = {
+                    if (it != null) {
+                        listener(CategoryClicked(it))
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 

@@ -73,6 +73,8 @@ class ManagePeopleViewModel @Inject constructor(
             is CreatePersonDialogAction -> handleCreateDialogIntent(action.action)
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
+            is TabClicked -> _state.update { it.copy(navigateInitiatedFor = action.item.navRoute) }
+            NavigationResolved -> _state.update { it.copy(navigateInitiatedFor = null) }
         }
     }
 

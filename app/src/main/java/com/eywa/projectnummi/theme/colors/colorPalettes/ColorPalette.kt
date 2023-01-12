@@ -24,6 +24,12 @@ data class ColorPalette(
 
         @StyleRes val dialogThemeId: Int = R.style.DialogMainTheme,
 
+        val pillSelectorSelected: ThemeColor = ThemeColor(main = BaseColor.BASE_PURPLE, content = Color.White),
+        val pillSelectorNotSelected: ThemeColor = ThemeColor(main = BaseColor.BASE_SPACE, content = Color.White),
+        val pillSelectorBorder: Color = Color.LightGray,
+
+        val divider: Color = Color.LightGray,
+
         val link: Color = BaseColor.BLUE,
 
         val incomingTransaction: Color = BaseColor.GREEN,
@@ -108,4 +114,5 @@ data class ColorPalette(
         },
 ) {
     fun getTransactionColor(isOutgoing: Boolean) = if (isOutgoing) outgoingTransaction else incomingTransaction
+    fun getPillColor(isSelected: Boolean) = if (isSelected) pillSelectorSelected else pillSelectorNotSelected
 }

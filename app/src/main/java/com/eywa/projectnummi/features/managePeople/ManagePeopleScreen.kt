@@ -1,31 +1,41 @@
 package com.eywa.projectnummi.features.managePeople
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.eywa.projectnummi.features.managePeople.ManagePeopleIntent.*
 import com.eywa.projectnummi.model.providers.PeopleProvider
-import com.eywa.projectnummi.sharedUi.ItemList
+import com.eywa.projectnummi.sharedUi.ManageScaffold
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.sharedUi.navigateToManageTab
 import com.eywa.projectnummi.sharedUi.person.PersonItem
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialog
-import com.eywa.projectnummi.theme.NummiTheme
+import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
+import kotlinx.coroutines.launch
 
 @Composable
 fun ManagePeopleScreen(
+        navController: NavController,
         viewModel: ManagePeopleViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(state.value.navigateInitiatedFor) {
+        launch {
+            state.value.navigateInitiatedFor?.let {
+                viewModel.handle(NavigationResolved)
+                navigateToManageTab(it, navController)
+            }
+        }
+    }
+
     ManagePeopleScreen(state = state.value, listener = { viewModel.handle(it) })
 }
 
@@ -34,8 +44,6 @@ fun ManagePeopleScreen(
         state: ManagePeopleState,
         listener: (ManagePeopleIntent) -> Unit,
 ) {
-    val displayItems = state.people?.sortedBy { it.name } ?: listOf()
-
     CreatePersonDialog(
             isShown = true,
             state = state.createDialogState,
@@ -52,37 +60,22 @@ fun ManagePeopleScreen(
             listener = { listener(DeleteConfirmationDialogAction(it)) },
     )
 
-    Box(
-            modifier = Modifier.fillMaxSize()
+    ManageScaffold(
+            displayItems = state.people?.sortedBy { it.name } ?: listOf(),
+            addFabContentDescription = "Add person",
+            onAddFabClicked = { listener(AddPersonClicked) },
+            currentTab = ManageTabSwitcherItem.PEOPLE,
+            onTabSwitcherClicked = { listener(TabClicked(it)) },
     ) {
-        ItemList(
-                items = displayItems,
-                contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-        ) {
-            PersonItem(
-                    person = it,
-                    onClick = {
-                        if (it != null) {
-                            listener(PersonClicked(it))
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        FloatingActionButton(
-                backgroundColor = NummiTheme.colors.fab.main,
-                contentColor = NummiTheme.colors.fab.content,
-                onClick = { listener(AddPersonClicked) },
-                modifier = Modifier
-                        .padding(NummiTheme.dimens.fabToScreenEdgePadding)
-                        .align(Alignment.BottomEnd)
-        ) {
-            Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add person",
-            )
-        }
+        PersonItem(
+                person = it,
+                onClick = {
+                    if (it != null) {
+                        listener(PersonClicked(it))
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
