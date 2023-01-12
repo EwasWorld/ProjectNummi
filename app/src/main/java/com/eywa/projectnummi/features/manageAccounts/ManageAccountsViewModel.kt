@@ -2,16 +2,16 @@ package com.eywa.projectnummi.features.manageAccounts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogIntent
-import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDefaultOption
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.*
 import com.eywa.projectnummi.model.Account
+import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogIntent
+import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogState
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDefaultOption
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

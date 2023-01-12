@@ -1,11 +1,11 @@
 package com.eywa.projectnummi.features.addTransactions
 
-import com.eywa.projectnummi.common.DateUtils
-import com.eywa.projectnummi.common.div100String
-import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
-import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
-import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogState
 import com.eywa.projectnummi.model.*
+import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogState
+import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
+import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogState
+import com.eywa.projectnummi.utils.DateUtils
+import com.eywa.projectnummi.utils.div100String
 import java.util.*
 import kotlin.math.roundToInt
 

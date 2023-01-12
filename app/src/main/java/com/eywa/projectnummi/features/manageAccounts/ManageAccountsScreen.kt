@@ -14,15 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.eywa.projectnummi.components.ItemList
-import com.eywa.projectnummi.components.account.AccountItem
-import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialog
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.features.manageAccounts.ManageAccountsIntent.*
 import com.eywa.projectnummi.model.providers.AccountProvider
-import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
-import com.eywa.projectnummi.ui.theme.NummiTheme
+import com.eywa.projectnummi.sharedUi.ItemList
+import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.sharedUi.account.AccountItem
+import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialog
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
 fun ManageAccountsScreen(

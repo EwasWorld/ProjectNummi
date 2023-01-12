@@ -24,21 +24,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.eywa.projectnummi.common.DateTimeFormat
-import com.eywa.projectnummi.common.asCurrency
-import com.eywa.projectnummi.common.div100String
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
 import com.eywa.projectnummi.model.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.navigation.NummiNavRoute
-import com.eywa.projectnummi.ui.components.CornerTriangleBox
-import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
-import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
-import com.eywa.projectnummi.ui.theme.NummiTheme
-import com.eywa.projectnummi.ui.theme.colors.BaseColor
+import com.eywa.projectnummi.sharedUi.CornerTriangleBox
+import com.eywa.projectnummi.sharedUi.CornerTriangleShapeState
+import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.theme.NummiTheme
+import com.eywa.projectnummi.theme.colors.BaseColor
+import com.eywa.projectnummi.utils.DateTimeFormat
+import com.eywa.projectnummi.utils.asCurrency
+import com.eywa.projectnummi.utils.div100String
 import kotlinx.coroutines.launch
 
 

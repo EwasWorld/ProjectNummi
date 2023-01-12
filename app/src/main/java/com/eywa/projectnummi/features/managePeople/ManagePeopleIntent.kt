@@ -1,9 +1,9 @@
 package com.eywa.projectnummi.features.managePeople
 
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
-import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogIntent
 
 sealed class ManagePeopleIntent {
     data class PersonClicked(val person: Person) : ManagePeopleIntent()

@@ -1,7 +1,7 @@
 package com.eywa.projectnummi.model.providers
 
-import com.eywa.projectnummi.common.ColorUtils
 import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.utils.ColorUtils
 
 object CategoryProvider {
     val basic = listOf(

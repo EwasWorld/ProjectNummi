@@ -15,7 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.navigation.toNummiNavRoute
-import com.eywa.projectnummi.ui.theme.NummiTheme
+import com.eywa.projectnummi.theme.NummiTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

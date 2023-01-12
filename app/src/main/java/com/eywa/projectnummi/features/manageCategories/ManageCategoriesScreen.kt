@@ -11,15 +11,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.eywa.projectnummi.components.ItemList
-import com.eywa.projectnummi.components.category.CategoryItem
-import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialog
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
 import com.eywa.projectnummi.model.providers.CategoryProvider
-import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
-import com.eywa.projectnummi.ui.theme.NummiTheme
+import com.eywa.projectnummi.sharedUi.ItemList
+import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.sharedUi.category.CategoryItem
+import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialog
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
 fun ManageCategoriesScreen(

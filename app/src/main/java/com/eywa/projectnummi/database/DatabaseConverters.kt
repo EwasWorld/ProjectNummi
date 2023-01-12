@@ -3,8 +3,8 @@ package com.eywa.projectnummi.database
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.room.TypeConverter
-import com.eywa.projectnummi.common.DateTimeFormat
-import com.eywa.projectnummi.common.DateUtils
+import com.eywa.projectnummi.utils.DateTimeFormat
+import com.eywa.projectnummi.utils.DateUtils
 import java.util.*
 
 class DatabaseConverters {

@@ -2,16 +2,16 @@ package com.eywa.projectnummi.features.manageCategories
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogIntent
-import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogIntent
-import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialogState
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDefaultOption
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogIntent
-import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialogState
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
 import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogIntent
+import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
+import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDefaultOption
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent
+import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

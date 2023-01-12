@@ -1,7 +1,7 @@
 package com.eywa.projectnummi
 
-import com.eywa.projectnummi.common.Cartesian
-import com.eywa.projectnummi.common.Polar
+import com.eywa.projectnummi.utils.Cartesian
+import com.eywa.projectnummi.utils.Polar
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

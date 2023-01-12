@@ -18,8 +18,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.eywa.projectnummi.R
 import com.eywa.projectnummi.navigation.NummiNavRoute
-import com.eywa.projectnummi.ui.theme.NummiTheme
-import com.eywa.projectnummi.ui.utils.NummiIconInfo
+import com.eywa.projectnummi.sharedUi.utils.NummiIconInfo
+import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
 fun NummiBottomNav(

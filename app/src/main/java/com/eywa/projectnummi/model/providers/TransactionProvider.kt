@@ -1,8 +1,8 @@
 package com.eywa.projectnummi.model.providers
 
-import com.eywa.projectnummi.common.providers.DateProvider
 import com.eywa.projectnummi.model.Amount
 import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.utils.providers.DateProvider
 
 object TransactionProvider {
     val basic = listOf(
