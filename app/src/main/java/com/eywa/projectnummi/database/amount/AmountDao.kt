@@ -13,7 +13,7 @@ interface AmountDao {
     suspend fun insert(vararg amounts: DatabaseAmount)
 
     @Delete
-    suspend fun delete(amount: DatabaseAmount)
+    suspend fun delete(vararg amount: DatabaseAmount)
 
     @Update
     suspend fun update(vararg amounts: DatabaseAmount)

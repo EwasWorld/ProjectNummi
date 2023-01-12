@@ -17,6 +17,7 @@ import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
 import com.eywa.projectnummi.model.Account
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -91,22 +92,7 @@ class AddTransactionsViewModel @Inject constructor(
                         people = it.people,
                 )
             }
-            Submit -> viewModelScope.launch {
-                val transaction = state.value.takeIf { it.name.isNotBlank() }?.asTransaction()
-                        ?: return@launch
-
-                transactionRepo.insert(
-                        transaction.asDbTransaction(),
-                        transaction.amount.map { it.asDatabaseAmount(null) },
-                )
-                _state.update {
-                    it.copy(
-                            name = "",
-                            isOutgoing = true,
-                            amountRows = listOf(AmountInputState()),
-                    )
-                }
-            }
+            Submit -> submit()
 
             AddAmountRow ->
                 _state.update { it.copy(amountRows = it.amountRows.plus(it.amountRows.last().copy(amount = ""))) }
@@ -118,6 +104,40 @@ class AddTransactionsViewModel @Inject constructor(
             Split -> {
                 if (_state.value.amountRows.size > 1) return
                 openSelectPersonDialog(null, SelectPersonDialogPurpose.SPLIT)
+            }
+        }
+    }
+
+    private fun submit() = viewModelScope.launch {
+        fun Transaction.getDbAmounts(id: Int?) = amount.map { it.asDatabaseAmount(id) }
+
+        val transaction = state.value
+                .takeIf { it.name.isNotBlank() }
+                ?.asTransaction()
+                ?.takeIf { it.amount.isNotEmpty() }
+                ?: return@launch
+
+        if (state.value.isEditing) {
+            val originalTransaction = state.value.editing!!
+            transactionRepo.update(
+                    transaction.asDbTransaction(),
+                    transaction.getDbAmounts(originalTransaction.id),
+                    originalTransaction.asDbTransaction(),
+                    originalTransaction.getDbAmounts(originalTransaction.id),
+            )
+            _state.update { it.copy(isEditComplete = true) }
+        }
+        else {
+            transactionRepo.insert(
+                    transaction.asDbTransaction(),
+                    transaction.getDbAmounts(null),
+            )
+            _state.update {
+                it.copy(
+                        name = "",
+                        isOutgoing = true,
+                        amountRows = listOf(AmountInputState()),
+                )
             }
         }
     }

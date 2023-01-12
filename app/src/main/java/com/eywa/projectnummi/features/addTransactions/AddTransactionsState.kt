@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.common.DateUtils
+import com.eywa.projectnummi.common.div100String
 import com.eywa.projectnummi.components.account.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.components.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.components.person.createPersonDialog.CreatePersonDialogState
@@ -9,9 +10,12 @@ import java.util.*
 import kotlin.math.roundToInt
 
 data class AddTransactionsState(
-        val date: Calendar = DateUtils.currentDate(),
-        val name: String = "",
-        val isOutgoing: Boolean = true,
+        val editing: Transaction? = null,
+        val isEditComplete: Boolean = false,
+
+        val date: Calendar = editing?.date ?: DateUtils.currentDate(),
+        val name: String = editing?.name ?: "",
+        val isOutgoing: Boolean = editing?.isOutgoing ?: true,
 
         /**
          * null for not loaded
@@ -31,11 +35,12 @@ data class AddTransactionsState(
          * null for not loaded
          */
         val accounts: List<Account>? = null,
-        val accountId: Int? = null,
+        val accountId: Int? = editing?.account?.id,
         val createAccountDialogState: CreateAccountDialogState? = null,
         val selectAccountDialogIsShown: Boolean = false,
 
-        val amountRows: List<AmountInputState> = listOf(AmountInputState()),
+        val amountRows: List<AmountInputState> =
+                editing?.amount?.map { AmountInputState(it) } ?: listOf(AmountInputState()),
         val currentRow: Int? = null,
 ) {
     init {
@@ -52,6 +57,7 @@ data class AddTransactionsState(
     }
 
     val account = accountId?.let { accounts?.find { it.id == accountId } }
+    val isEditing = editing != null
 
     fun getCategory(categoryId: Int?) = categoryId?.let { id -> categories?.find { it.id == id } }
     fun getPerson(personId: Int?) = personId?.let { id -> people?.find { it.id == id } }
@@ -59,21 +65,24 @@ data class AddTransactionsState(
     private fun String.asPennyValue() = (this.toDouble() * 100).roundToInt()
 
     fun asTransaction() = Transaction(
-            id = 0,
+            id = editing?.id ?: 0,
             date = date,
             name = name,
-            amount = amountRows.mapNotNull {
+            amount = amountRows.mapNotNull { amountState ->
                 // TODO ERROR_HANDLING Prevent same category/person combination appearing more than once
-                if (it.amount.isBlank()) return@mapNotNull null
+                if (amountState.amount.isBlank()) return@mapNotNull null
+                val oldAmount = editing?.amount
+                        ?.find { it.category?.id == amountState.categoryId && it.person?.id == amountState.personId }
                 Amount(
-                        id = 0,
-                        amount = it.amount.asPennyValue(),
-                        category = getCategory(it.categoryId),
-                        person = getPerson(it.personId),
+                        id = oldAmount?.id ?: 0,
+                        amount = amountState.amount.asPennyValue(),
+                        category = getCategory(amountState.categoryId),
+                        person = getPerson(amountState.personId),
                 )
             },
             isOutgoing = isOutgoing,
             account = account,
+            order = editing?.order ?: 1,
     )
 }
 
@@ -81,7 +90,9 @@ data class AmountInputState(
         val amount: String = "",
         val categoryId: Int? = null,
         val personId: Int? = null,
-)
+) {
+    constructor(amount: Amount) : this(amount.amount.div100String(), amount.category?.id, amount.person?.id)
+}
 
 enum class SelectPersonDialogPurpose {
     /**

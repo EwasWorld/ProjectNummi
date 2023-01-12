@@ -20,7 +20,7 @@ fun String.toMainNavRoute() =
 enum class MainNavRoute : NavRoute {
     ADD_TRANSACTIONS {
         @Composable
-        override fun Screen(navController: NavHostController) = AddTransactionsScreen()
+        override fun Screen(navController: NavHostController) = AddTransactionsScreen(navController)
 
         override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?): Boolean {
             return true
@@ -28,9 +28,7 @@ enum class MainNavRoute : NavRoute {
     },
     EDIT_TRANSACTIONS {
         @Composable
-        override fun Screen(navController: NavHostController) {
-            TODO("Implement")
-        }
+        override fun Screen(navController: NavHostController) = AddTransactionsScreen(navController)
     },
     VIEW_TRANSACTIONS {
         @Composable

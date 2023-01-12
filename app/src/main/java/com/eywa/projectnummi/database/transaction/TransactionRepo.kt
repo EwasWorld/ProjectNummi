@@ -11,7 +11,6 @@ class TransactionRepo(
 ) {
     fun getFull() = transactionDao.getFull()
     suspend fun delete(transaction: DatabaseTransaction) = transactionDao.delete(transaction)
-    suspend fun update(vararg transactions: DatabaseTransaction) = transactionDao.update(*transactions)
 
     /**
      * Sets [DatabaseTransaction.order] and [DatabaseAmount.transactionId] before inserting
@@ -23,6 +22,47 @@ class TransactionRepo(
         amountDao.insert(*amounts.map { it.copy(transactionId = id) }.toTypedArray())
     }
 
+    /**
+     * - Updates [updatedTransaction] (sets [DatabaseTransaction.order] if [DatabaseTransaction.date] has changed)
+     * - Inserts all items in [updatedAmounts] with an id of 0, updates all others
+     * - Deletes all [originalAmounts] whose ids don't appear in [updatedAmounts]
+     */
+    @Transaction
+    suspend fun update(
+            updatedTransaction: DatabaseTransaction,
+            updatedAmounts: List<DatabaseAmount>,
+            originalTransaction: DatabaseTransaction,
+            originalAmounts: List<DatabaseAmount>,
+    ) {
+        require(updatedTransaction.id == originalTransaction.id) { "Transaction ids don't match" }
+        require(updatedAmounts.all { it.transactionId == originalTransaction.id }) { "updatedAmounts transactionIds don't match" }
+        require(originalAmounts.all { it.transactionId == originalTransaction.id }) { "originalAmounts transactionIds don't match" }
+        require(originalAmounts.none { it.id == 0 }) { "originalAmounts has 0 id item" }
+
+        /*
+         * Transaction (update order if necessary)
+         */
+        var finalTransaction = updatedTransaction
+        if (updatedTransaction.date != originalTransaction.date) {
+            val maxOrder = transactionDao.getMaxOrder(updatedTransaction.date).first() ?: 0
+            finalTransaction = finalTransaction.copy(order = maxOrder + 1)
+        }
+        transactionDao.update(finalTransaction)
+
+        /*
+         * Amount (delete unnecessary and update the rest)
+         */
+        val usedIds = updatedAmounts.map { it.id }
+        val toDelete = originalAmounts.filter { !usedIds.contains(it.id) }
+        val (toInsert, toUpdate) = updatedAmounts.partition { it.id == 0 }
+        amountDao.delete(*toDelete.toTypedArray())
+        amountDao.insert(*toInsert.toTypedArray())
+        amountDao.update(*toUpdate.toTypedArray())
+    }
+
+    /**
+     * Swaps the [DatabaseTransaction.order]s of [transaction0] and [transaction1]
+     */
     @Transaction
     private suspend fun swapOrder(transaction0: DatabaseTransaction, transaction1: DatabaseTransaction) {
         transactionDao.update(transaction0.copy(order = -1))
@@ -30,6 +70,11 @@ class TransactionRepo(
         transactionDao.update(transaction0.copy(order = transaction1.order))
     }
 
+    /**
+     * Swaps the [DatabaseTransaction.order] of [transaction] with that of the [DatabaseTransaction] that has
+     * the next lowest [DatabaseTransaction.order] and the same [DatabaseTransaction.date].
+     * Does nothing if there is no [DatabaseTransaction] matches this criteria
+     */
     @Transaction
     suspend fun decreaseOrder(transaction: DatabaseTransaction) {
         val swapWith = transactionDao.getOrderAbove(transaction.date, transaction.order).first()
@@ -37,6 +82,11 @@ class TransactionRepo(
         swapOrder(transaction, swapWith)
     }
 
+    /**
+     * Swaps the [DatabaseTransaction.order] of [transaction] with that of the [DatabaseTransaction] that has
+     * the next highest [DatabaseTransaction.order] and the same [DatabaseTransaction.date].
+     * Does nothing if there is no [DatabaseTransaction] matches this criteria
+     */
     @Transaction
     suspend fun increaseOrder(transaction: DatabaseTransaction) {
         val swapWith = transactionDao.getOrderBelow(transaction.date, transaction.order).first()

@@ -67,7 +67,7 @@ fun ViewTransactionsScreen(
 ) {
     val state = viewModel.state.collectAsState()
 
-    LaunchedEffect(state) {
+    LaunchedEffect(state.value.editTransactionInitiatedFor) {
         launch {
             if (state.value.editTransactionInitiatedFor != null) {
                 navController.navigate(MainNavRoute.EDIT_TRANSACTIONS.routeBase)

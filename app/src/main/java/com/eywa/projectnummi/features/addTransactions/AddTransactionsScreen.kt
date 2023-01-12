@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -25,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.eywa.projectnummi.R
 import com.eywa.projectnummi.common.DateTimeFormat
 import com.eywa.projectnummi.common.asCurrency
@@ -51,14 +53,25 @@ import com.eywa.projectnummi.ui.components.NummiTextField
 import com.eywa.projectnummi.ui.components.stripNewLines
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.theme.asClickableStyle
+import kotlinx.coroutines.launch
 import java.util.*
 
 
 @Composable
 fun AddTransactionsScreen(
+        navController: NavController,
         viewModel: AddTransactionsViewModel = hiltViewModel(),
 ) {
     val state = viewModel.state.collectAsState()
+
+    LaunchedEffect(state.value.isEditComplete) {
+        launch {
+            if (state.value.isEditComplete) {
+                navController.popBackStack()
+            }
+        }
+    }
+
     AddTransactionsScreen(
             state = state.value,
             listener = { viewModel.handle(it) },
