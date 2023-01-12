@@ -185,7 +185,7 @@ private fun AmountRow(
                         onClick = { listener(StartChangeCategory(rowIndex)) },
                 )
                 PersonItem(
-                        person = state.getPerson(rowState.categoryId),
+                        person = state.getPerson(rowState.personId),
                         onClick = { listener(StartChangePerson(rowIndex)) },
                 )
             }
