@@ -10,6 +10,10 @@ interface TransactionDao {
     @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME}")
     fun getFull(): Flow<List<FullDatabaseTransaction>>
 
+    @Transaction
+    @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE id = :id")
+    fun getFull(id: Int): Flow<FullDatabaseTransaction>
+
     /**
      * @return max [DatabaseTransaction.order] where [DatabaseTransaction.date] == [date]
      */

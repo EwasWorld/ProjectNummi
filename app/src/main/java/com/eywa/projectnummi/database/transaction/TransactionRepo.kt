@@ -10,6 +10,7 @@ class TransactionRepo(
         private val amountDao: AmountDao,
 ) {
     fun getFull() = transactionDao.getFull()
+    fun getFull(id: Int) = transactionDao.getFull(id)
     suspend fun delete(transaction: DatabaseTransaction) = transactionDao.delete(transaction)
 
     /**

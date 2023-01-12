@@ -11,9 +11,10 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.navigation.NavArgument
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.eywa.projectnummi.navigation.NummiNavRoute
+import com.eywa.projectnummi.navigation.toNummiNavRoute
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,9 +23,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val navRoutes = MainNavRoute.values()
+        val navRoutes = NummiNavRoute.values()
         val duplicateRoutes = navRoutes
-                .groupBy { it.name.lowercase() }
+                .groupBy { it.routeBase.lowercase() }
                 .filter { (_, v) -> v.size > 1 }
                 .keys
         if (duplicateRoutes.isNotEmpty()) {
@@ -46,11 +47,11 @@ class MainActivity : ComponentActivity() {
                             NummiBottomNav(
                                     currentRoute = currentRoute,
                                     onClick = {
-                                        navController.navigate(it.routeBase) {
+                                        it.navigate(navController) {
                                             fun saveState(route: String?, args: Map<String, NavArgument>?) =
                                                     it.routeBase != currentRoute
                                                             && route
-                                                            ?.toMainNavRoute()
+                                                            ?.toNummiNavRoute()
                                                             ?.saveStateOnNavigate(args)
                                                             ?: false
 
@@ -67,13 +68,11 @@ class MainActivity : ComponentActivity() {
                 ) { padding ->
                     NavHost(
                             navController = navController,
-                            startDestination = MainNavRoute.VIEW_TRANSACTIONS.routeBase,
+                            startDestination = NummiNavRoute.VIEW_TRANSACTIONS.routeBase,
                             modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
                     ) {
                         navRoutes.forEach { route ->
-                            composable(route.routeBase) {
-                                route.Screen(navController = navController)
-                            }
+                            route.create(this, navController)
                         }
                     }
                 }

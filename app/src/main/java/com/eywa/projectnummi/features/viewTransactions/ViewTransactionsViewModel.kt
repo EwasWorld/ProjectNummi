@@ -87,6 +87,7 @@ class ViewTransactionsViewModel @Inject constructor(
                 }
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
+            NavigatedToEditItem -> _state.update { it.copy(editTransactionInitiatedFor = null) }
         }
     }
 

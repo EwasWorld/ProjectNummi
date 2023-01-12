@@ -10,35 +10,21 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.eywa.projectnummi.R
+import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.ui.theme.NummiTheme
 import com.eywa.projectnummi.ui.utils.NummiIconInfo
 
 @Composable
 fun NummiBottomNav(
-        navController: NavController,
-        onClick: (destination: NavRoute) -> Unit,
-) {
-    val current by navController.currentBackStackEntryAsState()
-    NummiBottomNav(
-            currentRoute = current?.destination?.route,
-            onClick = onClick,
-    )
-}
-
-@Composable
-fun NummiBottomNav(
         currentRoute: String?,
-        onClick: (destination: NavRoute) -> Unit,
+        onClick: (destination: NummiNavRoute) -> Unit,
 ) {
     BottomNavigation(
             backgroundColor = NummiTheme.colors.navBar.main,
@@ -49,7 +35,7 @@ fun NummiBottomNav(
                 selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Add),
                 label = "Add",
                 contentDescription = "Add transactions",
-                destination = MainNavRoute.ADD_TRANSACTIONS,
+                destination = NummiNavRoute.ADD_TRANSACTIONS,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -58,7 +44,7 @@ fun NummiBottomNav(
                 selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.List),
                 label = "View",
                 contentDescription = "View transactions",
-                destination = MainNavRoute.VIEW_TRANSACTIONS,
+                destination = NummiNavRoute.VIEW_TRANSACTIONS,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -67,7 +53,7 @@ fun NummiBottomNav(
                 selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_category_baseline),
                 label = "Categories",
                 contentDescription = "Manage categories",
-                destination = MainNavRoute.MANAGE_CATEGORIES,
+                destination = NummiNavRoute.MANAGE_CATEGORIES,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -76,7 +62,7 @@ fun NummiBottomNav(
                 selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Person),
                 label = "People",
                 contentDescription = "Manage people",
-                destination = MainNavRoute.MANAGE_PEOPLE,
+                destination = NummiNavRoute.MANAGE_PEOPLE,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -85,7 +71,7 @@ fun NummiBottomNav(
                 selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_account_baseline),
                 label = "Accounts",
                 contentDescription = "Manage accounts",
-                destination = MainNavRoute.MANAGE_ACCOUNTS,
+                destination = NummiNavRoute.MANAGE_ACCOUNTS,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -100,9 +86,9 @@ fun RowScope.NummiBottomNavItem(
         label: String,
         contentDescription: String,
         badgeContent: String? = null,
-        destination: NavRoute,
+        destination: NummiNavRoute,
         currentRoute: String?,
-        onClick: (destination: NavRoute) -> Unit,
+        onClick: (destination: NummiNavRoute) -> Unit,
 ) = NummiBottomNavItem(
         icon = icon,
         selectedIcon = selectedIcon,
@@ -125,9 +111,9 @@ fun RowScope.NummiBottomNavItem(
         label: String,
         contentDescription: String,
         badgeContent: String? = null,
-        destinations: Iterable<NavRoute>,
+        destinations: Iterable<NummiNavRoute>,
         currentRoute: String?,
-        onClick: (destination: NavRoute) -> Unit,
+        onClick: (destination: NummiNavRoute) -> Unit,
 ) {
     require(destinations.any()) { "No destinations for nav button" }
     val isSelected = destinations.map { it.routeBase }.contains(currentRoute)

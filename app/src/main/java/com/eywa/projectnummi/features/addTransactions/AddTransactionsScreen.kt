@@ -115,7 +115,7 @@ fun AddTransactionsScreen(
             AddRowButton { listener(AddAmountRow) }
         }
 
-        FinalButtons({ listener(Submit) }, { listener(Clear) })
+        FinalButtons(state.isEditing, listener)
     }
 }
 
@@ -348,8 +348,8 @@ private fun OutgoingInput(
 
 @Composable
 private fun FinalButtons(
-        onCreateClick: () -> Unit,
-        onClearClick: () -> Unit,
+        isEditing: Boolean,
+        listener: (AddTransactionsIntent) -> Unit,
 ) {
     Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -358,19 +358,19 @@ private fun FinalButtons(
         Button(
                 colors = NummiTheme.colors.secondaryTextButton(),
                 elevation = NummiTheme.dimens.buttonElevationNone(),
-                onClick = onClearClick,
+                onClick = { listener(Clear) },
         ) {
             Text(
-                    text = "Clear"
+                    text = if (isEditing) "Reset" else "Clear"
             )
         }
         Button(
                 colors = NummiTheme.colors.generalButton(),
                 shape = NummiTheme.shapes.generalButton,
-                onClick = onCreateClick,
+                onClick = { listener(Submit) },
         ) {
             Text(
-                    text = "Create"
+                    text = if (isEditing) "Update" else "Create"
             )
         }
     }

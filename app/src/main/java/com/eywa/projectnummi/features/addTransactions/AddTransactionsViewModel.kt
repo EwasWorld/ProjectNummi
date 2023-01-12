@@ -1,5 +1,7 @@
 package com.eywa.projectnummi.features.addTransactions
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.common.div100String
@@ -18,9 +20,11 @@ import com.eywa.projectnummi.model.Account
 import com.eywa.projectnummi.model.Category
 import com.eywa.projectnummi.model.Person
 import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.navigation.NummiNavArgument
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.*
@@ -29,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddTransactionsViewModel @Inject constructor(
         db: NummiDatabase,
+        savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val categoryRepo = db.categoryRepo()
     private val personRepo = db.personRepo()
@@ -39,6 +44,12 @@ class AddTransactionsViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
+        savedStateHandle.get<String>(NummiNavArgument.TRANSACTION_ID.toArgName())?.let { transactionId ->
+            viewModelScope.launch {
+                val transaction = transactionRepo.getFull(transactionId.toInt()).first()
+                _state.update { it.copy(editing = Transaction(transaction)).resetState() }
+            }
+        }
         viewModelScope.launch {
             categoryRepo.get().collect { categories ->
                 _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
@@ -57,6 +68,7 @@ class AddTransactionsViewModel @Inject constructor(
     }
 
     fun handle(action: AddTransactionsIntent) {
+        Log.d("AddTransactionsIntent", "Handler invoked for " + action::class.simpleName)
         when (action) {
             is ValueChangedIntent -> handleValueChangedIntent(action)
 
@@ -86,12 +98,7 @@ class AddTransactionsViewModel @Inject constructor(
             is CreateAccountDialogAction -> handleCreateAccountIntent(action.action)
             is SelectAccountDialogAction -> handleSelectAccountIntent(action.action)
 
-            Clear -> _state.update {
-                AddTransactionsState(
-                        categories = it.categories,
-                        people = it.people,
-                )
-            }
+            Clear -> _state.update { it.resetState() }
             Submit -> submit()
 
             AddAmountRow ->
@@ -107,6 +114,13 @@ class AddTransactionsViewModel @Inject constructor(
             }
         }
     }
+
+    private fun AddTransactionsState.resetState() = AddTransactionsState(
+            editing = editing,
+            categories = categories,
+            people = people,
+            accounts = accounts,
+    )
 
     private fun submit() = viewModelScope.launch {
         fun Transaction.getDbAmounts(id: Int?) = amount.map { it.asDatabaseAmount(id) }

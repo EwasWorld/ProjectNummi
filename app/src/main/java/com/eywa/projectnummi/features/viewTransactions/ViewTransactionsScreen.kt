@@ -30,9 +30,10 @@ import com.eywa.projectnummi.common.div100String
 import com.eywa.projectnummi.components.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.components.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
-import com.eywa.projectnummi.main.MainNavRoute
 import com.eywa.projectnummi.model.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
+import com.eywa.projectnummi.navigation.NummiNavArgument
+import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.ui.components.CornerTriangleBox
 import com.eywa.projectnummi.ui.components.CornerTriangleShapeState
 import com.eywa.projectnummi.ui.components.NummiScreenPreviewWrapper
@@ -69,8 +70,11 @@ fun ViewTransactionsScreen(
 
     LaunchedEffect(state.value.editTransactionInitiatedFor) {
         launch {
-            if (state.value.editTransactionInitiatedFor != null) {
-                navController.navigate(MainNavRoute.EDIT_TRANSACTIONS.routeBase)
+            state.value.editTransactionInitiatedFor?.let {
+                viewModel.handle(NavigatedToEditItem)
+                NummiNavRoute.EDIT_TRANSACTIONS.navigate(
+                        navController, mapOf(NummiNavArgument.TRANSACTION_ID to it.id.toString())
+                )
             }
         }
     }
