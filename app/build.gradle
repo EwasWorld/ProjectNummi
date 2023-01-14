@@ -5,16 +5,43 @@ plugins {
     id 'com.google.dagger.hilt.android'
 }
 
+ext.minimumSdkVersion = 21 // 2 digits
+ext.versionMajor = 0 // 2 digits
+ext.versionMinor = 1 // 2 digits
+ext.versionPatch = 0 // 1 digit
+ext.extraInfo = 0 // 2 digits (currently unused)
+ext.versionClassifier = null // Extra info to be appended to version name e.g. alpha (used for version name)
+ext.isSnapshot = false // Will append SNAPSHOT to version name
+
+@SuppressWarnings('GrMethodMayBeStatic')
+private Integer generateVersionCode() {
+    // There is one digit spare between min sdk and major version
+    return ext.minimumSdkVersion * 10000000 + ext.extraInfo * 100000 + ext.versionMajor * 1000 + ext.versionMinor * 10 + ext.versionPatch
+}
+
+@SuppressWarnings('GrMethodMayBeStatic')
+private String generateVersionName() {
+    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
+    if (ext.versionClassifier == null && ext.isSnapshot) {
+        ext.versionClassifier = "SNAPSHOT"
+    }
+
+    if (ext.versionClassifier != null) {
+        versionName += "-" + ext.versionClassifier
+    }
+    return versionName
+}
+
 android {
     namespace 'com.eywa.projectnummi'
     compileSdk 32
 
     defaultConfig {
         applicationId "com.eywa.projectnummi"
-        minSdk 21
+        minSdk project.ext.minimumSdkVersion
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
