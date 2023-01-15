@@ -5,7 +5,7 @@ import com.eywa.projectnummi.model.Account
 object AccountProvider {
     val basic = listOf(
             "Cash" to "Cash",
-            "Nationwide" to "Debit",
-            "AMEX" to "Credit",
-    ).mapIndexed { index, (name, type) -> Account(index, name, type) }
+            "NatWest" to "Debit card",
+            "AMEX" to "Credit card",
+    ).mapIndexed { index, (name, type) -> Account(index + 1, name, type) }
 }

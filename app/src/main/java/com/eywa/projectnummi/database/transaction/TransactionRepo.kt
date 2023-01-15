@@ -14,12 +14,13 @@ class TransactionRepo(
     suspend fun delete(transaction: DatabaseTransaction) = transactionDao.delete(transaction)
 
     /**
-     * Sets [DatabaseTransaction.order] and [DatabaseAmount.transactionId] before inserting
+     * Sets [DatabaseTransaction.order] if <= 0 and [DatabaseAmount.transactionId] before inserting
      */
     @Transaction
     suspend fun insert(transaction: DatabaseTransaction, amounts: List<DatabaseAmount>) {
         val maxOrder = transactionDao.getMaxOrder(transaction.date).first() ?: 0
-        val id = transactionDao.insert(transaction.copy(order = maxOrder + 1)).toInt()
+        val newOrder = transaction.order.takeIf { it > 0 } ?: (maxOrder + 1)
+        val id = transactionDao.insert(transaction.copy(order = newOrder)).toInt()
         amountDao.insert(*amounts.map { it.copy(transactionId = id) }.toTypedArray())
     }
 

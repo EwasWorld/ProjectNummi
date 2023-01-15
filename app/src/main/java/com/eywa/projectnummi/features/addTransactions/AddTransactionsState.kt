@@ -82,7 +82,7 @@ data class AddTransactionsState(
             },
             isOutgoing = isOutgoing,
             account = account,
-            order = editing?.order ?: 1,
+            order = editing?.order ?: -1,
     )
 }
 

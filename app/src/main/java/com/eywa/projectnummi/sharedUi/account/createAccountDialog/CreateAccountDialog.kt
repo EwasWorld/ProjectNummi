@@ -26,7 +26,7 @@ fun CreateAccountDialog(
                 text = state?.name ?: "",
                 onTextChanged = { listener(NameChanged(it)) },
                 label = "Name",
-                placeholderText = "Nationwide main",
+                placeholderText = "NatWest main",
         )
         NummiTextField(
                 text = state?.type ?: "",

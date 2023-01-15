@@ -9,5 +9,6 @@ object CategoryProvider {
             "Groceries" to 0.33f,
             "Income" to 0.66f,
             "Work" to 0.8f,
-    ).mapIndexed { index, (name, hue) -> Category(index, name, ColorUtils.asCategoryColor(hue)) }
+            "Utilities" to 0.2f,
+    ).mapIndexed { index, (name, hue) -> Category(index + 1, name, ColorUtils.asCategoryColor(hue)) }
 }

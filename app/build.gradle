@@ -79,6 +79,21 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    productFlavors {
+        flavorDimensions("environment")
+        create("local") {
+            dimension = "environment"
+        }
+        create("live") {
+            dimension = "environment"
+        }
+    }
+    variantFilter { variant ->
+        def names = variant.flavors*.name
+        if (variant.buildType.name == 'release' && !names.contains("live")) {
+            setIgnore(true)
+        }
+    }
 }
 
 dependencies {

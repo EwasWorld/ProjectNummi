@@ -123,8 +123,6 @@ class AddTransactionsViewModel @Inject constructor(
     )
 
     private fun submit() = viewModelScope.launch {
-        fun Transaction.getDbAmounts(id: Int?) = amount.map { it.asDatabaseAmount(id) }
-
         val transaction = state.value
                 .takeIf { it.name.isNotBlank() }
                 ?.asTransaction()

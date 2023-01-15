@@ -7,5 +7,5 @@ object PeopleProvider {
             "Person 1",
             "Person 2",
             "Person 3",
-    ).mapIndexed { index, name -> Person(index, name) }
+    ).mapIndexed { index, name -> Person(index + 1, name) }
 }
