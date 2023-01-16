@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.model.NamedItem
@@ -51,18 +52,24 @@ fun <T : NamedItem> TabSwitcher(
                     val isSelected = selectedItem == item
                     val colors = NummiTheme.colors.getPillColor(isSelected)
 
-                    Text(
-                            text = item.getItemName(),
-                            color = colors.content,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
+                    Box(
+                            contentAlignment = Alignment.Center,
                             modifier = Modifier
                                     .selectable(isSelected, role = Role.Tab) { itemClickedListener(item) }
                                     .weight(1f)
                                     .background(colors.main)
                                     .fillMaxHeight()
                                     .padding(10.dp)
-                    )
+                    ) {
+                        Text(
+                                text = item.getItemName(),
+                                color = colors.content,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                     if (index != items.count() - 1) {
                         Divider(
                                 color = NummiTheme.colors.pillSelectorBorder,
