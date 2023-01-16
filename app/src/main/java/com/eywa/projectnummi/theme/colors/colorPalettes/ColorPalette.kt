@@ -31,6 +31,7 @@ data class ColorPalette(
         val divider: Color = Color.LightGray,
 
         val link: Color = BaseColor.BLUE,
+        val pieChartDefault: Color = BaseColor.BASE_SPACE,
 
         val incomingTransaction: Color = BaseColor.GREEN,
         val outgoingTransaction: Color = BaseColor.RED,

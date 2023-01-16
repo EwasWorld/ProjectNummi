@@ -18,7 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -32,9 +31,7 @@ import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
-import com.eywa.projectnummi.sharedUi.NummiDatePicker
-import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
-import com.eywa.projectnummi.sharedUi.NummiTextField
+import com.eywa.projectnummi.sharedUi.*
 import com.eywa.projectnummi.sharedUi.account.AccountItem
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialog
 import com.eywa.projectnummi.sharedUi.account.selectAccountDialog.SelectAccountDialog
@@ -47,10 +44,7 @@ import com.eywa.projectnummi.sharedUi.person.PersonItem
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialog
 import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialog
 import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialogState
-import com.eywa.projectnummi.sharedUi.stripNewLines
 import com.eywa.projectnummi.theme.NummiTheme
-import com.eywa.projectnummi.theme.asClickableStyle
-import com.eywa.projectnummi.utils.DateTimeFormat
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
 import kotlinx.coroutines.launch
@@ -222,8 +216,9 @@ private fun MainInfo(
                     onIncrement = { listener(DateIncremented(it)) },
                     onChange = { listener(DateChanged(it)) },
             )
-            OutgoingInput(
-                    isOutgoing = state.isOutgoing,
+            CheckboxInput(
+                    text = "Outgoing",
+                    isSelected = state.isOutgoing,
                     onClick = { listener(ToggleIsOutgoing) },
             )
         }
@@ -245,12 +240,6 @@ private fun DateInput(
         onIncrement: (Int) -> Unit,
         onChange: (Calendar) -> Unit,
 ) {
-    val context = LocalContext.current
-    val dialogTheme = NummiTheme.colors.dialogThemeId
-    val datePicker by lazy {
-        NummiDatePicker.createDialog(context, date, dialogTheme) { onChange(it) }
-    }
-
     Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -262,10 +251,10 @@ private fun DateInput(
                     tint = NummiTheme.colors.appBackground.content,
             )
         }
-        Text(
-                text = DateTimeFormat.LONG_DATE.format(date),
-                style = NummiTheme.typography.h6.asClickableStyle(),
-                modifier = Modifier.clickable { datePicker.show() }
+        DateText(
+                style = NummiTheme.typography.h6,
+                date = date,
+                onChange = onChange,
         )
         IconButton(onClick = { onIncrement(1) }) {
             Icon(
@@ -322,28 +311,6 @@ private fun AmountInput(
             },
             colors = NummiTheme.colors.outlinedTextField(),
     )
-}
-
-@Composable
-private fun OutgoingInput(
-        isOutgoing: Boolean,
-        onClick: () -> Unit,
-) {
-    Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.clickable(onClick = onClick)
-    ) {
-        Text(
-                text = "Outgoing",
-                color = NummiTheme.colors.appBackground.content,
-        )
-        Checkbox(
-                checked = isOutgoing,
-                onCheckedChange = { onClick() },
-                colors = NummiTheme.colors.generalCheckbox(),
-        )
-    }
 }
 
 @Composable

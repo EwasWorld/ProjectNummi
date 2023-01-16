@@ -135,12 +135,12 @@ fun ViewTransactionsScreen(
                             ),
                             modifier = Modifier.alpha(0.3f)
                     )
-                    if (item.amount.any { it.category != null }) {
+                    if (item.amounts.any { it.category != null }) {
                         CornerTriangleBox(
-                                colors = item.amount.map { it.category?.color }.reversed(),
+                                colors = item.amounts.map { it.category?.color }.reversed(),
                                 state = CornerTriangleShapeState(
                                         isTop = false,
-                                        segmentWeights = item.amount.map { it.amount }.reversed(),
+                                        segmentWeights = item.amounts.map { it.amount }.reversed(),
                                         forceSize = colorTriangleSize,
                                         yScale = 1.5f,
                                         usePercentage = false,
@@ -181,7 +181,7 @@ fun ViewTransactionsScreen(
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
                                 modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)
                         ) {
-                            item.amount.forEach { amount ->
+                            item.amounts.forEach { amount ->
                                 Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                 ) {
@@ -192,7 +192,7 @@ fun ViewTransactionsScreen(
                                                 modifier = Modifier.padding(end = 10.dp)
                                         )
                                     }
-                                    if (amount.person?.id != null || item.amount.size > 1) {
+                                    if (amount.person?.id != null || item.amounts.size > 1) {
                                         Text(
                                                 text = amount.person?.name ?: "Me",
                                                 color = NummiTheme.colors.appBackground.content,
@@ -210,7 +210,7 @@ fun ViewTransactionsScreen(
                                 }
                             }
                         }
-                        if (item.amount.size > 1) {
+                        if (item.amounts.size > 1) {
                             val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
                             Box(
                                     modifier = Modifier
@@ -218,7 +218,7 @@ fun ViewTransactionsScreen(
                                             .padding(end = 6.dp, bottom = 5.dp)
                             ) {
                                 Text(
-                                        text = item.amount.sumOf { it.amount }.div100String().asCurrency(),
+                                        text = item.amounts.sumOf { it.amount }.div100String().asCurrency(),
                                         color = NummiTheme.colors.appBackground.content,
                                         modifier = Modifier
                                                 .padding(bottom = 4.dp)

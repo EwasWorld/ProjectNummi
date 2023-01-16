@@ -16,6 +16,11 @@ fun TextStyle.asClickableStyle() = copy(
 
 // Set of Material typography styles to start with
 val NummiTypography = Typography(
+        h3 = TextStyle(
+                fontFamily = FontFamily.Default,
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
+        ),
         h5 = TextStyle(
                 fontFamily = FontFamily.Default,
                 fontWeight = FontWeight.Bold,

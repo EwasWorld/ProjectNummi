@@ -7,6 +7,7 @@ import com.eywa.projectnummi.features.addTransactions.AddTransactionsScreen
 import com.eywa.projectnummi.features.manageAccounts.ManageAccountsScreen
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesScreen
 import com.eywa.projectnummi.features.managePeople.ManagePeopleScreen
+import com.eywa.projectnummi.features.transactionsSummary.ui.TransactionsSummaryScreen
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsScreen
 
 fun String.toNummiNavRoute() =
@@ -23,9 +24,7 @@ enum class NummiNavRoute : NavRoute {
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
                 AddTransactionsScreen(navController)
 
-        override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?): Boolean {
-            return true
-        }
+        override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?) = true
     },
     EDIT_TRANSACTIONS {
         override val arguments = listOf(
@@ -43,6 +42,14 @@ enum class NummiNavRoute : NavRoute {
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
                 ViewTransactionsScreen(navController)
+    },
+    TRANSACTIONS_SUMMARY {
+        @Composable
+        override fun Screen(navController: NavController, entry: NavBackStackEntry) =
+                TransactionsSummaryScreen()
+
+        // TODO Save state isn't working :(
+        override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?) = true
     },
     MANAGE_CATEGORIES {
         @Composable

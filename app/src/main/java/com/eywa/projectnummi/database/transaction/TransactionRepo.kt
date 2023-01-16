@@ -11,6 +11,20 @@ class TransactionRepo(
 ) {
     fun getFull() = transactionDao.getFull()
     fun getFull(id: Int) = transactionDao.getFull(id)
+    fun get(filters: TransactionsFilters) =
+            transactionDao.get(
+                    from = filters.from,
+                    to = filters.to,
+                    accountIds = filters.selectedAccountIds,
+                    overrideShowAllAccounts = filters.selectedAccountIds.isEmpty(),
+                    categoryIds = filters.selectedCategoryIds,
+                    overrideShowAllCategories = filters.selectedCategoryIds.isEmpty(),
+                    personIds = filters.selectedPersonIds,
+                    overrideShowAllPeople = filters.selectedPersonIds.isEmpty(),
+                    isOutgoing = filters.showOutgoing,
+                    overrideShowInAndOut = filters.showOutgoing == filters.showIncoming,
+            )
+
     suspend fun delete(transaction: DatabaseTransaction) = transactionDao.delete(transaction)
 
     /**

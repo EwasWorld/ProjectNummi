@@ -64,3 +64,12 @@ data class FullDatabaseTransaction(
         )
         val account: DatabaseAccount?,
 )
+
+data class DatabaseTransactionWithFullAccount(
+        @Embedded val transaction: DatabaseTransaction,
+        @Relation(
+                parentColumn = "accountId",
+                entityColumn = "id",
+        )
+        val account: DatabaseAccount?,
+)

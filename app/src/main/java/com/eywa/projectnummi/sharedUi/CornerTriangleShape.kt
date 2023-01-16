@@ -76,7 +76,7 @@ fun BoxScope.CornerTriangleBox(
         segmentModifier: Modifier = Modifier,
         state: CornerTriangleShapeState = CornerTriangleShapeState(),
 ) {
-    require(colors.isNotEmpty()) { "Must provide at least one colour" }
+    if (colors.isEmpty()) return
 
     Box(
             modifier = modifier

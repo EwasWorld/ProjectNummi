@@ -23,4 +23,6 @@ data class Polar(
             r * cos(theta),
             r * sin(theta),
     )
+
+    fun addDegrees(degrees: Float) = copy(theta = Math.toRadians(degrees.toDouble()).toFloat() + theta)
 }

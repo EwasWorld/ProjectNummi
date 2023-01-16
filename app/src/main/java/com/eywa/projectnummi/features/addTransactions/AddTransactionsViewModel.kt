@@ -126,7 +126,7 @@ class AddTransactionsViewModel @Inject constructor(
         val transaction = state.value
                 .takeIf { it.name.isNotBlank() }
                 ?.asTransaction()
-                ?.takeIf { it.amount.isNotEmpty() }
+                ?.takeIf { it.amounts.isNotEmpty() }
                 ?: return@launch
 
         if (state.value.isEditing) {

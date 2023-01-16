@@ -6,7 +6,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.List
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -38,11 +37,18 @@ fun NummiBottomNav(
                 onClick = onClick,
         )
         NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Outlined.List),
-                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.List),
+                icon = NummiIconInfo.VectorIcon(Icons.Default.List),
                 label = "View",
                 contentDescription = "View transactions",
                 destination = NummiNavRoute.VIEW_TRANSACTIONS,
+                currentRoute = currentRoute,
+                onClick = onClick,
+        )
+        NummiBottomNavItem(
+                icon = NummiIconInfo.PainterIcon(R.drawable.ic_donut_large),
+                label = "Summary",
+                contentDescription = "Transactions summary",
+                destination = NummiNavRoute.TRANSACTIONS_SUMMARY,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )

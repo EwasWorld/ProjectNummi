@@ -10,7 +10,7 @@ object TransactionProvider {
                     id = 1,
                     date = DateProvider.getDate(0),
                     name = "Sainsburys",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     1,
                                     CategoryProvider.basic[1],
@@ -23,7 +23,7 @@ object TransactionProvider {
                     id = 2,
                     date = DateProvider.getDate(-1),
                     name = "Gym",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     2,
                                     null,
@@ -37,7 +37,7 @@ object TransactionProvider {
                     id = 3,
                     date = DateProvider.getDate(-2),
                     name = "Salary",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     3,
                                     CategoryProvider.basic[2],
@@ -52,7 +52,7 @@ object TransactionProvider {
                     id = 4,
                     date = DateProvider.getDate(-3),
                     name = "Amazon",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     4,
                                     CategoryProvider.basic[0],
@@ -72,7 +72,7 @@ object TransactionProvider {
                     id = 5,
                     date = DateProvider.getDate(-3),
                     name = "Toaster",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     6,
                                     null,
@@ -87,7 +87,7 @@ object TransactionProvider {
                     id = 6,
                     date = DateProvider.getDate(-4),
                     name = "Water bill",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     7,
                                     CategoryProvider.basic[4],
@@ -102,7 +102,7 @@ object TransactionProvider {
                     id = 7,
                     date = DateProvider.getDate(-4),
                     name = "Electric bill",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     8,
                                     CategoryProvider.basic[4],
@@ -117,7 +117,7 @@ object TransactionProvider {
                     id = 8,
                     date = DateProvider.getDate(-44),
                     name = "Water bill",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     9,
                                     CategoryProvider.basic[4],
@@ -132,7 +132,7 @@ object TransactionProvider {
                     id = 9,
                     date = DateProvider.getDate(-44),
                     name = "Electric bill",
-                    amount = listOf(
+                    amounts = listOf(
                             Amount(
                                     10,
                                     CategoryProvider.basic[4],

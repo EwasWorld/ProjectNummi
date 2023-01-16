@@ -1,6 +1,8 @@
 package com.eywa.projectnummi.model
 
+import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
+import com.eywa.projectnummi.database.transaction.DatabaseTransactionWithFullAccount
 import com.eywa.projectnummi.database.transaction.FullDatabaseTransaction
 import com.eywa.projectnummi.features.viewTransactions.descendingDateTransactionComparator
 import java.util.*
@@ -10,7 +12,7 @@ data class Transaction(
         val id: Int,
         val date: Calendar,
         val name: String,
-        val amount: List<Amount>,
+        val amounts: List<Amount>,
         /**
          * True if money is leaving the account, false if it's entering the account
          */
@@ -27,7 +29,20 @@ data class Transaction(
             id = dbTransaction.transaction.id,
             date = dbTransaction.transaction.date,
             name = dbTransaction.transaction.name,
-            amount = dbTransaction.amounts.map { Amount(it) },
+            amounts = dbTransaction.amounts.map { Amount(it) },
+            isOutgoing = dbTransaction.transaction.isOutgoing,
+            account = dbTransaction.account?.let { Account(it) },
+            order = dbTransaction.transaction.order,
+    )
+
+    constructor(
+            dbTransaction: DatabaseTransactionWithFullAccount,
+            dbAmounts: List<FullDatabaseAmount>,
+    ) : this(
+            id = dbTransaction.transaction.id,
+            date = dbTransaction.transaction.date,
+            name = dbTransaction.transaction.name,
+            amounts = dbAmounts.map { Amount(it) },
             isOutgoing = dbTransaction.transaction.isOutgoing,
             account = dbTransaction.account?.let { Account(it) },
             order = dbTransaction.transaction.order,
@@ -42,7 +57,7 @@ data class Transaction(
             order = order,
     )
 
-    fun getDbAmounts(id: Int? = null) = amount.map { it.asDatabaseAmount(id) }
+    fun getDbAmounts(id: Int? = null) = amounts.map { it.asDatabaseAmount(id) }
 
     override fun getItemName(): String = name
 }

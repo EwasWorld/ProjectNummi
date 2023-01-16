@@ -40,7 +40,7 @@ data class AddTransactionsState(
         val selectAccountDialogIsShown: Boolean = false,
 
         val amountRows: List<AmountInputState> =
-                editing?.amount?.map { AmountInputState(it) } ?: listOf(AmountInputState()),
+                editing?.amounts?.map { AmountInputState(it) } ?: listOf(AmountInputState()),
         val currentRow: Int? = null,
 ) {
     init {
@@ -68,10 +68,10 @@ data class AddTransactionsState(
             id = editing?.id ?: 0,
             date = date,
             name = name,
-            amount = amountRows.mapNotNull { amountState ->
+            amounts = amountRows.mapNotNull { amountState ->
                 // TODO ERROR_HANDLING Prevent same category/person combination appearing more than once
                 if (amountState.amount.isBlank()) return@mapNotNull null
-                val oldAmount = editing?.amount
+                val oldAmount = editing?.amounts
                         ?.find { it.category?.id == amountState.categoryId && it.person?.id == amountState.personId }
                 Amount(
                         id = oldAmount?.id ?: 0,

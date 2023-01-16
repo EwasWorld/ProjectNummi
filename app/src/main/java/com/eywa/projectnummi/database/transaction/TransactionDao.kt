@@ -1,6 +1,8 @@
 package com.eywa.projectnummi.database.transaction
 
 import androidx.room.*
+import com.eywa.projectnummi.database.amount.DatabaseAmount
+import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
@@ -13,6 +15,40 @@ interface TransactionDao {
     @Transaction
     @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE id = :id")
     fun getFull(id: Int): Flow<FullDatabaseTransaction>
+
+    /**
+     * @param overrideShowAllAccounts ignore [accountIds], show all accounts
+     * @param overrideShowAllCategories ignore [categoryIds], show all categories
+     * @param overrideShowAllPeople ignore [personIds], show all people
+     * @param overrideShowInAndOut ignore [isOutgoing], show all transactions
+     */
+    @Transaction
+    @Query(
+            """
+                SELECT *
+                FROM ${DatabaseTransaction.TABLE_NAME} as tran
+                JOIN ${DatabaseAmount.TABLE_NAME} as amount ON tran.id = amount.transactionId
+                WHERE 
+                    tran.date >= :from AND tran.date <= :to 
+                    AND (tran.isOutgoing = :isOutgoing OR :overrideShowInAndOut)
+                    AND (tran.accountId IN (:accountIds) OR :overrideShowAllAccounts)
+                    AND (amount.categoryId IN (:categoryIds) OR :overrideShowAllCategories)
+                    AND (amount.personId IN (:personIds) OR :overrideShowAllPeople)
+                GROUP BY tran.id
+            """
+    )
+    fun get(
+            from: Calendar,
+            to: Calendar,
+            accountIds: List<Int?>,
+            overrideShowAllAccounts: Boolean,
+            categoryIds: List<Int?>,
+            overrideShowAllCategories: Boolean,
+            personIds: List<Int?>,
+            overrideShowAllPeople: Boolean,
+            isOutgoing: Boolean,
+            overrideShowInAndOut: Boolean,
+    ): Flow<Map<DatabaseTransactionWithFullAccount, List<FullDatabaseAmount>>>
 
     /**
      * @return max [DatabaseTransaction.order] where [DatabaseTransaction.date] == [date]

@@ -1,20 +1,16 @@
 package com.eywa.projectnummi.sharedUi.person
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.sharedUi.BorderedItem
 import com.eywa.projectnummi.theme.NummiTheme
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PersonItem(
         person: Person?,
@@ -22,10 +18,7 @@ fun PersonItem(
         contentPadding: PaddingValues = PaddingValues(NummiTheme.dimens.listItemPadding),
         onClick: () -> Unit,
 ) {
-    Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-            shape = NummiTheme.shapes.generalListItem,
+    BorderedItem(
             onClick = onClick,
             modifier = modifier
     ) {
@@ -35,6 +28,33 @@ fun PersonItem(
         ) {
             Text(
                     text = person?.name ?: "Me",
+                    color = NummiTheme.colors.appBackground.content,
+            )
+        }
+    }
+}
+
+@Composable
+fun PersonItem(
+        people: List<Person?>,
+        modifier: Modifier = Modifier,
+        contentPadding: PaddingValues = PaddingValues(NummiTheme.dimens.listItemPadding),
+        onClick: () -> Unit,
+) {
+    BorderedItem(
+            onClick = onClick,
+            modifier = modifier
+    ) {
+        Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(contentPadding)
+        ) {
+            Text(
+                    text = when (people.size) {
+                        0 -> "All people"
+                        1 -> people.first()?.name ?: "Me"
+                        else -> "Various people"
+                    },
                     color = NummiTheme.colors.appBackground.content,
             )
         }
