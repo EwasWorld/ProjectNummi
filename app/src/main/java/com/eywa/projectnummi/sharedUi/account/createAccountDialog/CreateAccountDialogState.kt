@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.sharedUi.account.createAccountDialog
 
-import com.eywa.projectnummi.model.Account
+import com.eywa.projectnummi.model.objects.Account
 
 data class CreateAccountDialogState(
         val editing: Account? = null,

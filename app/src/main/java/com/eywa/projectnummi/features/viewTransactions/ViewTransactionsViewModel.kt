@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDefaultOption

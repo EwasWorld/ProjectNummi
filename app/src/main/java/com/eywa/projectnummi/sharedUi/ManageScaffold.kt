@@ -1,9 +1,6 @@
 package com.eywa.projectnummi.sharedUi
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
@@ -25,6 +22,7 @@ fun <T> ManageScaffold(
         onAddFabClicked: () -> Unit,
         currentTab: ManageTabSwitcherItem,
         onTabSwitcherClicked: (ManageTabSwitcherItem) -> Unit,
+        onItemClicked: (T?) -> Unit,
         itemContent: @Composable (T?) -> Unit,
 ) {
     Column {
@@ -41,8 +39,13 @@ fun <T> ManageScaffold(
             ItemList(
                     items = displayItems,
                     contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-                    itemContent = itemContent,
-            )
+            ) {
+                BorderedItem(
+                        onClick = { onItemClicked(it) },
+                        content = { itemContent(it) },
+                        modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             FloatingActionButton(
                     backgroundColor = NummiTheme.colors.fab.main,

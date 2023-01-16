@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.manageCategories
 
-import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState

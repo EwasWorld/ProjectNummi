@@ -1,5 +1,5 @@
 package com.eywa.projectnummi.model
 
-interface NamedItem {
+interface HasName {
     fun getItemName(): String
 }

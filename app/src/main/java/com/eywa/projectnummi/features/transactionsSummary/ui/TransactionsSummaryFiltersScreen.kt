@@ -18,6 +18,7 @@ import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSumm
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
+import com.eywa.projectnummi.sharedUi.BorderedItem
 import com.eywa.projectnummi.sharedUi.CheckboxInput
 import com.eywa.projectnummi.sharedUi.DateText
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
@@ -71,17 +72,17 @@ fun TransactionsSummaryFiltersScreen(
                     onChange = { listener(ToDateChanged(it)) },
             )
         }
-        AccountItem(
-                accounts = state.selectedAccounts,
+        BorderedItem(
                 onClick = { listener(AccountClicked) },
+                content = { AccountItem(accounts = state.selectedAccounts) },
         )
-        CategoryItem(
-                categories = state.selectedCategories,
+        BorderedItem(
                 onClick = { listener(CategoryClicked) },
+                content = { CategoryItem(categories = state.selectedCategories) },
         )
-        PersonItem(
-                people = state.selectedPeople,
+        BorderedItem(
                 onClick = { listener(PersonClicked) },
+                content = { PersonItem(people = state.selectedPeople) },
         )
         CheckboxInput(
                 text = "Show incoming",

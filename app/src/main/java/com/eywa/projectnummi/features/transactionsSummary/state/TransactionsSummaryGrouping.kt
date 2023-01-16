@@ -1,7 +1,7 @@
 package com.eywa.projectnummi.features.transactionsSummary.state
 
 import androidx.compose.ui.graphics.Color
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.utils.ColorUtils
 
 enum class TransactionsSummaryGrouping {

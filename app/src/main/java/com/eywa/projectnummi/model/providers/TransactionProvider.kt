@@ -1,7 +1,7 @@
 package com.eywa.projectnummi.model.providers
 
-import com.eywa.projectnummi.model.Amount
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Amount
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.utils.providers.DateProvider
 
 object TransactionProvider {

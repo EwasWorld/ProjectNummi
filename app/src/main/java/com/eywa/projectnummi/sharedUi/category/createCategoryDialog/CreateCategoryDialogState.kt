@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.sharedUi.category.createCategoryDialog
 
-import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.utils.ColorUtils
 
 data class CreateCategoryDialogState(

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.manageCategories.ManageCategoriesIntent.*
-import com.eywa.projectnummi.model.Category
+import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent

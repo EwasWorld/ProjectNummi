@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.model.providers
 
-import com.eywa.projectnummi.model.Account
+import com.eywa.projectnummi.model.objects.Account
 
 object AccountProvider {
     val basic = listOf(

@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.managePeople
 
-import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.objects.Person
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogIntent

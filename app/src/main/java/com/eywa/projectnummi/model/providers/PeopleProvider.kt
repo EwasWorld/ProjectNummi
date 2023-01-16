@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.model.providers
 
-import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.objects.Person
 
 object PeopleProvider {
     val basic = listOf(

@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.model.NamedItem
+import com.eywa.projectnummi.model.HasName
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.sharedUi.NummiDialog
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
@@ -20,7 +20,7 @@ import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent.Op
 import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
-fun <I : NamedItem> ManageItemDialog(
+fun <I : HasName> ManageItemDialog(
         isShown: Boolean,
         state: ManageItemDialogState<I>?,
         listener: (ManageItemDialogIntent) -> Unit,

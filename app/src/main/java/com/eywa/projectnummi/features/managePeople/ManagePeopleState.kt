@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.managePeople
 
-import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.objects.Person
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogState

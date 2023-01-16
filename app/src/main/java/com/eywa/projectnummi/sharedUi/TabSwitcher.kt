@@ -17,12 +17,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.eywa.projectnummi.model.NamedItem
+import com.eywa.projectnummi.model.HasName
 import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
 import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
-fun <T : NamedItem> TabSwitcher(
+fun <T : HasName> TabSwitcher(
         items: Iterable<T>,
         selectedItem: T,
         itemClickedListener: (T) -> Unit,

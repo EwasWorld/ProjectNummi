@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.addTransactions
 
-import com.eywa.projectnummi.model.*
+import com.eywa.projectnummi.model.objects.*
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogState
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogState

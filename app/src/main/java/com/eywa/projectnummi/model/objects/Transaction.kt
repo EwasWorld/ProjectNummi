@@ -1,10 +1,11 @@
-package com.eywa.projectnummi.model
+package com.eywa.projectnummi.model.objects
 
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
 import com.eywa.projectnummi.database.transaction.DatabaseTransactionWithFullAccount
 import com.eywa.projectnummi.database.transaction.FullDatabaseTransaction
 import com.eywa.projectnummi.features.viewTransactions.descendingDateTransactionComparator
+import com.eywa.projectnummi.model.HasNameAndId
 import java.util.*
 
 // TODO Transaction.note feature
@@ -22,7 +23,7 @@ data class Transaction(
          * @see [descendingDateTransactionComparator]
          */
         val order: Int = -1,
-) : NamedItem {
+) : HasNameAndId {
     constructor(
             dbTransaction: FullDatabaseTransaction,
     ) : this(
@@ -60,4 +61,6 @@ data class Transaction(
     fun getDbAmounts(id: Int? = null) = amounts.map { it.asDatabaseAmount(id) }
 
     override fun getItemName(): String = name
+
+    override fun getItemId(): Int = id
 }

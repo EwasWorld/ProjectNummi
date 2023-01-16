@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.manageAccounts
 
-import com.eywa.projectnummi.model.Account
+import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogIntent
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogIntent

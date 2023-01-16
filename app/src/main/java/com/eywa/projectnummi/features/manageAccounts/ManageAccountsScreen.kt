@@ -64,16 +64,9 @@ fun ManageAccountsScreen(
             onAddFabClicked = { listener(AddAccountClicked) },
             currentTab = ManageTabSwitcherItem.ACCOUNTS,
             onTabSwitcherClicked = { listener(TabClicked(it)) },
-    ) {
-        AccountItem(
-                account = it,
-                onClick = {
-                    if (it != null) {
-                        listener(AccountClicked(it))
-                    }
-                },
-        )
-    }
+            onItemClicked = { if (it != null) listener(AccountClicked(it)) },
+            itemContent = { AccountItem(account = it) }
+    )
 }
 
 @Preview

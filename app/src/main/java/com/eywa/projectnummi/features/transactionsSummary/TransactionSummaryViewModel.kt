@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryState
-import com.eywa.projectnummi.model.Account
-import com.eywa.projectnummi.model.Category
-import com.eywa.projectnummi.model.Person
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Account
+import com.eywa.projectnummi.model.objects.Category
+import com.eywa.projectnummi.model.objects.Person
+import com.eywa.projectnummi.model.objects.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

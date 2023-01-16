@@ -1,10 +1,8 @@
 package com.eywa.projectnummi.features.manageCategories
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -66,17 +64,9 @@ fun ManageCategoriesScreen(
             onAddFabClicked = { listener(AddCategoryClicked) },
             currentTab = ManageTabSwitcherItem.CATEGORIES,
             onTabSwitcherClicked = { listener(TabClicked(it)) },
-    ) {
-        CategoryItem(
-                category = it,
-                onClick = {
-                    if (it != null) {
-                        listener(CategoryClicked(it))
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-        )
-    }
+            onItemClicked = { if (it != null) listener(CategoryClicked(it)) },
+            itemContent = { CategoryItem(category = it) },
+    )
 }
 
 @Preview

@@ -21,6 +21,7 @@ data class ColorPalette(
         val fab: ThemeColor = ThemeColor(main = BaseColor.BASE_BLUE, content = BaseColor.BASE_SPACE),
         val dialog: ThemeColor = ThemeColor(main = BaseColor.BASE_BLACK, content = Color.White),
         val listItemBorder: Color = BaseColor.GREY_500,
+        val listItemSelectedBackground: Color = BaseColor.GREY_700,
 
         @StyleRes val dialogThemeId: Int = R.style.DialogMainTheme,
 
@@ -33,6 +34,8 @@ data class ColorPalette(
         val link: Color = BaseColor.BLUE,
         val pieChartDefault: Color = BaseColor.BASE_SPACE,
 
+        val transactionAmountDetail: Color = BaseColor.BASE_SPACE,
+        val transactionTotalLines: Color = BaseColor.GREY_300,
         val incomingTransaction: Color = BaseColor.GREEN,
         val outgoingTransaction: Color = BaseColor.RED,
 

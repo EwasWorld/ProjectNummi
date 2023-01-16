@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.sharedUi
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -12,15 +13,17 @@ import com.eywa.projectnummi.theme.NummiTheme
 @Composable
 fun BorderedItem(
         modifier: Modifier = Modifier,
+        isSelected: Boolean? = null,
         onClick: () -> Unit = {},
         content: @Composable () -> Unit,
 ) {
+    val selectable = if (isSelected == null) Modifier else Modifier.selectable(isSelected, onClick = onClick)
     Surface(
-            color = Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+            color = if (isSelected == true) NummiTheme.colors.listItemSelectedBackground else Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.getBorder(isSelected ?: false), NummiTheme.colors.listItemBorder),
             shape = NummiTheme.shapes.generalListItem,
             onClick = onClick,
-            modifier = modifier,
-            content = content
+            content = content,
+            modifier = modifier.then(selectable),
     )
 }

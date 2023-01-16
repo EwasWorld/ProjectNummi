@@ -6,20 +6,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
-import com.eywa.projectnummi.model.Account
-import com.eywa.projectnummi.model.Category
-import com.eywa.projectnummi.model.Person
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Account
+import com.eywa.projectnummi.model.objects.Category
+import com.eywa.projectnummi.model.objects.Person
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogIntent
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogState
-import com.eywa.projectnummi.sharedUi.account.selectAccountDialog.SelectAccountDialogIntent
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogIntent
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
-import com.eywa.projectnummi.sharedUi.category.selectCategoryDialog.SelectCategoryDialogIntent
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogIntent
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogState
-import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialogIntent
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
 import com.eywa.projectnummi.utils.div100String
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -209,7 +207,7 @@ class AddTransactionsViewModel @Inject constructor(
                     // Create category can only be triggered from the select category action
                     //      so after the category is created, select them
                     handleSelectCategoryIntent(
-                            SelectCategoryDialogIntent.CategoryClicked(category.copy(id = id))
+                            SelectItemDialogIntent.ItemChosen(category.copy(id = id))
                     )
                 }
             }
@@ -234,17 +232,18 @@ class AddTransactionsViewModel @Inject constructor(
                     currentRow = null,
             )
 
-    private fun handleSelectCategoryIntent(action: SelectCategoryDialogIntent) {
+    private fun handleSelectCategoryIntent(action: SelectItemDialogIntent) {
         when (action) {
-            SelectCategoryDialogIntent.Close -> _state.update { it.copy(selectCategoryDialogIsShown = false) }
-            is SelectCategoryDialogIntent.CategoryClicked -> _state.update { it.setCategoryId(action.category?.id) }
-            SelectCategoryDialogIntent.CreateNew ->
+            SelectItemDialogIntent.Close -> _state.update { it.copy(selectCategoryDialogIsShown = false) }
+            is SelectItemDialogIntent.ItemChosen<*> -> _state.update { it.setCategoryId(action.item?.getItemId()) }
+            SelectItemDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(
                             selectCategoryDialogIsShown = false,
                             createCategoryDialogState = CreateCategoryDialogState(),
                     )
                 }
+            else -> throw NotImplementedError()
         }
     }
 
@@ -263,25 +262,25 @@ class AddTransactionsViewModel @Inject constructor(
                     // Create person can only be triggered from the select person action
                     //      so after the person is created, select them
                     handleSelectPersonIntent(
-                            SelectPersonDialogIntent.PersonClicked(person.copy(id = id))
+                            SelectItemDialogIntent.ItemChosen(person.copy(id = id))
                     )
                 }
             }
         }
     }
 
-    private fun handleSelectPersonIntent(action: SelectPersonDialogIntent) {
+    private fun handleSelectPersonIntent(action: SelectItemDialogIntent) {
         when (action) {
-            SelectPersonDialogIntent.Close -> _state.update { it.copy(selectPersonDialogIsShown = null) }
-            is SelectPersonDialogIntent.PersonClicked ->
+            SelectItemDialogIntent.Close -> _state.update { it.copy(selectPersonDialogIsShown = null) }
+            is SelectItemDialogIntent.ItemChosen<*> ->
                 _state.update {
                     if (it.selectPersonDialogIsShown == SelectPersonDialogPurpose.SELECT) {
-                        it.setPersonId(action.person?.id)
+                        it.setPersonId(action.item?.getItemId())
                     }
                     else {
                         val people = listOf(
                                 it.amountRows[0].personId,
-                                action.person?.id
+                                action.item?.getItemId()
                         )
                         val floorAmount = it.totalAmount / people.size
                         val remainder = it.totalAmount - floorAmount * people.size
@@ -299,13 +298,14 @@ class AddTransactionsViewModel @Inject constructor(
                         ).closeDialogs()
                     }
                 }
-            SelectPersonDialogIntent.CreateNew ->
+            SelectItemDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(
                             selectPersonDialogIsShown = null,
                             createPersonDialogState = CreatePersonDialogState(),
                     )
                 }
+            else -> throw NotImplementedError()
         }
     }
 
@@ -326,30 +326,31 @@ class AddTransactionsViewModel @Inject constructor(
                     // Create account can only be triggered from the select account action
                     //      so after the account is created, select them
                     handleSelectAccountIntent(
-                            SelectAccountDialogIntent.AccountClicked(account.copy(id = id))
+                            SelectItemDialogIntent.ItemChosen(account.copy(id = id))
                     )
                 }
             }
         }
     }
 
-    private fun handleSelectAccountIntent(action: SelectAccountDialogIntent) {
+    private fun handleSelectAccountIntent(action: SelectItemDialogIntent) {
         when (action) {
-            SelectAccountDialogIntent.Close -> _state.update { it.copy(selectAccountDialogIsShown = false) }
-            is SelectAccountDialogIntent.AccountClicked ->
+            SelectItemDialogIntent.Close -> _state.update { it.copy(selectAccountDialogIsShown = false) }
+            is SelectItemDialogIntent.ItemChosen<*> ->
                 _state.update {
                     it.copy(
-                            accountId = action.account?.id,
+                            accountId = action.item?.getItemId(),
                             selectAccountDialogIsShown = false,
                     )
                 }
-            SelectAccountDialogIntent.CreateNew ->
+            SelectItemDialogIntent.CreateNew ->
                 _state.update {
                     it.copy(
                             selectAccountDialogIsShown = false,
                             createAccountDialogState = CreateAccountDialogState(),
                     )
                 }
+            else -> throw NotImplementedError()
         }
     }
 }

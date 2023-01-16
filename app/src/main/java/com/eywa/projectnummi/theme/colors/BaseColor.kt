@@ -18,6 +18,7 @@ object BaseColor {
     val BLUE = Color(0xFF4C6BE6)
     val GREEN = Color(0xFF77AE6B)
 
+    val GREY_700 = Color(0xFF3A3A3A)
     val GREY_500 = Color(0xFF818181)
     val GREY_300 = Color(0xFFADADAD)
 }

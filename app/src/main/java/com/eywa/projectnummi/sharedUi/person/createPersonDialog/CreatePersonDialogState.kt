@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.sharedUi.person.createPersonDialog
 
-import com.eywa.projectnummi.model.Person
+import com.eywa.projectnummi.model.objects.Person
 
 data class CreatePersonDialogState(
         val editing: Person? = null,

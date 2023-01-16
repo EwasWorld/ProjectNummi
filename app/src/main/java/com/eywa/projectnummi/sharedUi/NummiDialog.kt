@@ -20,16 +20,20 @@ private enum class ButtonStatus { ENABLED, DISABLED, GONE }
 fun NummiDialog(
         isShown: Boolean,
         title: String,
-        okButtonText: String,
+        okButtonText: String? = null,
         okButtonEnabled: Boolean = true,
         onCancelListener: () -> Unit,
-        onOkListener: () -> Unit,
-        content: @Composable ColumnScope.() -> Unit
+        onOkListener: () -> Unit = {},
+        content: @Composable ColumnScope.() -> Unit,
 ) = NummiDialog(
         isShown = isShown,
         title = title,
-        okButtonText = okButtonText,
-        okButtonStatus = if (okButtonEnabled) ButtonStatus.ENABLED else ButtonStatus.DISABLED,
+        okButtonText = okButtonText ?: "",
+        okButtonStatus = when {
+            okButtonText.isNullOrBlank() -> ButtonStatus.GONE
+            okButtonEnabled -> ButtonStatus.ENABLED
+            else -> ButtonStatus.DISABLED
+        },
         onCancelListener = onCancelListener,
         onOkListener = onOkListener,
         content = content,

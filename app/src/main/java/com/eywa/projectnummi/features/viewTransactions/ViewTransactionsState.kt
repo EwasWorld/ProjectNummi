@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.viewTransactions
 
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogState
 

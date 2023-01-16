@@ -34,16 +34,14 @@ import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.sharedUi.*
 import com.eywa.projectnummi.sharedUi.account.AccountItem
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialog
-import com.eywa.projectnummi.sharedUi.account.selectAccountDialog.SelectAccountDialog
-import com.eywa.projectnummi.sharedUi.account.selectAccountDialog.SelectAccountDialogState
 import com.eywa.projectnummi.sharedUi.category.CategoryItem
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialog
-import com.eywa.projectnummi.sharedUi.category.selectCategoryDialog.SelectCategoryDialog
-import com.eywa.projectnummi.sharedUi.category.selectCategoryDialog.SelectCategoryDialogState
 import com.eywa.projectnummi.sharedUi.person.PersonItem
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialog
-import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialog
-import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialogState
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectAccountDialog
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectCategoryDialog
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogState
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectPersonDialog
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
@@ -120,7 +118,7 @@ private fun Dialogs(
 ) {
     SelectCategoryDialog(
             isShown = state.selectCategoryDialogIsShown,
-            state = SelectCategoryDialogState(state.categories ?: listOf()),
+            state = SelectItemDialogState(state.categories ?: listOf()),
             listener = { listener(SelectCategoryDialogAction(it)) },
     )
     CreateCategoryDialog(
@@ -130,7 +128,7 @@ private fun Dialogs(
     )
     SelectPersonDialog(
             isShown = state.selectPersonDialogIsShown != null,
-            state = SelectPersonDialogState(state.people ?: listOf()),
+            state = SelectItemDialogState(state.people ?: listOf()),
             listener = { listener(SelectPersonDialogAction(it)) },
     )
     CreatePersonDialog(
@@ -140,7 +138,7 @@ private fun Dialogs(
     )
     SelectAccountDialog(
             isShown = state.selectAccountDialogIsShown,
-            state = SelectAccountDialogState(state.accounts ?: listOf()),
+            state = SelectItemDialogState(state.accounts ?: listOf()),
             listener = { listener(SelectAccountDialogAction(it)) },
     )
     CreateAccountDialog(
@@ -174,13 +172,13 @@ private fun AmountRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                CategoryItem(
-                        category = state.getCategory(rowState.categoryId),
+                BorderedItem(
                         onClick = { listener(StartChangeCategory(rowIndex)) },
+                        content = { CategoryItem(category = state.getCategory(rowState.categoryId)) },
                 )
-                PersonItem(
-                        person = state.getPerson(rowState.personId),
+                BorderedItem(
                         onClick = { listener(StartChangePerson(rowIndex)) },
+                        content = { PersonItem(person = state.getPerson(rowState.personId)) },
                 )
             }
         }
@@ -222,9 +220,9 @@ private fun MainInfo(
                     onClick = { listener(ToggleIsOutgoing) },
             )
         }
-        AccountItem(
-                account = state.account,
+        BorderedItem(
                 onClick = { listener(StartChangeAccount) },
+                content = { AccountItem(account = state.account) }
         )
         NameInput(
                 name = state.name,

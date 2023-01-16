@@ -1,4 +1,4 @@
-package com.eywa.projectnummi.model
+package com.eywa.projectnummi.model.objects
 
 import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount

@@ -12,6 +12,7 @@ data class NummiDimens(
         val screenPadding: Dp = 20.dp,
         val fabToScreenEdgePadding: Dp = 30.dp,
         val listItemBorder: Dp = 1.dp,
+        val listItemSelectedBorder: Dp = 4.dp,
         val pillBorder: Dp = 1.dp,
         val listItemPadding: Dp = 15.dp,
         val listItemSpacedBy: Dp = 10.dp,
@@ -19,4 +20,6 @@ data class NummiDimens(
 
         val buttonElevationNone: @Composable () -> ButtonElevation =
                 { ButtonDefaults.elevation(0.dp, 0.dp, 0.dp, 0.dp, 0.dp) },
-)
+) {
+    fun getBorder(isSelected: Boolean) = if (isSelected) listItemSelectedBorder else listItemBorder
+}

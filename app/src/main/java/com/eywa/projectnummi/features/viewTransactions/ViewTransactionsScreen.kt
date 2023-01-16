@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
-import com.eywa.projectnummi.model.Transaction
+import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.navigation.NummiNavRoute
@@ -35,7 +35,6 @@ import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.theme.NummiTheme
-import com.eywa.projectnummi.theme.colors.BaseColor
 import com.eywa.projectnummi.utils.DateTimeFormat
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
@@ -198,7 +197,10 @@ fun ViewTransactionsScreen(
                                                 color = NummiTheme.colors.appBackground.content,
                                                 fontStyle = FontStyle.Italic,
                                                 modifier = Modifier
-                                                        .background(BaseColor.BASE_SPACE, RoundedCornerShape(100))
+                                                        .background(
+                                                                NummiTheme.colors.transactionAmountDetail,
+                                                                RoundedCornerShape(100),
+                                                        )
                                                         .padding(horizontal = 10.dp, vertical = 2.dp)
                                         )
                                     }
@@ -212,6 +214,7 @@ fun ViewTransactionsScreen(
                         }
                         if (item.amounts.size > 1) {
                             val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
+                            val totalLinesColor = NummiTheme.colors.transactionTotalLines
                             Box(
                                     modifier = Modifier
                                             .align(Alignment.End)
@@ -227,10 +230,12 @@ fun ViewTransactionsScreen(
                                 Canvas(
                                         modifier = Modifier.matchParentSize()
                                 ) {
-                                    fun customLine(height: Float) = drawLine(BaseColor.GREY_300,
+                                    fun customLine(height: Float) = drawLine(
+                                            totalLinesColor,
                                             Offset(0f, height),
                                             Offset(size.width, height),
-                                            strokeWidth = oneDpWidth / 2f)
+                                            strokeWidth = oneDpWidth / 2f
+                                    )
 
                                     customLine(0f)
                                     customLine(size.height)

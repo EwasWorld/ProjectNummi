@@ -1,11 +1,9 @@
 package com.eywa.projectnummi.features.addTransactions
 
 import com.eywa.projectnummi.sharedUi.account.createAccountDialog.CreateAccountDialogIntent
-import com.eywa.projectnummi.sharedUi.account.selectAccountDialog.SelectAccountDialogIntent
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogIntent
-import com.eywa.projectnummi.sharedUi.category.selectCategoryDialog.SelectCategoryDialogIntent
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialogIntent
-import com.eywa.projectnummi.sharedUi.person.selectPersonDialog.SelectPersonDialogIntent
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
 import java.util.*
 
 sealed class AddTransactionsIntent {
@@ -25,13 +23,13 @@ sealed class AddTransactionsIntent {
 
     data class StartChangeCategory(val rowIndex: Int) : AddTransactionsIntent()
     data class CreateCategoryDialogAction(val action: CreateCategoryDialogIntent) : AddTransactionsIntent()
-    data class SelectCategoryDialogAction(val action: SelectCategoryDialogIntent) : AddTransactionsIntent()
+    data class SelectCategoryDialogAction(val action: SelectItemDialogIntent) : AddTransactionsIntent()
 
     data class StartChangePerson(val rowIndex: Int) : AddTransactionsIntent()
     data class CreatePersonDialogAction(val action: CreatePersonDialogIntent) : AddTransactionsIntent()
-    data class SelectPersonDialogAction(val action: SelectPersonDialogIntent) : AddTransactionsIntent()
+    data class SelectPersonDialogAction(val action: SelectItemDialogIntent) : AddTransactionsIntent()
 
     object StartChangeAccount : AddTransactionsIntent()
     data class CreateAccountDialogAction(val action: CreateAccountDialogIntent) : AddTransactionsIntent()
-    data class SelectAccountDialogAction(val action: SelectAccountDialogIntent) : AddTransactionsIntent()
+    data class SelectAccountDialogAction(val action: SelectItemDialogIntent) : AddTransactionsIntent()
 }
