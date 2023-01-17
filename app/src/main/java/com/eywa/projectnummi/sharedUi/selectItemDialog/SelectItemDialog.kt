@@ -22,8 +22,9 @@ import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent.*
 @Composable
 fun <I : HasNameAndId> SelectItemDialog(
         title: String,
-        newItemButtonText: String,
-        isShown: Boolean,
+        newItemButtonText: String? = null,
+        isShown: Boolean = true,
+        hasDefaultItem: Boolean = true,
         state: SelectItemDialogState<I>?,
         listener: (SelectItemDialogIntent) -> Unit,
         itemContent: @Composable (item: I?) -> Unit,
@@ -40,8 +41,8 @@ fun <I : HasNameAndId> SelectItemDialog(
         ItemList(
                 items = state?.items,
                 onNewItemClicked = { listener(CreateNew) },
-                hasDefaultItem = true,
-                newItemButtonText = newItemButtonText.takeIf { !isMultiSelect },
+                hasDefaultItem = hasDefaultItem,
+                newItemButtonText = newItemButtonText?.takeIf { !isMultiSelect },
         ) { item ->
             BorderedItem(
                     isSelected = state?.isSelected(item),
@@ -56,7 +57,7 @@ fun <I : HasNameAndId> SelectItemDialog(
 
 @Composable
 fun SelectAccountDialog(
-        isShown: Boolean,
+        isShown: Boolean = true,
         state: SelectItemDialogState<Account>?,
         listener: (SelectItemDialogIntent) -> Unit,
 ) = SelectItemDialog(
@@ -70,7 +71,7 @@ fun SelectAccountDialog(
 
 @Composable
 fun SelectCategoryDialog(
-        isShown: Boolean,
+        isShown: Boolean = true,
         state: SelectItemDialogState<Category>?,
         listener: (SelectItemDialogIntent) -> Unit,
 ) = SelectItemDialog(
@@ -84,7 +85,7 @@ fun SelectCategoryDialog(
 
 @Composable
 fun SelectPersonDialog(
-        isShown: Boolean,
+        isShown: Boolean = true,
         state: SelectItemDialogState<Person>?,
         listener: (SelectItemDialogIntent) -> Unit,
 ) = SelectItemDialog(

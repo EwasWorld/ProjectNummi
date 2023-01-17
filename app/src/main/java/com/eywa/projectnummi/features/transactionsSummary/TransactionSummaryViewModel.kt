@@ -4,11 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
+import com.eywa.projectnummi.features.transactionsSummary.TransactionsSummaryIntent.*
+import com.eywa.projectnummi.features.transactionsSummary.state.TransactionSummarySelectionDialog.*
+import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryGrouping
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryState
 import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.model.objects.Person
 import com.eywa.projectnummi.model.objects.Transaction
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
+import com.eywa.projectnummi.utils.ListUtils.toggle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -52,31 +57,24 @@ class TransactionSummaryViewModel @Inject constructor(
 
     fun handle(action: TransactionsSummaryIntent) {
         when (action) {
-            is TransactionsSummaryIntent.NavigationTabClicked -> _state.update { it.copy(currentScreen = action.tab) }
-            is TransactionsSummaryIntent.FilterIntent -> handleFilterIntent(action)
-            is TransactionsSummaryIntent.SummaryIntent -> handleSummaryIntent(action)
+            is NavigationTabClicked -> _state.update { it.copy(currentScreen = action.tab) }
+            is FilterIntent -> handleFilterIntent(action)
+            is SummaryIntent -> handleSummaryIntent(action)
+            is SelectDialogIntent -> handleSelectDialogIntent(action)
         }
     }
 
-    private fun handleFilterIntent(action: TransactionsSummaryIntent.FilterIntent) {
+    private fun handleFilterIntent(action: FilterIntent) {
         when (action) {
-            TransactionsSummaryIntent.AccountClicked -> { /* TODO */
-            }
-            TransactionsSummaryIntent.CategoryClicked -> { /* TODO */
-            }
-            TransactionsSummaryIntent.PersonClicked -> { /* TODO */
-            }
-            TransactionsSummaryIntent.GroupingClicked -> { /* TODO */
-            }
-            is TransactionsSummaryIntent.FromDateChanged ->
+            is FromDateChanged ->
                 updateFilterState { it.copy(from = action.date) }
-            is TransactionsSummaryIntent.ToDateChanged ->
+            is ToDateChanged ->
                 updateFilterState { it.copy(to = action.date) }
-            TransactionsSummaryIntent.ToggleShowIncoming ->
+            ToggleShowIncoming ->
                 updateFilterState { it.copy(showIncoming = !it.showIncoming) }
-            TransactionsSummaryIntent.ToggleShowOutgoing ->
+            ToggleShowOutgoing ->
                 updateFilterState { it.copy(showOutgoing = !it.showOutgoing) }
-            TransactionsSummaryIntent.ToggleOutgoingIsPositive ->
+            ToggleOutgoingIsPositive ->
                 _state.update { it.copy(outgoingIsPositive = !it.outgoingIsPositive) }
         }
     }
@@ -84,13 +82,72 @@ class TransactionSummaryViewModel @Inject constructor(
     private fun updateFilterState(update: (TransactionsFilters) -> TransactionsFilters) =
             _state.update { it.copy(filtersState = update(it.filtersState)) }
 
-    private fun handleSummaryIntent(action: TransactionsSummaryIntent.SummaryIntent) {
+    private fun handleSummaryIntent(action: SummaryIntent) {
         when (action) {
-            is TransactionsSummaryIntent.SummaryItemSelected ->
-                _state.update { it.copy(selectedItemIndex = action.index) }
-            is TransactionsSummaryIntent.SummaryPieClicked -> {
+            is SummaryItemSelected ->
+                _state.update {
+                    val newItem = action.index.takeIf { newIndex -> newIndex != it.selectedItemIndex }
+                    it.copy(selectedItemIndex = newItem)
+                }
+            is SummaryPieClicked -> {
                 val degrees = Math.toDegrees(action.polar.theta.toDouble()).toFloat()
-                _state.update { it.copy(selectedItemIndex = it.getSegmentIndex(degrees)) }
+                _state.update {
+                    val newItem = it.getSegmentIndex(degrees).takeIf { newIndex -> newIndex != it.selectedItemIndex }
+                    it.copy(selectedItemIndex = newItem)
+                }
+            }
+        }
+    }
+
+    private fun handleSelectDialogIntent(action: SelectDialogIntent) {
+        when (action) {
+            is OpenSelectDialog ->
+                _state.update {
+                    it.copy(
+                            openSelectDialog = action.type,
+                            selectedDialogIds = when (action.type) {
+                                ACCOUNT -> it.filtersState.selectedAccountIds
+                                CATEGORY -> it.filtersState.selectedCategoryIds
+                                PERSON -> it.filtersState.selectedPersonIds
+                                else -> emptyList()
+                            },
+                    )
+                }
+            is SelectDialogAction -> when (action.action) {
+                SelectItemDialogIntent.Close ->
+                    _state.update { it.copy(selectedDialogIds = emptyList(), openSelectDialog = null) }
+                SelectItemDialogIntent.CreateNew -> throw NotImplementedError()
+                is SelectItemDialogIntent.ToggleItemSelected<*> ->
+                    _state.update {
+                        it.copy(selectedDialogIds = it.selectedDialogIds.toggle(action.action.item?.getItemId()))
+                    }
+                is SelectItemDialogIntent.ItemChosen<*> ->
+                    _state.update {
+                        if (it.openSelectDialog?.isMultiSelectable != false) return
+                        val newState = it.copy(
+                                selectedDialogIds = emptyList(),
+                                openSelectDialog = null,
+                        )
+                        when (it.openSelectDialog) {
+                            GROUP -> newState.copy(currentGrouping = action.action.item as TransactionsSummaryGrouping)
+                            else -> throw NotImplementedError()
+                        }
+                    }
+                SelectItemDialogIntent.Submit ->
+                    _state.update {
+                        if (it.openSelectDialog?.isMultiSelectable != true) return
+                        val newFilterState = when (it.openSelectDialog) {
+                            ACCOUNT -> it.filtersState.copy(selectedAccountIds = it.selectedDialogIds)
+                            CATEGORY -> it.filtersState.copy(selectedCategoryIds = it.selectedDialogIds)
+                            PERSON -> it.filtersState.copy(selectedPersonIds = it.selectedDialogIds)
+                            else -> throw NotImplementedError()
+                        }
+                        it.copy(
+                                selectedDialogIds = emptyList(),
+                                openSelectDialog = null,
+                                filtersState = newFilterState,
+                        )
+                    }
             }
         }
     }

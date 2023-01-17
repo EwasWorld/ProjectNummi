@@ -13,8 +13,12 @@ import androidx.compose.ui.unit.dp
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
 import com.eywa.projectnummi.features.transactionsSummary.TransactionsSummaryIntent
 import com.eywa.projectnummi.features.transactionsSummary.TransactionsSummaryIntent.*
+import com.eywa.projectnummi.features.transactionsSummary.state.TransactionSummarySelectionDialog.*
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryGrouping
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryState
+import com.eywa.projectnummi.model.objects.Account
+import com.eywa.projectnummi.model.objects.Category
+import com.eywa.projectnummi.model.objects.Person
 import com.eywa.projectnummi.model.providers.AccountProvider
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
@@ -25,6 +29,7 @@ import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.account.AccountItem
 import com.eywa.projectnummi.sharedUi.category.CategoryItem
 import com.eywa.projectnummi.sharedUi.person.PersonItem
+import com.eywa.projectnummi.sharedUi.selectItemDialog.*
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.theme.asClickableStyle
 
@@ -33,6 +38,42 @@ fun TransactionsSummaryFiltersScreen(
         state: TransactionsSummaryState,
         listener: (TransactionsSummaryIntent) -> Unit,
 ) {
+    SelectItemDialog(
+            title = "Select grouping",
+            isShown = state.openSelectDialog == GROUP,
+            state = SelectItemDialogState(TransactionsSummaryGrouping.values().toList()),
+            hasDefaultItem = false,
+            listener = { listener(SelectDialogAction(it)) },
+    ) {
+        Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                    text = it?.getItemName()!!,
+                    modifier = Modifier.padding(NummiTheme.dimens.listItemPadding)
+            )
+        }
+    }
+    @Suppress("UNCHECKED_CAST")
+    SelectAccountDialog(
+            isShown = state.openSelectDialog == ACCOUNT,
+            state = ACCOUNT.getDialogState(state) as SelectItemDialogState<Account>,
+            listener = { listener(SelectDialogAction(it)) },
+    )
+    @Suppress("UNCHECKED_CAST")
+    SelectCategoryDialog(
+            isShown = state.openSelectDialog == CATEGORY,
+            state = CATEGORY.getDialogState(state) as SelectItemDialogState<Category>,
+            listener = { listener(SelectDialogAction(it)) },
+    )
+    @Suppress("UNCHECKED_CAST")
+    SelectPersonDialog(
+            isShown = state.openSelectDialog == PERSON,
+            state = PERSON.getDialogState(state) as SelectItemDialogState<Person>,
+            listener = { listener(SelectDialogAction(it)) },
+    )
+
     Column(
             verticalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -47,9 +88,9 @@ fun TransactionsSummaryFiltersScreen(
                     color = NummiTheme.colors.appBackground.content,
             )
             Text(
-                    text = state.currentGrouping.toDisplayString(),
+                    text = state.currentGrouping.getItemName(),
                     style = NummiTheme.typography.h5.asClickableStyle(),
-                    modifier = Modifier.clickable { listener(GroupingClicked) }
+                    modifier = Modifier.clickable { listener(OpenSelectDialog(GROUP)) }
             )
         }
         Row(
@@ -73,15 +114,15 @@ fun TransactionsSummaryFiltersScreen(
             )
         }
         BorderedItem(
-                onClick = { listener(AccountClicked) },
+                onClick = { listener(OpenSelectDialog(ACCOUNT)) },
                 content = { AccountItem(accounts = state.selectedAccounts) },
         )
         BorderedItem(
-                onClick = { listener(CategoryClicked) },
+                onClick = { listener(OpenSelectDialog(CATEGORY)) },
                 content = { CategoryItem(categories = state.selectedCategories) },
         )
         BorderedItem(
-                onClick = { listener(PersonClicked) },
+                onClick = { listener(OpenSelectDialog(PERSON)) },
                 content = { PersonItem(people = state.selectedPeople) },
         )
         CheckboxInput(
@@ -100,14 +141,6 @@ fun TransactionsSummaryFiltersScreen(
                 onClick = { listener(ToggleOutgoingIsPositive) },
         )
     }
-}
-
-@Composable
-fun TransactionsSummaryGrouping.toDisplayString() = when (this) {
-    TransactionsSummaryGrouping.CATEGORY -> "Category"
-    TransactionsSummaryGrouping.PERSON -> "Person"
-    TransactionsSummaryGrouping.ACCOUNT -> "Account"
-    TransactionsSummaryGrouping.OUTGOING -> "Outgoing"
 }
 
 @Preview

@@ -62,7 +62,7 @@ private fun ListBreakdown(
                     contentAlignment = Alignment.Center,
             ) {
                 CornerTriangleBox(
-                        color = item.color ?: NummiTheme.colors.pieChartDefault,
+                        color = item.getDisplayColor(),
                         state = CornerTriangleShapeState(
                                 isTop = false,
                                 xScale = 2f,
@@ -111,6 +111,9 @@ private fun PieCircles(
     val defaultColor = NummiTheme.colors.pieChartDefault
     val rotationDegrees = 270f
 
+    val coloredItems = items.associateWith { it.getDisplayColor() }
+    val selectedItemColor = selectedItem?.getDisplayColor() ?: defaultColor
+
     Canvas(
             modifier = Modifier
                     .fillMaxSize()
@@ -126,10 +129,10 @@ private fun PieCircles(
                     }
     ) {
         if (items.isNotEmpty()) {
-            items.forEach { item ->
+            coloredItems.forEach { (item, color) ->
                 if (item.startAngleDegrees != null && item.arcAngleDegrees != null) {
                     drawArc(
-                            color = item.color ?: defaultColor,
+                            color = color,
                             startAngle = rotationDegrees + item.startAngleDegrees,
                             sweepAngle = item.arcAngleDegrees,
                             useCenter = true,
@@ -153,7 +156,7 @@ private fun PieCircles(
         )
         if (selectedItem != null) {
             drawCircle(
-                    color = selectedItem.color ?: defaultColor,
+                    color = selectedItemColor,
                     radius = size.minDimension * 0.3f
             )
         }

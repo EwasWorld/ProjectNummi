@@ -2,10 +2,12 @@ package com.eywa.projectnummi.features.transactionsSummary.state
 
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryGrouping.CATEGORY
+import com.eywa.projectnummi.model.HasNameAndId
 import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.model.objects.Person
 import com.eywa.projectnummi.model.objects.Transaction
+import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogState
 
 fun List<TransactionsSummaryPieItem>.getTotal() =
         sumOf { item ->
@@ -25,6 +27,9 @@ data class TransactionsSummaryState(
 
         val currentGrouping: TransactionsSummaryGrouping = CATEGORY,
         val selectedItemIndex: Int? = null,
+
+        val selectedDialogIds: List<Int?> = emptyList(),
+        val openSelectDialog: TransactionSummarySelectionDialog? = null,
 ) {
     val selectedAccounts = get(filtersState.selectedAccountIds, accounts) { id, item -> item.id == id }
     val selectedCategories = get(filtersState.selectedCategoryIds, categories) { id, item -> item.id == id }
@@ -66,4 +71,21 @@ data class TransactionsSummaryState(
     fun getSegmentIndex(thetaDegrees: Float) = groupedItems
             .takeWhile { (it.startAngleDegrees ?: 0f) < thetaDegrees.mod(360f) }
             .count { it.startAngleDegrees != null } - 1
+}
+
+enum class TransactionSummarySelectionDialog(
+        val isMultiSelectable: Boolean,
+        val getItems: (TransactionsSummaryState) -> List<HasNameAndId>?,
+) {
+    GROUP(false, { TransactionsSummaryGrouping.values().toList() }),
+    ACCOUNT(true, { it.accounts }),
+    CATEGORY(true, { it.categories }),
+    PERSON(true, { it.people }),
+    ;
+
+    fun getDialogState(state: TransactionsSummaryState) = SelectItemDialogState(
+            items = getItems(state) ?: emptyList(),
+            selectedItemIds = state.selectedDialogIds,
+            allowMultiSelect = isMultiSelectable,
+    )
 }

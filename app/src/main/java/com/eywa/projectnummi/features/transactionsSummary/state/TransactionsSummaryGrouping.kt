@@ -1,11 +1,12 @@
 package com.eywa.projectnummi.features.transactionsSummary.state
 
 import androidx.compose.ui.graphics.Color
+import com.eywa.projectnummi.model.HasNameAndId
 import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.utils.ColorUtils
 
-enum class TransactionsSummaryGrouping {
-    CATEGORY {
+enum class TransactionsSummaryGrouping(private val displayName: String) : HasNameAndId {
+    CATEGORY("Category") {
         override fun toItems(transactions: List<Transaction>?): List<TransactionsSummaryPieItem> =
                 (transactions ?: emptyList())
                         .flatMap { transaction ->
@@ -20,7 +21,7 @@ enum class TransactionsSummaryGrouping {
                             )
                         }
     },
-    PERSON {
+    PERSON("Person") {
         override fun toItems(transactions: List<Transaction>?): List<TransactionsSummaryPieItem> =
                 (transactions ?: emptyList())
                         .flatMap { transaction ->
@@ -30,7 +31,7 @@ enum class TransactionsSummaryGrouping {
                         .map { (person, amounts) -> person?.name to amounts.sumOf { it.second } }
                         .addColours()
     },
-    ACCOUNT {
+    ACCOUNT("Account") {
         override fun toItems(transactions: List<Transaction>?): List<TransactionsSummaryPieItem> =
                 (transactions ?: emptyList())
                         .groupBy { it.account }
@@ -41,7 +42,7 @@ enum class TransactionsSummaryGrouping {
                         }
                         .addColours()
     },
-    OUTGOING {
+    OUTGOING("Incoming/Outgoing") {
         override fun toItems(transactions: List<Transaction>?): List<TransactionsSummaryPieItem> =
                 (transactions ?: emptyList())
                         .map { transaction -> transaction.isOutgoing to transaction.amounts.sumOf { it.amount } }
@@ -57,7 +58,7 @@ enum class TransactionsSummaryGrouping {
                                     TransactionsSummaryPieItem(
                                             OUTGOING_NAME,
                                             Color.Transparent,
-                                            it[false] ?: 0,
+                                            it[true] ?: 0,
                                     )
                             )
                         }
@@ -66,15 +67,34 @@ enum class TransactionsSummaryGrouping {
 
     abstract fun toItems(transactions: List<Transaction>?): List<TransactionsSummaryPieItem>
 
+    override fun getItemId(): Int = ordinal
+    override fun getItemName(): String = displayName
+
     fun List<Pair<String?, Int>>.addColours(): List<TransactionsSummaryPieItem> {
         if (isEmpty()) return emptyList()
 
-        val nonNullCount = count { it.first != null }
-        val increment = 1f / (nonNullCount - 1)
-        val colors = List(nonNullCount) { it * increment }.shuffled().toMutableList()
+        val nonNullCount = count { it.first != null && it.second > 0 }
+        val increment = 1f / (nonNullCount)
+        val defaultColors = listOf(
+                1f, // Red
+                0.5f, // Light blue
+                0.15f, // Yellow
+                0.72f, // Purple
+                0.32f, // Green
+                0.66f, // Dark blue
+                0.9f, // Pink
+        )
+        val colors =
+                if (nonNullCount < defaultColors.size) defaultColors.take(nonNullCount)
+                else List(nonNullCount) { it * increment }
+        val alphabeticalOrder = filter { it.first != null && it.second > 0 }.map { it.first }.sortedBy { it!! }
+                .mapIndexed { index, i -> i to index }.toMap()
 
         return map { (name, amount) ->
-            val color = if (name == null) null else ColorUtils.asCategoryColor(colors.removeFirst())
+            val color =
+                    if (name == null) null
+                    else if (amount <= 0) Color.Transparent
+                    else ColorUtils.asCategoryColor(colors[alphabeticalOrder[name]!!])
             TransactionsSummaryPieItem(
                     name,
                     color,
