@@ -9,14 +9,16 @@ import java.util.*
 @Dao
 interface TransactionDao {
     @Transaction
-    @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME}")
-    fun getFull(): Flow<List<FullDatabaseTransaction>>
+    @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE isRecurring = :isRecurring")
+    fun getFull(isRecurring: Boolean): Flow<List<FullDatabaseTransaction>>
 
     @Transaction
     @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE id = :id")
     fun getFull(id: Int): Flow<FullDatabaseTransaction>
 
     /**
+     * Note: does not return any [DatabaseTransaction.isRecurring] items
+     *
      * @param overrideShowAllAccounts ignore [accountIds], show all accounts
      * @param overrideShowAllCategories ignore [categoryIds], show all categories
      * @param overrideShowAllPeople ignore [personIds], show all people
@@ -29,7 +31,8 @@ interface TransactionDao {
                 FROM ${DatabaseTransaction.TABLE_NAME} as tran
                 JOIN ${DatabaseAmount.TABLE_NAME} as amount ON tran.id = amount.transactionId
                 WHERE 
-                    tran.date >= :from AND tran.date <= :to 
+                    isRecurring = 0
+                    AND tran.date >= :from AND tran.date <= :to 
                     AND (tran.isOutgoing = :isOutgoing OR :overrideShowInAndOut)
                     AND (tran.accountId IN (:accountIds) OR :overrideShowAllAccounts)
                     AND (amount.categoryId IN (:categoryIds) OR :overrideShowAllCategories)
@@ -57,6 +60,8 @@ interface TransactionDao {
     fun getMaxOrder(date: Calendar): Flow<Int?>
 
     /**
+     * Note: does not return any [DatabaseTransaction.isRecurring] items
+     *
      * @return [DatabaseTransaction] with the highest [DatabaseTransaction.order] that is lower than [order]
      *   where [DatabaseTransaction.date] == [date]
      */
@@ -64,7 +69,7 @@ interface TransactionDao {
             """
                 SELECT * 
                 FROM ${DatabaseTransaction.TABLE_NAME} 
-                WHERE date = :date AND `order` < :order
+                WHERE date = :date AND `order` < :order AND isRecurring = 0
                 ORDER BY `order` DESC
                 LIMIT 1
             """
@@ -72,6 +77,8 @@ interface TransactionDao {
     fun getOrderBelow(date: Calendar, order: Int): Flow<DatabaseTransaction?>
 
     /**
+     * Note: does not return any [DatabaseTransaction.isRecurring] items
+     *
      * @return [DatabaseTransaction] with the lowest [DatabaseTransaction.order] that is higher than [order]
      *   where [DatabaseTransaction.date] == [date]
      */
@@ -79,7 +86,7 @@ interface TransactionDao {
             """
                 SELECT * 
                 FROM ${DatabaseTransaction.TABLE_NAME} 
-                WHERE date = :date AND `order` > :order
+                WHERE date = :date AND `order` > :order AND isRecurring = 0
                 ORDER BY `order` ASC
                 LIMIT 1
             """

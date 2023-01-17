@@ -4,25 +4,22 @@ import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
 import com.eywa.projectnummi.database.transaction.DatabaseTransactionWithFullAccount
 import com.eywa.projectnummi.database.transaction.FullDatabaseTransaction
-import com.eywa.projectnummi.features.viewTransactions.descendingDateTransactionComparator
 import com.eywa.projectnummi.model.HasNameAndId
 import java.util.*
 
+/**
+ * @see [DatabaseTransaction]
+ */
 // TODO Transaction.note feature
 data class Transaction(
         val id: Int,
         val date: Calendar,
         val name: String,
         val amounts: List<Amount>,
-        /**
-         * True if money is leaving the account, false if it's entering the account
-         */
         val isOutgoing: Boolean = true,
         val account: Account? = null,
-        /**
-         * @see [descendingDateTransactionComparator]
-         */
         val order: Int = -1,
+        val isRecurring: Boolean = false,
 ) : HasNameAndId {
     constructor(
             dbTransaction: FullDatabaseTransaction,
@@ -34,6 +31,7 @@ data class Transaction(
             isOutgoing = dbTransaction.transaction.isOutgoing,
             account = dbTransaction.account?.let { Account(it) },
             order = dbTransaction.transaction.order,
+            isRecurring = dbTransaction.transaction.isRecurring,
     )
 
     constructor(
@@ -47,6 +45,7 @@ data class Transaction(
             isOutgoing = dbTransaction.transaction.isOutgoing,
             account = dbTransaction.account?.let { Account(it) },
             order = dbTransaction.transaction.order,
+            isRecurring = dbTransaction.transaction.isRecurring,
     )
 
     fun asDbTransaction() = DatabaseTransaction(
@@ -56,6 +55,7 @@ data class Transaction(
             accountId = account?.id,
             isOutgoing = isOutgoing,
             order = order,
+            isRecurring = isRecurring,
     )
 
     fun getDbAmounts(id: Int? = null) = amounts.map { it.asDatabaseAmount(id) }

@@ -143,5 +143,37 @@ object TransactionProvider {
                     order = 2,
                     account = AccountProvider.basic[1],
             ),
+            Transaction(
+                    id = 10,
+                    date = DateProvider.getDate(-44),
+                    name = "Water bill",
+                    amounts = listOf(
+                            Amount(
+                                    11,
+                                    CategoryProvider.basic[4],
+                                    null,
+                                    20_00,
+                            ),
+                    ),
+                    order = 3,
+                    account = AccountProvider.basic[1],
+                    isRecurring = true,
+            ),
+            Transaction(
+                    id = 11,
+                    date = DateProvider.getDate(-44),
+                    name = "Electric bill",
+                    amounts = listOf(
+                            Amount(
+                                    12,
+                                    CategoryProvider.basic[4],
+                                    null,
+                                    20_00,
+                            ),
+                    ),
+                    order = 4,
+                    account = AccountProvider.basic[1],
+                    isRecurring = true,
+            ),
     )
 }

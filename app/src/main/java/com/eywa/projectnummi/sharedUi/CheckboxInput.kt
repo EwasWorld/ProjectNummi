@@ -14,12 +14,13 @@ import com.eywa.projectnummi.theme.NummiTheme
 fun CheckboxInput(
         text: String,
         isSelected: Boolean,
+        modifier: Modifier = Modifier,
         onClick: () -> Unit,
 ) {
     Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.clickable(onClick = onClick)
+            modifier = modifier.clickable(onClick = onClick)
     ) {
         Text(
                 text = text,

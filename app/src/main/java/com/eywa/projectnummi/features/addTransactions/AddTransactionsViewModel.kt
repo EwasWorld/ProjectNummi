@@ -20,6 +20,7 @@ import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDial
 import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
 import com.eywa.projectnummi.utils.div100String
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
@@ -41,11 +42,21 @@ class AddTransactionsViewModel @Inject constructor(
     private val _state = MutableStateFlow(AddTransactionsState())
     val state = _state.asStateFlow()
 
+    private var getTransactionJob: Job? = null
+
     init {
+        val createFromRecurring =
+                savedStateHandle.get<Boolean>(NummiNavArgument.INIT_FROM_RECURRING_TRANSACTION.toArgName()) ?: false
         savedStateHandle.get<String>(NummiNavArgument.TRANSACTION_ID.toArgName())?.let { transactionId ->
-            viewModelScope.launch {
+            getTransactionJob = viewModelScope.launch {
                 val transaction = transactionRepo.getFull(transactionId.toInt()).first()
-                _state.update { it.copy(editing = Transaction(transaction)).resetState() }
+                _state.update {
+                    val newState = it.copy(
+                            editing = Transaction(transaction),
+                            creatingFromRecurring = createFromRecurring,
+                    ).resetState()
+                    if (!createFromRecurring) newState else newState.copy(editing = null)
+                }
             }
         }
         viewModelScope.launch {
@@ -114,6 +125,7 @@ class AddTransactionsViewModel @Inject constructor(
     }
 
     private fun AddTransactionsState.resetState() = AddTransactionsState(
+            creatingFromRecurring = creatingFromRecurring,
             editing = editing,
             categories = categories,
             people = people,
@@ -138,8 +150,14 @@ class AddTransactionsViewModel @Inject constructor(
             _state.update { it.copy(isEditComplete = true) }
         }
         else {
+            if (transaction.isRecurring) {
+                transactionRepo.insert(
+                        transaction.asDbTransaction(),
+                        transaction.getDbAmounts(null),
+                )
+            }
             transactionRepo.insert(
-                    transaction.asDbTransaction(),
+                    transaction.copy(isRecurring = false).asDbTransaction(),
                     transaction.getDbAmounts(null),
             )
             _state.update {
@@ -150,6 +168,7 @@ class AddTransactionsViewModel @Inject constructor(
                 )
             }
         }
+        getTransactionJob?.cancel()
     }
 
     private fun openSelectPersonDialog(rowIndex: Int?, select: SelectPersonDialogPurpose) {
@@ -182,6 +201,7 @@ class AddTransactionsViewModel @Inject constructor(
                 }
             is NameChanged -> _state.update { it.copy(name = action.name) }
             ToggleIsOutgoing -> _state.update { it.copy(isOutgoing = !it.isOutgoing) }
+            ToggleIsRecurring -> _state.update { it.copy(isRecurring = !it.isRecurring) }
         }
     }
 

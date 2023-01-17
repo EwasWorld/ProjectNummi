@@ -32,8 +32,10 @@ import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.CornerTriangleBox
 import com.eywa.projectnummi.sharedUi.CornerTriangleShapeState
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
+import com.eywa.projectnummi.sharedUi.TabSwitcher
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
+import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.utils.DateTimeFormat
 import com.eywa.projectnummi.utils.asCurrency
@@ -77,6 +79,28 @@ fun ViewTransactionsScreen(
             }
         }
     }
+    LaunchedEffect(state.value.newTransactionInitiatedFor) {
+        launch {
+            state.value.newTransactionInitiatedFor?.let {
+                viewModel.handle(NavigatedToNewItem)
+                NummiNavRoute.ADD_TRANSACTIONS_FROM_RECURRING.navigate(
+                        navController,
+                        mapOf(
+                                NummiNavArgument.TRANSACTION_ID to it.id.toString(),
+                                NummiNavArgument.INIT_FROM_RECURRING_TRANSACTION to true.toString(),
+                        )
+                )
+            }
+        }
+    }
+    LaunchedEffect(state.value.switchToManageTabInitiatedFor) {
+        launch {
+            state.value.switchToManageTabInitiatedFor?.let {
+                viewModel.handle(NavigatedToManageTab)
+                it.navRoute.navigate(navController)
+            }
+        }
+    }
 
     ViewTransactionsScreen(
             state = state.value,
@@ -90,7 +114,8 @@ fun ViewTransactionsScreen(
         state: ViewTransactionsState,
         listener: (ViewTransactionsIntent) -> Unit,
 ) {
-    val displayItems = state.transactions.sortedWith(descendingDateTransactionComparator)
+    val displayItems = if (state.isRecurring) state.transactions.sortedBy { it.name }
+    else state.transactions.sortedWith(descendingDateTransactionComparator)
 
     ManageItemDialog(
             isShown = state.deleteDialogState == null,
@@ -103,143 +128,154 @@ fun ViewTransactionsScreen(
             listener = { listener(DeleteConfirmationDialogAction(it)) },
     )
 
-    LazyColumn(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-            modifier = Modifier.fillMaxSize()
-    ) {
-        items(displayItems) { item ->
-            Surface(
-                    color = Color.Transparent,
-                    border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
-                    shape = NummiTheme.shapes.generalListItem,
-                    onClick = { listener(TransactionClicked(item)) },
-                    modifier = Modifier.fillMaxWidth()
-            ) {
-                Box(
-                        contentAlignment = Alignment.Center,
+    Column {
+        if (state.isRecurring) {
+            TabSwitcher(
+                    items = ManageTabSwitcherItem.values().toList(),
+                    selectedItem = ManageTabSwitcherItem.RECURRING,
+                    itemClickedListener = { listener(TabClicked(it)) },
+            )
+        }
+        LazyColumn(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
+                modifier = Modifier.fillMaxSize()
+        ) {
+            items(displayItems) { item ->
+                Surface(
+                        color = Color.Transparent,
+                        border = BorderStroke(NummiTheme.dimens.listItemBorder, NummiTheme.colors.listItemBorder),
+                        shape = NummiTheme.shapes.generalListItem,
+                        onClick = { listener(TransactionClicked(item)) },
+                        modifier = Modifier.fillMaxWidth()
                 ) {
-                    val colorTriangleSize =
-                            with(LocalDensity.current) { NummiTheme.dimens.viewTransactionTriangleSize.toPx() }
+                    Box(
+                            contentAlignment = Alignment.Center,
+                    ) {
+                        val colorTriangleSize =
+                                with(LocalDensity.current) { NummiTheme.dimens.viewTransactionTriangleSize.toPx() }
 
-                    CornerTriangleBox(
-                            color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
-                            state = CornerTriangleShapeState(
-                                    isTop = false,
-                                    isLeft = false,
-                                    forceSize = colorTriangleSize,
-                                    xScale = 0.8f,
-                                    yScale = 0.8f,
-                            ),
-                            modifier = Modifier.alpha(0.3f)
-                    )
-                    if (item.amounts.any { it.category != null }) {
                         CornerTriangleBox(
-                                colors = item.amounts.map { it.category?.color }.reversed(),
+                                color = NummiTheme.colors.getTransactionColor(item.isOutgoing),
                                 state = CornerTriangleShapeState(
                                         isTop = false,
-                                        segmentWeights = item.amounts.map { it.amount }.reversed(),
+                                        isLeft = false,
                                         forceSize = colorTriangleSize,
-                                        yScale = 1.5f,
-                                        usePercentage = false,
+                                        xScale = 0.8f,
+                                        yScale = 0.8f,
                                 ),
+                                modifier = Modifier.alpha(0.3f)
                         )
-                    }
-                    Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(5.dp),
-                            modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 18.dp, vertical = 12.dp)
-                    ) {
-                        if (item.account != null) {
-                            Text(
-                                    text = item.account.name,
-                                    color = NummiTheme.colors.appBackground.content,
-                                    fontStyle = FontStyle.Italic,
-                            )
-                        }
-                        Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                    text = item.name,
-                                    color = NummiTheme.colors.appBackground.content,
-                                    style = NummiTheme.typography.h5,
-                            )
-                            Text(
-                                    text = DateTimeFormat.SHORT_DATE.format(item.date),
-                                    color = NummiTheme.colors.appBackground.content,
+                        if (item.amounts.any { it.category != null }) {
+                            CornerTriangleBox(
+                                    colors = item.amounts.map { it.category?.color }.reversed(),
+                                    state = CornerTriangleShapeState(
+                                            isTop = false,
+                                            segmentWeights = item.amounts.map { it.amount }.reversed(),
+                                            forceSize = colorTriangleSize,
+                                            yScale = 1.5f,
+                                            usePercentage = false,
+                                    ),
                             )
                         }
                         Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.spacedBy(5.dp),
-                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)
+                                modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 18.dp, vertical = 12.dp)
                         ) {
-                            item.amounts.forEach { amount ->
-                                Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    if (amount.category != null) {
-                                        Text(
-                                                text = amount.category.name,
-                                                color = NummiTheme.colors.appBackground.content,
-                                                modifier = Modifier.padding(end = 10.dp)
-                                        )
-                                    }
-                                    if (amount.person?.id != null || item.amounts.size > 1) {
-                                        Text(
-                                                text = amount.person?.name ?: "Me",
-                                                color = NummiTheme.colors.appBackground.content,
-                                                fontStyle = FontStyle.Italic,
-                                                modifier = Modifier
-                                                        .background(
-                                                                NummiTheme.colors.transactionAmountDetail,
-                                                                RoundedCornerShape(100),
-                                                        )
-                                                        .padding(horizontal = 10.dp, vertical = 2.dp)
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.weight(1f))
+                            if (item.account != null) {
+                                Text(
+                                        text = item.account.name,
+                                        color = NummiTheme.colors.appBackground.content,
+                                        fontStyle = FontStyle.Italic,
+                                )
+                            }
+                            Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                        text = item.name,
+                                        color = NummiTheme.colors.appBackground.content,
+                                        style = NummiTheme.typography.h5,
+                                )
+                                if (!state.isRecurring) {
                                     Text(
-                                            text = amount.amount.div100String().asCurrency(),
+                                            text = DateTimeFormat.SHORT_DATE.format(item.date),
                                             color = NummiTheme.colors.appBackground.content,
                                     )
                                 }
                             }
-                        }
-                        if (item.amounts.size > 1) {
-                            val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
-                            val totalLinesColor = NummiTheme.colors.transactionTotalLines
-                            Box(
-                                    modifier = Modifier
-                                            .align(Alignment.End)
-                                            .padding(end = 6.dp, bottom = 5.dp)
+                            Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(5.dp),
+                                    modifier = Modifier.padding(horizontal = 15.dp, vertical = 5.dp)
                             ) {
-                                Text(
-                                        text = item.amounts.sumOf { it.amount }.div100String().asCurrency(),
-                                        color = NummiTheme.colors.appBackground.content,
+                                item.amounts.forEach { amount ->
+                                    Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        if (amount.category != null) {
+                                            Text(
+                                                    text = amount.category.name,
+                                                    color = NummiTheme.colors.appBackground.content,
+                                                    modifier = Modifier.padding(end = 10.dp)
+                                            )
+                                        }
+                                        if (amount.person?.id != null || item.amounts.size > 1) {
+                                            Text(
+                                                    text = amount.person?.name ?: "Me",
+                                                    color = NummiTheme.colors.appBackground.content,
+                                                    fontStyle = FontStyle.Italic,
+                                                    modifier = Modifier
+                                                            .background(
+                                                                    NummiTheme.colors.transactionAmountDetail,
+                                                                    RoundedCornerShape(100),
+                                                            )
+                                                            .padding(horizontal = 10.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.weight(1f))
+                                        Text(
+                                                text = amount.amount.div100String().asCurrency(),
+                                                color = NummiTheme.colors.appBackground.content,
+                                        )
+                                    }
+                                }
+                            }
+                            if (item.amounts.size > 1) {
+                                val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
+                                val totalLinesColor = NummiTheme.colors.transactionTotalLines
+                                Box(
                                         modifier = Modifier
-                                                .padding(bottom = 4.dp)
-                                                .padding(horizontal = 8.dp)
-                                )
-                                Canvas(
-                                        modifier = Modifier.matchParentSize()
+                                                .align(Alignment.End)
+                                                .padding(end = 6.dp, bottom = 5.dp)
                                 ) {
-                                    fun customLine(height: Float) = drawLine(
-                                            totalLinesColor,
-                                            Offset(0f, height),
-                                            Offset(size.width, height),
-                                            strokeWidth = oneDpWidth / 2f
+                                    Text(
+                                            text = item.amounts.sumOf { it.amount }.div100String().asCurrency(),
+                                            color = NummiTheme.colors.appBackground.content,
+                                            modifier = Modifier
+                                                    .padding(bottom = 4.dp)
+                                                    .padding(horizontal = 8.dp)
                                     )
+                                    Canvas(
+                                            modifier = Modifier.matchParentSize()
+                                    ) {
+                                        fun customLine(height: Float) = drawLine(
+                                                totalLinesColor,
+                                                Offset(0f, height),
+                                                Offset(size.width, height),
+                                                strokeWidth = oneDpWidth / 2f
+                                        )
 
-                                    customLine(0f)
-                                    customLine(size.height)
-                                    customLine(size.height - oneDpWidth * 1)
+                                        customLine(0f)
+                                        customLine(size.height)
+                                        customLine(size.height - oneDpWidth * 1)
+                                    }
                                 }
                             }
                         }

@@ -40,7 +40,7 @@ fun NummiBottomNav(
                 icon = NummiIconInfo.VectorIcon(Icons.Default.List),
                 label = "View",
                 contentDescription = "View transactions",
-                destination = NummiNavRoute.VIEW_TRANSACTIONS,
+                destination = NummiNavRoute.VIEW_USER_TRANSACTIONS,
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -56,8 +56,13 @@ fun NummiBottomNav(
                 icon = NummiIconInfo.PainterIcon(R.drawable.ic_category_outline),
                 selectedIcon = NummiIconInfo.PainterIcon(R.drawable.ic_category_baseline),
                 label = "Manage",
-                contentDescription = "Manage categories, people, and accounts",
-                destination = NummiNavRoute.MANAGE_CATEGORIES,
+                contentDescription = "Manage saved transactions, categories, people, and accounts",
+                destinations = listOf(
+                        NummiNavRoute.VIEW_RECURRING_TRANSACTIONS,
+                        NummiNavRoute.MANAGE_CATEGORIES,
+                        NummiNavRoute.MANAGE_PEOPLE,
+                        NummiNavRoute.MANAGE_ACCOUNTS,
+                ),
                 currentRoute = currentRoute,
                 onClick = onClick,
         )
@@ -102,7 +107,7 @@ fun RowScope.NummiBottomNavItem(
         onClick: (destination: NummiNavRoute) -> Unit,
 ) {
     require(destinations.any()) { "No destinations for nav button" }
-    val isSelected = destinations.map { it.routeBase }.contains(currentRoute)
+    val isSelected = destinations.any { currentRoute?.contains(it.routeBase) == true }
     BottomNavigationItem(
             selected = isSelected,
             onClick = { onClick(destinations.first()) },

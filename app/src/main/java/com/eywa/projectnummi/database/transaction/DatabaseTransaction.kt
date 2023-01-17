@@ -42,6 +42,13 @@ data class DatabaseTransaction(
          */
         val order: Int = 1,
         val note: String? = null,
+        /**
+         * Marks this transaction as a recurring item. Will allow the user to quickly create a duplicate of it.
+         *
+         * Should not count towards actual user data.
+         */
+        @ColumnInfo(defaultValue = "0")
+        val isRecurring: Boolean = false,
 ) {
     companion object {
         const val TABLE_NAME = "transactions"

@@ -18,6 +18,8 @@ fun String.toNummiNavRoute() =
             null
         }
 
+// TODO Rethink the arguments that are just being used for their default value.
+//      Surely there's a better way to get that to the view model
 enum class NummiNavRoute : NavRoute {
     ADD_TRANSACTIONS {
         @Composable
@@ -26,19 +28,49 @@ enum class NummiNavRoute : NavRoute {
 
         override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?) = true
     },
-    EDIT_TRANSACTIONS {
+    ADD_TRANSACTIONS_FROM_RECURRING {
         override val arguments = listOf(
                 navArgument(NummiNavArgument.TRANSACTION_ID.toArgName()) {
                     type = NavType.StringType
                     nullable = false
-                }
+                },
+                navArgument(NummiNavArgument.INIT_FROM_RECURRING_TRANSACTION.toArgName()) {
+                    type = NavType.BoolType
+                    nullable = false
+                    defaultValue = true
+                },
         )
 
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
                 AddTransactionsScreen(navController)
     },
-    VIEW_TRANSACTIONS {
+    EDIT_TRANSACTIONS {
+        override val arguments = listOf(
+                navArgument(NummiNavArgument.TRANSACTION_ID.toArgName()) {
+                    type = NavType.StringType
+                    nullable = false
+                },
+        )
+
+        @Composable
+        override fun Screen(navController: NavController, entry: NavBackStackEntry) =
+                AddTransactionsScreen(navController)
+    },
+    VIEW_USER_TRANSACTIONS {
+        @Composable
+        override fun Screen(navController: NavController, entry: NavBackStackEntry) =
+                ViewTransactionsScreen(navController)
+    },
+    VIEW_RECURRING_TRANSACTIONS {
+        override val arguments = listOf(
+                navArgument(NummiNavArgument.RECURRING_TRANSACTIONS.toArgName()) {
+                    type = NavType.BoolType
+                    nullable = false
+                    defaultValue = true
+                },
+        )
+
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
                 ViewTransactionsScreen(navController)
@@ -82,8 +114,9 @@ enum class NummiNavRoute : NavRoute {
             args: Map<NummiNavArgument, String> = emptyMap(),
             options: (NavOptionsBuilder.() -> Unit)? = null,
     ) {
-        check(arguments.map { it.name } == args.map { it.key.toArgName() }) { "Invalid arguments" }
-        val route = routeBase + arguments.joinToString { "/" + args[it.name.toNummiNavArgument()!!]!! }
+        val route = routeBase + arguments.joinToString {
+            "/" + (args[it.name.toNummiNavArgument()!!] ?: it.argument.defaultValue!!)
+        }
 
         if (options == null) {
             navController.navigate(route)

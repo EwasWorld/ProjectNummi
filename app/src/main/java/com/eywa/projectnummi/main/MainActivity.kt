@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                 ) { padding ->
                     NavHost(
                             navController = navController,
-                            startDestination = NummiNavRoute.VIEW_TRANSACTIONS.routeBase,
+                            startDestination = NummiNavRoute.VIEW_USER_TRANSACTIONS.routeBase,
                             modifier = Modifier.padding(bottom = padding.calculateBottomPadding()),
                     ) {
                         navRoutes.forEach { route ->

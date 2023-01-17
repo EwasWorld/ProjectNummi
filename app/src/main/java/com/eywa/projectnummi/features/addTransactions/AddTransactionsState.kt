@@ -10,12 +10,14 @@ import java.util.*
 import kotlin.math.roundToInt
 
 data class AddTransactionsState(
+        val creatingFromRecurring: Boolean = false,
         val editing: Transaction? = null,
         val isEditComplete: Boolean = false,
 
-        val date: Calendar = editing?.date ?: DateUtils.currentDate(),
+        val date: Calendar = editing?.date?.takeIf { !creatingFromRecurring } ?: DateUtils.currentDate(),
         val name: String = editing?.name ?: "",
         val isOutgoing: Boolean = editing?.isOutgoing ?: true,
+        val isRecurring: Boolean = editing?.isRecurring?.takeIf { !creatingFromRecurring } ?: false,
 
         /**
          * null for not loaded
@@ -83,6 +85,7 @@ data class AddTransactionsState(
             isOutgoing = isOutgoing,
             account = account,
             order = editing?.order ?: -1,
+            isRecurring = isRecurring,
     )
 }
 

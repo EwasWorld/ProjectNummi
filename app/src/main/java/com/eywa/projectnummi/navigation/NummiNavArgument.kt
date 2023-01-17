@@ -11,7 +11,9 @@ fun String.toNummiNavArgument() =
         }
 
 enum class NummiNavArgument {
-    TRANSACTION_ID
+    TRANSACTION_ID,
+    RECURRING_TRANSACTIONS,
+    INIT_FROM_RECURRING_TRANSACTION,
     ;
 
     fun toArgName() = Regex("_[a-z]").replace(name.lowercase()) { it.value.drop(1).uppercase() }

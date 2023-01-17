@@ -1,10 +1,12 @@
 package com.eywa.projectnummi.features.viewTransactions
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
 import com.eywa.projectnummi.model.objects.Transaction
+import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogIntent
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDefaultOption
@@ -21,14 +23,28 @@ import javax.inject.Inject
 @HiltViewModel
 class ViewTransactionsViewModel @Inject constructor(
         db: NummiDatabase,
+        savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val transactionRepo = db.transactionRepo()
 
-    private val _state = MutableStateFlow(ViewTransactionsState())
+    private val _state = MutableStateFlow(
+            ViewTransactionsState(
+                    isRecurring = savedStateHandle
+                            .get<Boolean>(NummiNavArgument.RECURRING_TRANSACTIONS.toArgName()) ?: false
+            )
+    )
     val state = _state.asStateFlow()
 
     private val contextMenuOptions: Map<ManageItemOption, () -> Unit> by lazy {
         mapOf(
+                ViewTransactionsManageItemOptions.ADD to {
+                    _state.update {
+                        it.copy(
+                                manageItemDialogState = null,
+                                newTransactionInitiatedFor = it.manageItemDialogState?.item,
+                        )
+                    }
+                },
                 ManageItemDefaultOption.EDIT to {
                     _state.update {
                         it.copy(
@@ -64,7 +80,7 @@ class ViewTransactionsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            transactionRepo.getFull().collect { transactions ->
+            transactionRepo.getFull(_state.value.isRecurring).collect { transactions ->
                 _state.update { it.copy(transactions = transactions.map { dbTrans -> Transaction(dbTrans) }) }
             }
         }
@@ -88,6 +104,9 @@ class ViewTransactionsViewModel @Inject constructor(
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
             NavigatedToEditItem -> _state.update { it.copy(editTransactionInitiatedFor = null) }
+            NavigatedToNewItem -> _state.update { it.copy(newTransactionInitiatedFor = null) }
+            NavigatedToManageTab -> _state.update { it.copy(switchToManageTabInitiatedFor = null) }
+            is TabClicked -> _state.update { it.copy(switchToManageTabInitiatedFor = action.item) }
         }
     }
 
@@ -123,9 +142,10 @@ private enum class ViewTransactionsManageItemOptions(
         val shouldShow: (state: ViewTransactionsState, selectedItem: Transaction) -> Boolean,
 ) : ManageItemOption {
     MOVE_UP("Move up", { state, selectedItem ->
-        selectedItem.order != state.transactions.minOfOrNull { it.order }
+        !state.isRecurring && selectedItem.order != state.transactions.minOfOrNull { it.order }
     }),
     MOVE_DOWN("Move down", { state, selectedItem ->
-        selectedItem.order != state.transactions.maxOfOrNull { it.order }
+        !state.isRecurring && selectedItem.order != state.transactions.maxOfOrNull { it.order }
     }),
+    ADD("Add", { state, _ -> state.isRecurring })
 }

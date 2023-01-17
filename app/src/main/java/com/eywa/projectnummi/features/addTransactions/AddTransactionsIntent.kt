@@ -13,6 +13,7 @@ sealed class AddTransactionsIntent {
     object AddAmountRow : AddTransactionsIntent()
 
     sealed class ValueChangedIntent : AddTransactionsIntent()
+    object ToggleIsRecurring : ValueChangedIntent()
     object ToggleIsOutgoing : ValueChangedIntent()
     data class DateChanged(val date: Calendar) : ValueChangedIntent()
     data class DateIncremented(val daysAdded: Int) : ValueChangedIntent()

@@ -9,7 +9,7 @@ class TransactionRepo(
         private val transactionDao: TransactionDao,
         private val amountDao: AmountDao,
 ) {
-    fun getFull() = transactionDao.getFull()
+    fun getFull(isRecurring: Boolean = false) = transactionDao.getFull(isRecurring)
     fun getFull(id: Int) = transactionDao.getFull(id)
     fun get(filters: TransactionsFilters) =
             transactionDao.get(

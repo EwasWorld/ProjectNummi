@@ -107,7 +107,7 @@ fun AddTransactionsScreen(
             AddRowButton { listener(AddAmountRow) }
         }
 
-        FinalButtons(state.isEditing, listener)
+        FinalButtons(state, listener)
     }
 }
 
@@ -313,30 +313,43 @@ private fun AmountInput(
 
 @Composable
 private fun FinalButtons(
-        isEditing: Boolean,
+        state: AddTransactionsState,
         listener: (AddTransactionsIntent) -> Unit,
 ) {
-    Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+    Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.CenterVertically),
     ) {
-        Button(
-                colors = NummiTheme.colors.secondaryTextButton(),
-                elevation = NummiTheme.dimens.buttonElevationNone(),
-                onClick = { listener(Clear) },
-        ) {
-            Text(
-                    text = if (isEditing) "Reset" else "Clear"
+        if (!state.isEditing && !state.creatingFromRecurring) {
+            CheckboxInput(
+                    text = "Save to frequently used",
+                    isSelected = state.isRecurring,
+                    onClick = { listener(ToggleIsRecurring) },
+                    modifier = Modifier.padding(start = 15.dp)
             )
         }
-        Button(
-                colors = NummiTheme.colors.generalButton(),
-                shape = NummiTheme.shapes.generalButton,
-                onClick = { listener(Submit) },
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Text(
-                    text = if (isEditing) "Update" else "Create"
-            )
+            Button(
+                    colors = NummiTheme.colors.secondaryTextButton(),
+                    elevation = NummiTheme.dimens.buttonElevationNone(),
+                    onClick = { listener(Clear) },
+            ) {
+                Text(
+                        text = if (state.isEditing) "Reset" else "Clear"
+                )
+            }
+            Button(
+                    colors = NummiTheme.colors.generalButton(),
+                    shape = NummiTheme.shapes.generalButton,
+                    onClick = { listener(Submit) },
+            ) {
+                Text(
+                        text = if (state.isEditing) "Update" else "Create"
+                )
+            }
         }
     }
 }
@@ -399,11 +412,10 @@ fun AddTransactionsScreen_Preview() {
                                         personId = 0,
                                 ),
                                 AmountInputState(
-                                        amount = "12.05",
+                                        amount = "",
                                         categoryId = 0,
                                         personId = 1,
                                 ),
-                                AmountInputState(personId = 0)
                         ),
                         people = PeopleProvider.basic,
                         accounts = AccountProvider.basic,

@@ -1,5 +1,6 @@
 package com.eywa.projectnummi.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -26,9 +27,10 @@ import com.eywa.projectnummi.database.transaction.TransactionRepo
             DatabasePerson::class,
             DatabaseTransaction::class,
         ],
-        version = 1,
+        version = 2,
         exportSchema = true, // Needs a schema location in the build.gradle too to export!
         autoMigrations = [
+            AutoMigration(from = 1, to = 2),
         ]
 )
 @TypeConverters(DatabaseConverters::class)
