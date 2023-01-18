@@ -22,6 +22,14 @@ fun String.toNummiNavRoute() =
 //      Surely there's a better way to get that to the view model
 enum class NummiNavRoute : NavRoute {
     ADD_TRANSACTIONS {
+        override val arguments = listOf(
+                navArgument(NummiNavArgument.TICK_SAVE_AS_RECURRING.toArgName()) {
+                    type = NavType.BoolType
+                    nullable = false
+                    defaultValue = false
+                },
+        )
+
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
                 AddTransactionsScreen(navController)

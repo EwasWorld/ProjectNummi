@@ -39,7 +39,12 @@ class AddTransactionsViewModel @Inject constructor(
     private val accountRepo = db.accountRepo()
     private val transactionRepo = db.transactionRepo()
 
-    private val _state = MutableStateFlow(AddTransactionsState())
+    private val _state = MutableStateFlow(
+            AddTransactionsState(
+                    isRecurring = savedStateHandle.get<Boolean>(NummiNavArgument.TICK_SAVE_AS_RECURRING.toArgName())
+                            ?: false
+            )
+    )
     val state = _state.asStateFlow()
 
     private var getTransactionJob: Job? = null

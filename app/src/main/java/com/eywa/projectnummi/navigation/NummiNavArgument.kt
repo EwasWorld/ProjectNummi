@@ -14,6 +14,7 @@ enum class NummiNavArgument {
     TRANSACTION_ID,
     RECURRING_TRANSACTIONS,
     INIT_FROM_RECURRING_TRANSACTION,
+    TICK_SAVE_AS_RECURRING,
     ;
 
     fun toArgName() = Regex("_[a-z]").replace(name.lowercase()) { it.value.drop(1).uppercase() }

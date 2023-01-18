@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsExtra.*
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
 import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.navigation.NummiNavArgument
@@ -39,17 +40,19 @@ class ViewTransactionsViewModel @Inject constructor(
         mapOf(
                 ViewTransactionsManageItemOptions.ADD to {
                     _state.update {
+                        val item = it.manageItemDialogState?.item ?: return@update it
                         it.copy(
                                 manageItemDialogState = null,
-                                newTransactionInitiatedFor = it.manageItemDialogState?.item,
+                                extras = it.extras.plusOrReplace(NewTransactionFromRecurring(item)),
                         )
                     }
                 },
                 ManageItemDefaultOption.EDIT to {
                     _state.update {
+                        val item = it.manageItemDialogState?.item ?: return@update it
                         it.copy(
                                 manageItemDialogState = null,
-                                editTransactionInitiatedFor = it.manageItemDialogState?.item,
+                                extras = it.extras.plusOrReplace(EditTransaction(item)),
                         )
                     }
                 },
@@ -103,10 +106,9 @@ class ViewTransactionsViewModel @Inject constructor(
                 }
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
-            NavigatedToEditItem -> _state.update { it.copy(editTransactionInitiatedFor = null) }
-            NavigatedToNewItem -> _state.update { it.copy(newTransactionInitiatedFor = null) }
-            NavigatedToManageTab -> _state.update { it.copy(switchToManageTabInitiatedFor = null) }
-            is TabClicked -> _state.update { it.copy(switchToManageTabInitiatedFor = action.item) }
+            is TabClicked -> _state.update { it.copy(extras = it.extras.plusOrReplace(ManageTabChanged(action.item))) }
+            AddClicked -> _state.update { it.copy(extras = it.extras.plusOrReplace(AddTransactions)) }
+            is ClearExtra -> _state.update { it.copy(extras = it.extras.minus(action.extra::class)) }
         }
     }
 

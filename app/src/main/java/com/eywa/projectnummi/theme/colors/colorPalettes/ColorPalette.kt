@@ -41,7 +41,7 @@ data class ColorPalette(
 
         val generalButton: @Composable () -> ButtonColors = {
             ButtonDefaults.buttonColors(
-                    backgroundColor = BaseColor.BASE_BLUE,
+                    backgroundColor = BaseColor.BASE_GREEN,
                     contentColor = BaseColor.BASE_SPACE,
                     disabledBackgroundColor = BaseColor.BASE_SPACE,
                     disabledContentColor = BaseColor.GREY_500,
