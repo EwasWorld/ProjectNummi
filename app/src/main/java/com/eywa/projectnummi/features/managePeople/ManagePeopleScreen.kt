@@ -59,7 +59,7 @@ fun ManagePeopleScreen(
     )
 
     ManageScaffold(
-            displayItems = state.people?.sortedBy { it.name } ?: listOf(),
+            displayItems = state.people ?: listOf(),
             addFabContentDescription = "Add person",
             onAddFabClicked = { listener(AddPersonClicked) },
             currentTab = ManageTabSwitcherItem.PEOPLE,

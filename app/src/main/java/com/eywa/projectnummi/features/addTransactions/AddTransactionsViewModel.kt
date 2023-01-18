@@ -70,6 +70,11 @@ class AddTransactionsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            transactionRepo.getFull(true).collect { transactions ->
+                _state.update { it.copy(recurringTransactions = transactions.map { dbTran -> Transaction(dbTran) }) }
+            }
+        }
+        viewModelScope.launch {
             personRepo.get().collect { people ->
                 _state.update { it.copy(people = people.map { dbPerson -> Person(dbPerson) }) }
             }
@@ -112,7 +117,10 @@ class AddTransactionsViewModel @Inject constructor(
             is CreateAccountDialogAction -> handleCreateAccountIntent(action.action)
             is SelectAccountDialogAction -> handleSelectAccountIntent(action.action)
 
-            Clear -> _state.update { it.resetState() }
+            is SelectTransactionDialogAction -> handleSelectTransactionIntent(action.action)
+            StartSelectTransaction -> _state.update { it.copy(selectTransactionDialogIsShown = true) }
+
+            Clear -> _state.update { it.copy(creatingFromRecurring = false).resetState() }
             Submit -> submit()
 
             AddAmountRow ->
@@ -132,6 +140,7 @@ class AddTransactionsViewModel @Inject constructor(
     private fun AddTransactionsState.resetState() = AddTransactionsState(
             creatingFromRecurring = creatingFromRecurring,
             editing = editing,
+            recurringTransactions = recurringTransactions,
             categories = categories,
             people = people,
             accounts = accounts,
@@ -375,6 +384,23 @@ class AddTransactionsViewModel @Inject constructor(
                             createAccountDialogState = CreateAccountDialogState(),
                     )
                 }
+            else -> throw NotImplementedError()
+        }
+    }
+
+    private fun handleSelectTransactionIntent(action: SelectItemDialogIntent) {
+        when (action) {
+            SelectItemDialogIntent.Close -> _state.update { it.copy(selectTransactionDialogIsShown = false) }
+            is SelectItemDialogIntent.ItemChosen<*> -> {
+                if (action.item == null) return
+                _state.update {
+                    it.copy(
+                            creatingFromRecurring = true,
+                            editing = action.item as Transaction,
+                            selectTransactionDialogIsShown = false,
+                    ).resetState().copy(editing = null)
+                }
+            }
             else -> throw NotImplementedError()
         }
     }

@@ -33,4 +33,7 @@ sealed class AddTransactionsIntent {
     object StartChangeAccount : AddTransactionsIntent()
     data class CreateAccountDialogAction(val action: CreateAccountDialogIntent) : AddTransactionsIntent()
     data class SelectAccountDialogAction(val action: SelectItemDialogIntent) : AddTransactionsIntent()
+
+    object StartSelectTransaction : AddTransactionsIntent()
+    data class SelectTransactionDialogAction(val action: SelectItemDialogIntent) : AddTransactionsIntent()
 }

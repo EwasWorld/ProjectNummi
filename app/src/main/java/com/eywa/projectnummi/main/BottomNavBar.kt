@@ -3,9 +3,7 @@ package com.eywa.projectnummi.main
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -27,15 +25,6 @@ fun NummiBottomNav(
             backgroundColor = NummiTheme.colors.navBar.main,
             contentColor = NummiTheme.colors.navBar.content,
     ) {
-        NummiBottomNavItem(
-                icon = NummiIconInfo.VectorIcon(Icons.Outlined.Add),
-                selectedIcon = NummiIconInfo.VectorIcon(Icons.Filled.Add),
-                label = "Add",
-                contentDescription = "Add transactions",
-                destination = NummiNavRoute.ADD_TRANSACTIONS,
-                currentRoute = currentRoute,
-                onClick = onClick,
-        )
         NummiBottomNavItem(
                 icon = NummiIconInfo.VectorIcon(Icons.Default.List),
                 label = "View",

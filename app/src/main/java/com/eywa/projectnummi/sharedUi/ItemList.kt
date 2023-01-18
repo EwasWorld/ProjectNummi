@@ -12,10 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.eywa.projectnummi.model.HasName
 import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
-fun <T> ItemList(
+fun <T : HasName> ItemList(
         items: List<T>?,
         hasDefaultItem: Boolean = false,
         newItemButtonText: String? = null,
@@ -34,7 +35,7 @@ fun <T> ItemList(
             }
         }
 
-        items(items ?: listOf()) { item ->
+        items(items?.sortedBy { it.getItemName() } ?: listOf()) { item ->
             itemContent(item)
         }
 

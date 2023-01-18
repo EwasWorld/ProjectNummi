@@ -8,10 +8,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,10 +35,7 @@ import com.eywa.projectnummi.sharedUi.category.CategoryItem
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialog
 import com.eywa.projectnummi.sharedUi.person.PersonItem
 import com.eywa.projectnummi.sharedUi.person.createPersonDialog.CreatePersonDialog
-import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectAccountDialog
-import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectCategoryDialog
-import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogState
-import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectPersonDialog
+import com.eywa.projectnummi.sharedUi.selectItemDialog.*
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
@@ -77,37 +71,55 @@ fun AddTransactionsScreen(
 ) {
     Dialogs(state, listener)
 
-    Column(
-            verticalArrangement = Arrangement.spacedBy(25.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(NummiTheme.dimens.screenPadding)
-    ) {
-        MainInfo(state, listener)
-
-        Text(
-                text = "Total: " + state.totalAmount.div100String().asCurrency(),
-                color = NummiTheme.colors.appBackground.content,
-                style = NummiTheme.typography.h5,
-        )
-
-        repeat(state.amountRows.size) { index ->
-            AmountRow(index, state, listener)
-        }
-
-        Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(35.dp),
+    Box {
+        Column(
+                verticalArrangement = Arrangement.spacedBy(25.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(NummiTheme.dimens.screenPadding)
         ) {
-            if (state.amountRows.size <= 1) {
-                SplitButton { listener(Split) }
-            }
-            AddRowButton { listener(AddAmountRow) }
-        }
+            MainInfo(state, listener)
 
-        FinalButtons(state, listener)
+            Text(
+                    text = "Total: " + state.totalAmount.div100String().asCurrency(),
+                    color = NummiTheme.colors.appBackground.content,
+                    style = NummiTheme.typography.h5,
+            )
+
+            repeat(state.amountRows.size) { index ->
+                AmountRow(index, state, listener)
+            }
+
+            Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(35.dp),
+            ) {
+                if (state.amountRows.size <= 1) {
+                    SplitButton { listener(Split) }
+                }
+                AddRowButton { listener(AddAmountRow) }
+            }
+
+            FinalButtons(state, listener)
+        }
+        // TODO show/hide on scroll up/down
+        if (!state.isEditing && !state.creatingFromRecurring) {
+            FloatingActionButton(
+                    backgroundColor = NummiTheme.colors.fab.main,
+                    contentColor = NummiTheme.colors.fab.content,
+                    onClick = { listener(StartSelectTransaction) },
+                    modifier = Modifier
+                            .padding(NummiTheme.dimens.fabToScreenEdgePadding)
+                            .align(Alignment.BottomEnd)
+            ) {
+                Icon(
+                        imageVector = Icons.Default.FavoriteBorder,
+                        contentDescription = "Load from frequently used",
+                )
+            }
+        }
     }
 }
 
@@ -145,6 +157,25 @@ private fun Dialogs(
             isShown = true,
             state = state.createAccountDialogState,
             listener = { listener(CreateAccountDialogAction(it)) },
+    )
+    SelectItemDialog(
+            title = "Select a saved transaction",
+            state = SelectItemDialogState(state.recurringTransactions ?: emptyList()),
+            isShown = state.selectTransactionDialogIsShown,
+            hasDefaultItem = state.recurringTransactions.isNullOrEmpty(),
+            listener = { listener(SelectTransactionDialogAction(it)) },
+            itemContent = {
+                if (it != null) {
+                    TransactionItem(transaction = it)
+                }
+                else {
+                    Text(
+                            text = "No saved transactions",
+                            color = NummiTheme.colors.appBackground.content,
+                            modifier = Modifier.padding(NummiTheme.dimens.listItemPadding)
+                    )
+                }
+            },
     )
 }
 

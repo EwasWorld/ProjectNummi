@@ -11,12 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.eywa.projectnummi.model.HasName
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
 import com.eywa.projectnummi.theme.NummiTheme
 
 @Composable
-fun <T> ManageScaffold(
+fun <T : HasName> ManageScaffold(
         displayItems: List<T>,
         addFabContentDescription: String,
         onAddFabClicked: () -> Unit,

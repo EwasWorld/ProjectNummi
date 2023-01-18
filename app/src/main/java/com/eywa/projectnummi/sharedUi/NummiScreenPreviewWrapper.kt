@@ -21,3 +21,14 @@ fun NummiScreenPreviewWrapper(theme: NummiColorTheme = currentColorTheme, conten
         }
     }
 }
+
+@Composable
+fun NummiPreviewWrapper(theme: NummiColorTheme = currentColorTheme, content: @Composable () -> Unit) {
+    NummiTheme(theme) {
+        Box(
+                modifier = Modifier.background(NummiTheme.colors.appBackground.main)
+        ) {
+            content()
+        }
+    }
+}

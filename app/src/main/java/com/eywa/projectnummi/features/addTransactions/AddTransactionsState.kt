@@ -41,6 +41,12 @@ data class AddTransactionsState(
         val createAccountDialogState: CreateAccountDialogState? = null,
         val selectAccountDialogIsShown: Boolean = false,
 
+        /**
+         * null for not loaded
+         */
+        val recurringTransactions: List<Transaction>? = null,
+        val selectTransactionDialogIsShown: Boolean = false,
+
         val amountRows: List<AmountInputState> =
                 editing?.amounts?.map { AmountInputState(it) } ?: listOf(AmountInputState()),
         val currentRow: Int? = null,

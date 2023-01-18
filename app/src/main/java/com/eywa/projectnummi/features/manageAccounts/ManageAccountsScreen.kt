@@ -59,7 +59,7 @@ fun ManageAccountsScreen(
     )
 
     ManageScaffold(
-            displayItems = state.accounts?.sortedBy { it.name } ?: listOf(),
+            displayItems = state.accounts ?: listOf(),
             addFabContentDescription = "Add account",
             onAddFabClicked = { listener(AddAccountClicked) },
             currentTab = ManageTabSwitcherItem.ACCOUNTS,
