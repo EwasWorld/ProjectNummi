@@ -54,10 +54,18 @@ data class TransactionsSummaryState(
     val selectedItem by lazy { selectedItemIndex?.let { groupedItems.getOrNull(it) } }
 
     private fun List<TransactionsSummaryPieItem>.addArcs(): List<TransactionsSummaryPieItem> {
-        val total = getTotal() ?: return emptyList()
+        var total = getTotal()
+        val items = if (total != null) {
+            this
+        }
+        else {
+            val list = this.map { it.copy(amount = it.amount * -1) }.reversed()
+            total = list.getTotal() ?: return this
+            list
+        }
         val percentage = 360f / total
         var currentAngle = 0f
-        return map { item ->
+        return items.map { item ->
             val startAngle = currentAngle
             val itemArc = (item.amount * percentage).takeIf { it > 0f } ?: return@map item
             currentAngle += itemArc

@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.eywa.projectnummi.model.objects.Transaction
@@ -24,6 +25,16 @@ fun TransactionItem(
             contentAlignment = Alignment.Center,
             modifier = modifier
     ) {
+        CornerTriangleBox(
+                color = NummiTheme.colors.getTransactionColor(transaction.isOutgoing),
+                state = CornerTriangleShapeState(
+                        isTop = false,
+                        isLeft = false,
+                        xScale = 0.8f,
+                        yScale = 0.8f,
+                ),
+                modifier = Modifier.alpha(0.3f)
+        )
         CornerTriangleBox(
                 colors = colors,
                 state = CornerTriangleShapeState(

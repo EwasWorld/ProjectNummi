@@ -179,6 +179,7 @@ class AddTransactionsViewModel @Inject constructor(
                         name = "",
                         isOutgoing = true,
                         amountRows = listOf(AmountInputState()),
+                        creatingFromRecurring = false,
                 )
             }
         }
@@ -394,11 +395,14 @@ class AddTransactionsViewModel @Inject constructor(
             is SelectItemDialogIntent.ItemChosen<*> -> {
                 if (action.item == null) return
                 _state.update {
+                    val date = it.date
                     it.copy(
                             creatingFromRecurring = true,
                             editing = action.item as Transaction,
                             selectTransactionDialogIsShown = false,
-                    ).resetState().copy(editing = null)
+                    )
+                            .resetState()
+                            .copy(editing = null, date = date)
                 }
             }
             else -> throw NotImplementedError()

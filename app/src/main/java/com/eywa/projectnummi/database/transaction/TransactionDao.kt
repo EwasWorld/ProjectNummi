@@ -20,8 +20,11 @@ interface TransactionDao {
      * Note: does not return any [DatabaseTransaction.isRecurring] items
      *
      * @param overrideShowAllAccounts ignore [accountIds], show all accounts
+     * @param allowAccountIsNull include null values with [accountIds]
      * @param overrideShowAllCategories ignore [categoryIds], show all categories
+     * @param allowCategoryIsNull include null values with [categoryIds]
      * @param overrideShowAllPeople ignore [personIds], show all people
+     * @param allowPersonIsNull include null values with [personIds]
      * @param overrideShowInAndOut ignore [isOutgoing], show all transactions
      */
     @Transaction
@@ -34,20 +37,23 @@ interface TransactionDao {
                     isRecurring = 0
                     AND tran.date >= :from AND tran.date <= :to 
                     AND (tran.isOutgoing = :isOutgoing OR :overrideShowInAndOut)
-                    AND (tran.accountId IN (:accountIds) OR :overrideShowAllAccounts)
-                    AND (amount.categoryId IN (:categoryIds) OR :overrideShowAllCategories)
-                    AND (amount.personId IN (:personIds) OR :overrideShowAllPeople)
+                    AND (:overrideShowAllAccounts OR tran.accountId IN (:accountIds) OR (tran.accountId IS null AND :allowAccountIsNull))
+                    AND (:overrideShowAllCategories OR amount.categoryId IN (:categoryIds) OR (amount.categoryId IS null AND :allowCategoryIsNull))
+                    AND (:overrideShowAllPeople OR amount.personId IN (:personIds) OR (amount.personId IS null AND :allowPersonIsNull))
                 GROUP BY tran.id
             """
     )
     fun get(
             from: Calendar,
             to: Calendar,
-            accountIds: List<Int?>,
+            accountIds: List<Int>,
+            allowAccountIsNull: Boolean,
             overrideShowAllAccounts: Boolean,
-            categoryIds: List<Int?>,
+            categoryIds: List<Int>,
+            allowCategoryIsNull: Boolean,
             overrideShowAllCategories: Boolean,
-            personIds: List<Int?>,
+            personIds: List<Int>,
+            allowPersonIsNull: Boolean,
             overrideShowAllPeople: Boolean,
             isOutgoing: Boolean,
             overrideShowInAndOut: Boolean,

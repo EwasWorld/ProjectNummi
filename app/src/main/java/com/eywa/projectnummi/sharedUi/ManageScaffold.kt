@@ -26,7 +26,9 @@ fun <T : HasName> ManageScaffold(
         onItemClicked: (T?) -> Unit,
         itemContent: @Composable (T?) -> Unit,
 ) {
-    Column {
+    Column(
+            modifier = Modifier.fillMaxSize()
+    ) {
         TabSwitcher(
                 items = ManageTabSwitcherItem.values().toList(),
                 selectedItem = currentTab,

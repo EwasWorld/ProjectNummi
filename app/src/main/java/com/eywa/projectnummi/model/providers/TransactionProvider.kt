@@ -9,7 +9,7 @@ object TransactionProvider {
             Transaction(
                     id = 1,
                     date = DateProvider.getDate(0),
-                    name = "Sainsburys",
+                    name = "Sainsburys but a really long name",
                     amounts = listOf(
                             Amount(
                                     1,

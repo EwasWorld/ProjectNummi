@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
  * Sorts transactions as follows (in order):
  * - Nulls first
  * - Latest [Transaction.date] first
- * - Lower [Transaction.order] first
+ * - Higher [Transaction.order] first
  */
 val descendingDateTransactionComparator: Comparator<Transaction> = object : Comparator<Transaction> {
     override fun compare(t0: Transaction?, t1: Transaction?): Int {
@@ -58,7 +58,7 @@ val descendingDateTransactionComparator: Comparator<Transaction> = object : Comp
         val descendingDateComparison = t1.date.compareTo(t0.date)
         if (descendingDateComparison != 0) return descendingDateComparison
 
-        return t0.order.compareTo(t1.order)
+        return t1.order.compareTo(t0.order)
     }
 }
 
@@ -128,7 +128,9 @@ fun ViewTransactionsScreen(
             listener = { listener(DeleteConfirmationDialogAction(it)) },
     )
 
-    Box {
+    Box(
+            modifier = Modifier.fillMaxSize()
+    ) {
         Column {
             if (state.isRecurring) {
                 TabSwitcher(
@@ -141,7 +143,7 @@ fun ViewTransactionsScreen(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.weight(1f)
             ) {
                 items(displayItems) { item ->
                     Surface(
@@ -203,11 +205,13 @@ fun ViewTransactionsScreen(
                                             text = item.name,
                                             color = NummiTheme.colors.appBackground.content,
                                             style = NummiTheme.typography.h5,
+                                            modifier = Modifier.weight(1f)
                                     )
                                     if (!state.isRecurring) {
                                         Text(
                                                 text = DateTimeFormat.SHORT_DATE.format(item.date),
                                                 color = NummiTheme.colors.appBackground.content,
+                                                modifier = Modifier.padding(start = 10.dp)
                                         )
                                     }
                                 }

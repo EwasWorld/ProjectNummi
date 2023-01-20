@@ -59,14 +59,14 @@ class ViewTransactionsViewModel @Inject constructor(
                 ViewTransactionsManageItemOptions.MOVE_UP to {
                     viewModelScope.launch {
                         val item = _state.value.manageItemDialogState?.item?.asDbTransaction()
-                        if (item != null) transactionRepo.increaseOrder(item)
+                        if (item != null) transactionRepo.decreaseOrder(item)
                         _state.update { it.copy(manageItemDialogState = null) }
                     }
                 },
                 ViewTransactionsManageItemOptions.MOVE_DOWN to {
                     viewModelScope.launch {
                         val item = _state.value.manageItemDialogState?.item?.asDbTransaction()
-                        if (item != null) transactionRepo.decreaseOrder(item)
+                        if (item != null) transactionRepo.increaseOrder(item)
                         _state.update { it.copy(manageItemDialogState = null) }
                     }
                 },
@@ -144,10 +144,12 @@ private enum class ViewTransactionsManageItemOptions(
         val shouldShow: (state: ViewTransactionsState, selectedItem: Transaction) -> Boolean,
 ) : ManageItemOption {
     MOVE_UP("Move up", { state, selectedItem ->
-        !state.isRecurring && selectedItem.order != state.transactions.minOfOrNull { it.order }
+        val matchingDate = state.transactions.filter { it.date == selectedItem.date }
+        !state.isRecurring && matchingDate.size > 1 && selectedItem.order != matchingDate.maxOfOrNull { it.order }
     }),
     MOVE_DOWN("Move down", { state, selectedItem ->
-        !state.isRecurring && selectedItem.order != state.transactions.maxOfOrNull { it.order }
+        val matchingDate = state.transactions.filter { it.date == selectedItem.date }
+        !state.isRecurring && matchingDate.size > 1 && selectedItem.order != matchingDate.minOfOrNull { it.order }
     }),
     ADD("Add", { state, _ -> state.isRecurring })
 }
