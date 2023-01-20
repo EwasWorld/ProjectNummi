@@ -2,7 +2,6 @@ package com.eywa.projectnummi.sharedUi.account
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,8 +23,8 @@ fun AccountItem(
         Text(
                 text = account?.name ?: "Default account",
                 color = NummiTheme.colors.appBackground.content,
+                modifier = Modifier.weight(1f, fill = true)
         )
-        Spacer(modifier = Modifier.weight(1f, fill = true))
         if (account?.type != null) {
             Text(
                     text = account.type,
