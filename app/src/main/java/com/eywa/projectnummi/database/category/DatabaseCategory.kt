@@ -40,7 +40,7 @@ data class CategoryIdWithParentIds(
          */
         val parentsString: String?,
         val catId: Int,
+        val color: DbColor,
 )
 
 fun String.idsFromParentString() = split(",").map { it.toInt() }
-

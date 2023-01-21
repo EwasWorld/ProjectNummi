@@ -13,8 +13,8 @@ interface CategoryDao {
      */
     @Query(
             """
-                WITH RECURSIVE sub_cat(parentsString,catId) AS (
-                    SELECT NULL, id
+                WITH RECURSIVE sub_cat(parentsString,catId,color) AS (
+                    SELECT NULL, id, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL) 
                         FROM ${DatabaseCategory.TABLE_NAME} 
                         WHERE parentCategoryId IS NULL
                         
@@ -25,7 +25,8 @@ interface CategoryDao {
                                 WHEN sub_cat.parentsString IS NULL THEN cat.parentCategoryId
                                 ELSE cat.parentCategoryId || ',' || sub_cat.parentsString
                             END,
-                            cat.id
+                            cat.id,
+                            IIF(cat.matchParentColor = 0 OR cat.parentCategoryId IS NULL, cat.color, sub_cat.color)
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
                         WHERE cat.parentCategoryId = sub_cat.catId
                 )
@@ -40,8 +41,8 @@ interface CategoryDao {
      */
     @Query(
             """
-                WITH RECURSIVE sub_cat(parentsString,current) AS (
-                    SELECT NULL, parentCategoryId 
+                WITH RECURSIVE sub_cat(parentsString,catId,color) AS (
+                    SELECT NULL, parentCategoryId, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL)
                         FROM ${DatabaseCategory.TABLE_NAME} 
                         WHERE id = :id
                         
@@ -52,16 +53,21 @@ interface CategoryDao {
                                 WHEN sub_cat.parentsString IS NULL THEN cat.id
                                 ELSE sub_cat.parentsString || ',' || cat.id
                             END,
-                            cat.parentCategoryId
+                            cat.parentCategoryId,
+                            CASE
+                                WHEN NOT sub_cat.color IS NULL THEN sub_cat.color
+                                WHEN cat.matchParentColor = 0 OR cat.parentCategoryId IS NULL THEN cat.color
+                                ELSE NULL
+                            END
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
-                        WHERE cat.id = sub_cat.current
+                        WHERE cat.id = sub_cat.catId
                 )
-                SELECT parentsString
+                SELECT parentsString, :id as catId, color
                 FROM sub_cat
-                WHERE current IS NULL
+                WHERE catId IS NULL
             """
     )
-    fun getParentIds(id: Int): Flow<String>
+    fun getParentIds(id: Int): Flow<CategoryIdWithParentIds>
 
     @Insert
     suspend fun insert(category: DatabaseCategory): Long

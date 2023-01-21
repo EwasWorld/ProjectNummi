@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.database
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.compose.ui.graphics.Color
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.eywa.projectnummi.database.category.CategoryDao
 import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
@@ -36,27 +37,37 @@ class CategoryTests {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun testRecursive() = runTest {
+    fun testGetParentIds() = runTest {
         CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
 
-        assertEquals(
-                listOf(
-                        CategoryIdWithParentIds(null, 1),
-                        CategoryIdWithParentIds(null, 5),
-                        CategoryIdWithParentIds("1", 2),
-                        CategoryIdWithParentIds("1", 4),
-                        CategoryIdWithParentIds("5", 6),
-                        CategoryIdWithParentIds("2,1", 3),
-                ),
-                categoryDao.getParentIds().first(),
+        val expected = listOf(
+                CategoryIdWithParentIds(null, 1, DbColor(Color.Red)),
+                CategoryIdWithParentIds(null, 5, DbColor(Color.Magenta)),
+                CategoryIdWithParentIds(null, 7, DbColor(Color.White)),
+                CategoryIdWithParentIds("1", 2, DbColor(Color.Red)),
+                CategoryIdWithParentIds("1", 4, DbColor(Color.Cyan)),
+                CategoryIdWithParentIds("5", 6, DbColor(Color.Green)),
+                CategoryIdWithParentIds("7", 8, DbColor(Color.White)),
+                CategoryIdWithParentIds("2,1", 3, DbColor(Color.Red)),
         )
+        val actual = categoryDao.getParentIds().first()
+
+        assertEquals(expected, actual)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun testRecursiveWithId() = runTest {
+    fun testGetParentIdsFromId() = runTest {
         CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
 
-        assertEquals("2,1", categoryDao.getParentIds(3).first())
+        listOf(
+                CategoryIdWithParentIds("2,1", 3, DbColor(Color.Red)),
+                CategoryIdWithParentIds("1", 2, DbColor(Color.Red)),
+                CategoryIdWithParentIds("1", 4, DbColor(Color.Cyan)),
+                CategoryIdWithParentIds(null, 7, DbColor(Color.White)),
+                CategoryIdWithParentIds("7", 8, DbColor(Color.White)),
+        ).forEach {
+            assertEquals(it, categoryDao.getParentIds(it.catId).first())
+        }
     }
 }
