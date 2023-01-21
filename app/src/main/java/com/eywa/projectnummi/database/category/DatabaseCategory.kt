@@ -33,3 +33,14 @@ data class FullDatabaseCategory(
         val category: DatabaseCategory,
         val parent: FullDatabaseCategory?,
 )
+
+data class CategoryIdWithParentIds(
+        /**
+         * Direct parent first, root last
+         */
+        val parentsString: String?,
+        val catId: Int,
+)
+
+fun String.idsFromParentString() = split(",").map { it.toInt() }
+

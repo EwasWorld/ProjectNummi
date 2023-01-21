@@ -13,22 +13,55 @@ interface CategoryDao {
      */
     @Query(
             """
-                WITH RECURSIVE
-                sub_cat(parent,catName,catId,level) AS (
-                    SELECT 
-                            NULL, name, id, 0 
+                WITH RECURSIVE sub_cat(parentsString,catId) AS (
+                    SELECT NULL, id
                         FROM ${DatabaseCategory.TABLE_NAME} 
                         WHERE parentCategoryId IS NULL
+                        
                     UNION ALL
-                    SELECT 
-                            cat.parentCategoryId, cat.name, cat.id, sub_cat.level+1 
+                    SELECT
+                            CASE
+                                WHEN cat.parentCategoryId IS NULL THEN sub_cat.parentsString
+                                WHEN sub_cat.parentsString IS NULL THEN cat.parentCategoryId
+                                ELSE cat.parentCategoryId || ',' || sub_cat.parentsString
+                            END,
+                            cat.id
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
                         WHERE cat.parentCategoryId = sub_cat.catId
                 )
-                SELECT * FROM sub_cat
+                SELECT *
+                FROM sub_cat
             """
     )
-    fun getRecursive(): Flow<List<RecursiveTest>>
+    fun getParentIds(): Flow<List<CategoryIdWithParentIds>>
+
+    /**
+     * Direct parent first, root last
+     */
+    @Query(
+            """
+                WITH RECURSIVE sub_cat(parentsString,current) AS (
+                    SELECT NULL, parentCategoryId 
+                        FROM ${DatabaseCategory.TABLE_NAME} 
+                        WHERE id = :id
+                        
+                    UNION ALL
+                    SELECT
+                            CASE
+                                WHEN cat.id IS NULL THEN sub_cat.parentsString
+                                WHEN sub_cat.parentsString IS NULL THEN cat.id
+                                ELSE sub_cat.parentsString || ',' || cat.id
+                            END,
+                            cat.parentCategoryId
+                        FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
+                        WHERE cat.id = sub_cat.current
+                )
+                SELECT parentsString
+                FROM sub_cat
+                WHERE current IS NULL
+            """
+    )
+    fun getParentIds(id: Int): Flow<String>
 
     @Insert
     suspend fun insert(category: DatabaseCategory): Long
@@ -39,10 +72,3 @@ interface CategoryDao {
     @Update
     suspend fun update(vararg categories: DatabaseCategory)
 }
-
-data class RecursiveTest(
-        val parent: Int?,
-        val catName: String,
-        val catId: String,
-        val level: Int,
-)

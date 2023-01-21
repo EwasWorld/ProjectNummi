@@ -3,6 +3,7 @@ package com.eywa.projectnummi.database
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.eywa.projectnummi.database.category.CategoryDao
+import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -38,7 +39,24 @@ class CategoryTests {
     fun testRecursive() = runTest {
         CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
 
-        val testValue = categoryDao.getRecursive().first()
-        assertEquals(1, testValue.size)
+        assertEquals(
+                listOf(
+                        CategoryIdWithParentIds(null, 1),
+                        CategoryIdWithParentIds(null, 5),
+                        CategoryIdWithParentIds("1", 2),
+                        CategoryIdWithParentIds("1", 4),
+                        CategoryIdWithParentIds("5", 6),
+                        CategoryIdWithParentIds("2,1", 3),
+                ),
+                categoryDao.getParentIds().first(),
+        )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testRecursiveWithId() = runTest {
+        CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
+
+        assertEquals("2,1", categoryDao.getParentIds(3).first())
     }
 }
