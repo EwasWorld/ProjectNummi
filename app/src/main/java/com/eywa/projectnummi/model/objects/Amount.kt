@@ -19,7 +19,8 @@ data class Amount(
             dbAmount: FullDatabaseAmount,
     ) : this(
             id = dbAmount.amount.id,
-            category = dbAmount.category?.let { Category(it) },
+            // TODO Uncomment
+            category = null, // dbAmount.category?.let { Category(it) },
             person = dbAmount.person?.let { Person(it) },
             amount = dbAmount.amount.amount
     )

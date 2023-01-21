@@ -87,6 +87,7 @@ private fun NummiDialog(
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
                             text = title,
+                            style = NummiTheme.typography.h5,
                     )
                     content()
                 }

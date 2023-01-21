@@ -34,8 +34,9 @@ class ManageCategoriesViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                                 manageItemDialogState = null,
-                                createDialogState = it.manageItemDialogState?.item
-                                        ?.let { category -> CreateCategoryDialogState(editing = category) }
+                                createDialogState = it.manageItemDialogState?.item?.let { category ->
+                                    CreateCategoryDialogState(editing = category, categories = it.categories)
+                                }
                         )
                     }
                 },
@@ -52,7 +53,7 @@ class ManageCategoriesViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            categoryRepo.get().collect { categories ->
+            categoryRepo.getFull().collect { categories ->
                 _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }
@@ -69,7 +70,10 @@ class ManageCategoriesViewModel @Inject constructor(
                             )
                     )
                 }
-            AddCategoryClicked -> _state.update { it.copy(createDialogState = CreateCategoryDialogState()) }
+            AddCategoryClicked ->
+                _state.update {
+                    it.copy(createDialogState = CreateCategoryDialogState(categories = it.categories))
+                }
             is CreateCategoryDialogAction -> handleCreateDialogIntent(action.action)
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
@@ -80,9 +84,7 @@ class ManageCategoriesViewModel @Inject constructor(
 
     private fun handleCreateDialogIntent(action: CreateCategoryDialogIntent) {
         when (action) {
-            is CreateCategoryDialogIntent.NameChanged,
-            is CreateCategoryDialogIntent.HueChanged,
-            ->
+            is CreateCategoryDialogIntent.LocalChange ->
                 _state.update {
                     val currentState = it.createDialogState ?: return
                     it.copy(createDialogState = action.updateState(currentState))

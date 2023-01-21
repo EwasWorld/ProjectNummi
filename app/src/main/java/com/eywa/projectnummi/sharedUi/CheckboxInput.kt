@@ -14,6 +14,7 @@ import com.eywa.projectnummi.theme.NummiTheme
 fun CheckboxInput(
         text: String,
         isSelected: Boolean,
+        checkboxFirst: Boolean = false,
         modifier: Modifier = Modifier,
         onClick: () -> Unit,
 ) {
@@ -22,14 +23,22 @@ fun CheckboxInput(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier.clickable(onClick = onClick)
     ) {
-        Text(
-                text = text,
-                color = NummiTheme.colors.appBackground.content,
-        )
+        if (!checkboxFirst) {
+            Text(
+                    text = text,
+                    color = NummiTheme.colors.appBackground.content,
+            )
+        }
         Checkbox(
                 checked = isSelected,
                 onCheckedChange = { onClick() },
                 colors = NummiTheme.colors.generalCheckbox(),
         )
+        if (checkboxFirst) {
+            Text(
+                    text = text,
+                    color = NummiTheme.colors.appBackground.content,
+            )
+        }
     }
 }

@@ -65,7 +65,7 @@ class AddTransactionsViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
-            categoryRepo.get().collect { categories ->
+            categoryRepo.getFull().collect { categories ->
                 _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }
@@ -96,7 +96,10 @@ class AddTransactionsViewModel @Inject constructor(
                     it.copy(currentRow = action.rowIndex, selectCategoryDialogIsShown = true)
                 }
                 else {
-                    it.copy(currentRow = action.rowIndex, createCategoryDialogState = CreateCategoryDialogState())
+                    it.copy(
+                            currentRow = action.rowIndex,
+                            createCategoryDialogState = CreateCategoryDialogState(categories = it.categories),
+                    )
                 }
             }
             is CreateCategoryDialogAction -> handleCreateCategoryIntent(action.action)
@@ -227,9 +230,7 @@ class AddTransactionsViewModel @Inject constructor(
 
     private fun handleCreateCategoryIntent(action: CreateCategoryDialogIntent) {
         when (action) {
-            is CreateCategoryDialogIntent.HueChanged,
-            is CreateCategoryDialogIntent.NameChanged,
-            ->
+            is CreateCategoryDialogIntent.LocalChange ->
                 _state.update {
                     val createState = it.createCategoryDialogState ?: return
                     it.copy(createCategoryDialogState = action.updateState(createState))
@@ -275,7 +276,7 @@ class AddTransactionsViewModel @Inject constructor(
                 _state.update {
                     it.copy(
                             selectCategoryDialogIsShown = false,
-                            createCategoryDialogState = CreateCategoryDialogState(),
+                            createCategoryDialogState = CreateCategoryDialogState(categories = it.categories),
                     )
                 }
             else -> throw NotImplementedError()

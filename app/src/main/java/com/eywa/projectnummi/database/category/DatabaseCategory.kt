@@ -22,8 +22,14 @@ data class DatabaseCategory(
         val name: String,
         val color: DbColor,
         @ColumnInfo(index = true) val parentCategoryId: Int? = null,
+        @ColumnInfo(defaultValue = "0") val matchParentColor: Boolean = false,
 ) {
     companion object {
         const val TABLE_NAME = "categories"
     }
 }
+
+data class FullDatabaseCategory(
+        val category: DatabaseCategory,
+        val parent: FullDatabaseCategory?,
+)

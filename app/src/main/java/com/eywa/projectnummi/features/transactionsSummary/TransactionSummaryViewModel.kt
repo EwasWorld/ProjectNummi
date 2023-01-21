@@ -39,7 +39,7 @@ class TransactionSummaryViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            db.categoryRepo().get().collect { categories ->
+            db.categoryRepo().getFull().collect { categories ->
                 _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }

@@ -27,10 +27,11 @@ import com.eywa.projectnummi.database.transaction.TransactionRepo
             DatabasePerson::class,
             DatabaseTransaction::class,
         ],
-        version = 2,
+        version = 3,
         exportSchema = true, // Needs a schema location in the build.gradle too to export!
         autoMigrations = [
             AutoMigration(from = 1, to = 2),
+            AutoMigration(from = 2, to = 3),
         ]
 )
 @TypeConverters(DatabaseConverters::class)

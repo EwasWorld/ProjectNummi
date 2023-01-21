@@ -72,6 +72,7 @@ fun SelectAccountDialog(
 @Composable
 fun SelectCategoryDialog(
         isShown: Boolean = true,
+        showCreateNew: Boolean = true,
         state: SelectItemDialogState<Category>?,
         listener: (SelectItemDialogIntent) -> Unit,
 ) = SelectItemDialog(
@@ -80,7 +81,7 @@ fun SelectCategoryDialog(
         listener = listener,
         itemContent = { CategoryItem(category = it) },
         title = if (state?.allowMultiSelect == true) "Select categories" else "Select a category",
-        newItemButtonText = "New category",
+        newItemButtonText = "New category".takeIf { showCreateNew },
 )
 
 @Composable

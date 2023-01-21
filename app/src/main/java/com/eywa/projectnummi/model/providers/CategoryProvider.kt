@@ -1,5 +1,6 @@
 package com.eywa.projectnummi.model.providers
 
+import androidx.compose.ui.graphics.Color
 import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.utils.ColorUtils
 
@@ -11,4 +12,20 @@ object CategoryProvider {
             "Work" to 0.8f,
             "Utilities" to 0.2f,
     ).mapIndexed { index, (name, hue) -> Category(index + 1, name, ColorUtils.asCategoryColor(hue)) }
+
+    val recursive = mutableListOf<Category>().apply {
+        val top1 = Category(1, "Top 1", Color.Red, null, false)
+        add(top1)
+        val top1Sub1 = Category(2, "Top 1 - Sub 1", Color.Yellow, top1, false)
+        add(top1Sub1)
+        val top1SubSub1 = Category(3, "Top 1 - Sub Sub 1", Color.Blue, top1Sub1, false)
+        add(top1SubSub1)
+        val top1Sub2 = Category(4, "Top 1 - Sub 2", Color.Cyan, top1, false)
+        add(top1Sub2)
+
+        val top2 = Category(5, "Top 2", Color.Magenta, null, false)
+        add(top2)
+        val top2Sub1 = Category(6, "Top 2 - Sub 1", Color.Green, top2, false)
+        add(top2Sub1)
+    }.toList()
 }
