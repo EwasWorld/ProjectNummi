@@ -40,19 +40,25 @@ class CategoryTests {
     fun testGetParentIds() = runTest {
         CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
 
-        val expected = listOf(
-                CategoryIdWithParentIds(null, 1, DbColor(Color.Red)),
-                CategoryIdWithParentIds(null, 5, DbColor(Color.Magenta)),
-                CategoryIdWithParentIds(null, 7, DbColor(Color.White)),
-                CategoryIdWithParentIds("1", 2, DbColor(Color.Red)),
-                CategoryIdWithParentIds("1", 4, DbColor(Color.Cyan)),
-                CategoryIdWithParentIds("5", 6, DbColor(Color.Green)),
-                CategoryIdWithParentIds("7", 8, DbColor(Color.White)),
-                CategoryIdWithParentIds("2,1", 3, DbColor(Color.Red)),
+        val expectedItems = mapOf(
+                DbId(1) to CategoryIdWithParentIds(null, "Top 1", DbColor(Color.Red)),
+                DbId(5) to CategoryIdWithParentIds(null, "Top 2", DbColor(Color.Magenta)),
+                DbId(7) to CategoryIdWithParentIds(null, "Top 3", DbColor(Color.White)),
+                DbId(2) to CategoryIdWithParentIds("1", "Top 1 - Sub 1<!NM_SEP!>Top 1", DbColor(Color.Red)),
+                DbId(4) to CategoryIdWithParentIds("1", "Top 1 - Sub 2<!NM_SEP!>Top 1", DbColor(Color.Cyan)),
+                DbId(6) to CategoryIdWithParentIds("5", "Top 2 - Sub 1<!NM_SEP!>Top 2", DbColor(Color.Green)),
+                DbId(8) to CategoryIdWithParentIds("7", "Top 3 - Sub 1<!NM_SEP!>Top 3", DbColor(Color.White)),
+                DbId(3) to CategoryIdWithParentIds("2,1",
+                        "Top 1 - Sub Sub 1<!NM_SEP!>Top 1 - Sub 1<!NM_SEP!>Top 1",
+                        DbColor(Color.Red)),
         )
         val actual = categoryDao.getParentIds().first()
 
-        assertEquals(expected, actual)
+        expectedItems.forEach { (id, expected) ->
+            assertEquals(expected, actual[id])
+        }
+        assertEquals(emptyMap<Int, CategoryIdWithParentIds>(),
+                actual.filterNot { (key, _) -> expectedItems.keys.contains(key) })
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -61,13 +67,15 @@ class CategoryTests {
         CategoryProvider.recursive.forEach { categoryDao.insert(it.asDbCategory()) }
 
         listOf(
-                CategoryIdWithParentIds("2,1", 3, DbColor(Color.Red)),
-                CategoryIdWithParentIds("1", 2, DbColor(Color.Red)),
-                CategoryIdWithParentIds("1", 4, DbColor(Color.Cyan)),
-                CategoryIdWithParentIds(null, 7, DbColor(Color.White)),
-                CategoryIdWithParentIds("7", 8, DbColor(Color.White)),
-        ).forEach {
-            assertEquals(it, categoryDao.getParentIds(it.catId).first())
+                3 to CategoryIdWithParentIds("2,1",
+                        "Top 1 - Sub Sub 1<!NM_SEP!>Top 1 - Sub 1<!NM_SEP!>Top 1",
+                        DbColor(Color.Red)),
+                2 to CategoryIdWithParentIds("1", "Top 1 - Sub 1<!NM_SEP!>Top 1", DbColor(Color.Red)),
+                4 to CategoryIdWithParentIds("1", "Top 1 - Sub 2<!NM_SEP!>Top 1", DbColor(Color.Cyan)),
+                7 to CategoryIdWithParentIds(null, "Top 3", DbColor(Color.White)),
+                8 to CategoryIdWithParentIds("7", "Top 3 - Sub 1<!NM_SEP!>Top 3", DbColor(Color.White)),
+        ).forEach { (id, expected) ->
+            assertEquals(expected, categoryDao.getParentIds(id).first())
         }
     }
 }

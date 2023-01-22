@@ -46,7 +46,7 @@ abstract class NummiDatabase : RoomDatabase() {
     fun accountRepo() = AccountRepo(accountDao())
     fun categoryRepo() = CategoryRepo(categoryDao())
     fun personRepo() = PersonRepo(personDao())
-    fun transactionRepo() = TransactionRepo(transactionDao(), amountDao())
+    fun transactionRepo() = TransactionRepo(transactionDao(), amountDao(), categoryDao())
 
     companion object {
         const val DATABASE_NAME = "nummi_database"

@@ -1,9 +1,12 @@
 package com.eywa.projectnummi.database.transaction
 
 import androidx.room.*
+import com.eywa.projectnummi.database.DbId
 import com.eywa.projectnummi.database.account.DatabaseAccount
 import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount
+import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
+import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
 import com.eywa.projectnummi.features.viewTransactions.descendingDateTransactionComparator
 import java.util.*
 
@@ -69,6 +72,21 @@ data class FullDatabaseTransaction(
                 parentColumn = "accountId",
                 entityColumn = "id",
         )
+        val account: DatabaseAccount?,
+) {
+    fun addCategoryInfoDbId(info: Map<DbId, CategoryIdWithParentIds>) = addCategoryInfo(info.mapKeys { it.key.id })
+
+    fun addCategoryInfo(info: Map<Int, CategoryIdWithParentIds>) =
+            FullDatabaseTransactionWithFullCategory(
+                    transaction = transaction,
+                    amounts = amounts.map { it.addCategoryInfo(info) },
+                    account = account
+            )
+}
+
+data class FullDatabaseTransactionWithFullCategory(
+        val transaction: DatabaseTransaction,
+        val amounts: List<FullDatabaseAmountWithFullCategory>,
         val account: DatabaseAccount?,
 )
 

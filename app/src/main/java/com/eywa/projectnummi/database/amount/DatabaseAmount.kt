@@ -1,7 +1,10 @@
 package com.eywa.projectnummi.database.amount
 
 import androidx.room.*
+import com.eywa.projectnummi.database.DbId
+import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
 import com.eywa.projectnummi.database.category.DatabaseCategory
+import com.eywa.projectnummi.database.category.FullDatabaseCategory
 import com.eywa.projectnummi.database.person.DatabasePerson
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
 
@@ -67,5 +70,20 @@ data class FullDatabaseAmount(
                 parentColumn = "personId",
                 entityColumn = "id",
         )
+        val person: DatabasePerson?,
+) {
+    fun addCategoryInfoDbId(info: Map<DbId, CategoryIdWithParentIds>) = addCategoryInfo(info.mapKeys { it.key.id })
+
+    fun addCategoryInfo(info: Map<Int, CategoryIdWithParentIds>) =
+            FullDatabaseAmountWithFullCategory(
+                    amount = amount,
+                    category = category?.let { cat -> FullDatabaseCategory(cat, cat.id.let { info[it] }) },
+                    person = person,
+            )
+}
+
+data class FullDatabaseAmountWithFullCategory(
+        val amount: DatabaseAmount,
+        val category: FullDatabaseCategory?,
         val person: DatabasePerson?,
 )

@@ -172,7 +172,7 @@ fun ViewTransactionsScreen(
                             )
                             if (item.amounts.any { it.category != null }) {
                                 CornerTriangleBox(
-                                        colors = item.amounts.map { it.category?.color }.reversed(),
+                                        colors = item.amounts.map { it.category?.displayColor }.reversed(),
                                         state = CornerTriangleShapeState(
                                                 isTop = false,
                                                 segmentWeights = item.amounts.map { it.amount }.reversed(),

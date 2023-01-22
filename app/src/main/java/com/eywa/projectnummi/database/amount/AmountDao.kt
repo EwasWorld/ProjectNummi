@@ -1,14 +1,12 @@
 package com.eywa.projectnummi.database.amount
 
-import androidx.room.*
-import kotlinx.coroutines.flow.Flow
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.Update
 
 @Dao
 interface AmountDao {
-    @Transaction
-    @Query("SELECT * FROM ${DatabaseAmount.TABLE_NAME}")
-    fun getFull(): Flow<List<FullDatabaseAmount>>
-
     @Insert
     suspend fun insert(vararg amounts: DatabaseAmount)
 

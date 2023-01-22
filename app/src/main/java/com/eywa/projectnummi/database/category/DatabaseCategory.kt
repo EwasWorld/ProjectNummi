@@ -31,16 +31,32 @@ data class DatabaseCategory(
 
 data class FullDatabaseCategory(
         val category: DatabaseCategory,
-        val parent: FullDatabaseCategory?,
-)
+        val info: CategoryIdWithParentIds?,
+) {
+    init {
+        check(category.parentCategoryId == null || info != null) {
+            "Info cannot be null if parent is present"
+        }
+    }
+}
 
-data class CategoryIdWithParentIds(
-        /**
-         * Direct parent first, root last
-         */
-        val parentsString: String?,
-        val catId: Int,
+class CategoryIdWithParentIds(
+        private val parentsIdsString: String?,
+        private val allNamesString: String?,
         val color: DbColor,
-)
+) {
+    /**
+     * Direct parent first, root last
+     */
+    fun getParentsIds() = parentsIdsString?.split(",")?.map { it.toInt() }
 
-fun String.idsFromParentString() = split(",").map { it.toInt() }
+    /**
+     * This category's name first, then all parents up to the root
+     */
+    fun getAllNames() = allNamesString?.split(NAME_SEPARATOR)
+
+    companion object {
+        internal const val NAME_SEPARATOR = "<!NM_SEP!>"
+    }
+}
+

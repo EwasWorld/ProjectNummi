@@ -94,7 +94,7 @@ class ManageCategoriesViewModel @Inject constructor(
                 val dialogState = _state.value.createDialogState ?: return
                 _state.update { it.copy(createDialogState = null) }
 
-                val category = dialogState.asCategory().asDbCategory()
+                val category = dialogState.asDatabaseCategory()
                 viewModelScope.launch {
                     if (dialogState.isEditing) {
                         categoryRepo.update(category)

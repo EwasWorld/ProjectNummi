@@ -87,7 +87,7 @@ fun CreateCategoryDialog(
                             .fillMaxWidth()
                             .height(40.dp)
                             .background(
-                                    state?.parentCategory?.color?.takeIf { state.matchParentColor }
+                                    state?.parentCategory?.displayColor?.takeIf { state.matchParentColor }
                                             ?: ColorUtils.asCategoryColor(state?.hue ?: 0.5f)
                             )
             )

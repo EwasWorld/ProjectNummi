@@ -18,7 +18,7 @@ fun TransactionItem(
         modifier: Modifier = Modifier,
         contentPadding: PaddingValues = PaddingValues(NummiTheme.dimens.listItemPadding),
 ) {
-    val colors = transaction.amounts.sortedBy { it.amount }.map { it.category?.color }
+    val colors = transaction.amounts.sortedBy { it.amount }.map { it.category?.displayColor }
     Box(
             contentAlignment = Alignment.Center,
             modifier = modifier

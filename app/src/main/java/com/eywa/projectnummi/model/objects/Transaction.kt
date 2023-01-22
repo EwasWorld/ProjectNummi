@@ -1,9 +1,9 @@
 package com.eywa.projectnummi.model.objects
 
-import com.eywa.projectnummi.database.amount.FullDatabaseAmount
+import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
 import com.eywa.projectnummi.database.transaction.DatabaseTransaction
 import com.eywa.projectnummi.database.transaction.DatabaseTransactionWithFullAccount
-import com.eywa.projectnummi.database.transaction.FullDatabaseTransaction
+import com.eywa.projectnummi.database.transaction.FullDatabaseTransactionWithFullCategory
 import com.eywa.projectnummi.model.HasNameAndId
 import java.util.*
 
@@ -22,7 +22,7 @@ data class Transaction(
         val isRecurring: Boolean = false,
 ) : HasNameAndId {
     constructor(
-            dbTransaction: FullDatabaseTransaction,
+            dbTransaction: FullDatabaseTransactionWithFullCategory,
     ) : this(
             id = dbTransaction.transaction.id,
             date = dbTransaction.transaction.date,
@@ -36,7 +36,7 @@ data class Transaction(
 
     constructor(
             dbTransaction: DatabaseTransactionWithFullAccount,
-            dbAmounts: List<FullDatabaseAmount>,
+            dbAmounts: List<FullDatabaseAmountWithFullCategory>,
     ) : this(
             id = dbTransaction.transaction.id,
             date = dbTransaction.transaction.date,

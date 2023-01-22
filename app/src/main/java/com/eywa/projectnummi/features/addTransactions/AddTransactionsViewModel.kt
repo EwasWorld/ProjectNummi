@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
 import com.eywa.projectnummi.features.addTransactions.AddTransactionsIntent.*
+import com.eywa.projectnummi.model.HasNameAndId
 import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.model.objects.Person
@@ -237,13 +238,18 @@ class AddTransactionsViewModel @Inject constructor(
                 }
             CreateCategoryDialogIntent.Close -> _state.update { it.copy(createCategoryDialogState = null) }
             CreateCategoryDialogIntent.Submit -> {
-                val category = _state.value.createCategoryDialogState?.asCategory() ?: return
+                val category = _state.value.createCategoryDialogState?.asDatabaseCategory() ?: return
                 viewModelScope.launch {
-                    val id = categoryRepo.insert(category.asDbCategory()).toInt()
+                    val id = categoryRepo.insert(category).toInt()
                     // Create category can only be triggered from the select category action
                     //      so after the category is created, select them
                     handleSelectCategoryIntent(
-                            SelectItemDialogIntent.ItemChosen(category.copy(id = id))
+                            SelectItemDialogIntent.ItemChosen(
+                                    object : HasNameAndId {
+                                        override fun getItemName(): String = category.name
+                                        override fun getItemId(): Int = id
+                                    }
+                            )
                     )
                 }
             }

@@ -3,14 +3,25 @@ package com.eywa.projectnummi.database.transaction
 import androidx.room.Transaction
 import com.eywa.projectnummi.database.amount.AmountDao
 import com.eywa.projectnummi.database.amount.DatabaseAmount
+import com.eywa.projectnummi.database.category.CategoryDao
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 
 class TransactionRepo(
         private val transactionDao: TransactionDao,
         private val amountDao: AmountDao,
+        private val categoryDao: CategoryDao,
 ) {
     fun getFull(isRecurring: Boolean = false) = transactionDao.getFull(isRecurring)
+            .combine(categoryDao.getParentIds()) { transactions, categoryInfo ->
+                transactions.map { it.addCategoryInfoDbId(categoryInfo) }
+            }
+
     fun getFull(id: Int) = transactionDao.getFull(id)
+            .combine(categoryDao.getParentIds(id)) { transaction, categoryInfo ->
+                transaction.addCategoryInfo(mapOf(id to categoryInfo))
+            }
+
     fun get(filters: TransactionsFilters) =
             transactionDao.get(
                     from = filters.from,
@@ -26,7 +37,11 @@ class TransactionRepo(
                     overrideShowAllPeople = filters.selectedPersonIds.isEmpty(),
                     isOutgoing = filters.showOutgoing,
                     overrideShowInAndOut = filters.showOutgoing == filters.showIncoming,
-            )
+            ).combine(categoryDao.getParentIds()) { transactions, categoryInfo ->
+                transactions.mapValues { (_, value) ->
+                    value.map { it.addCategoryInfoDbId(categoryInfo) }
+                }
+            }
 
     suspend fun delete(transaction: DatabaseTransaction) = transactionDao.delete(transaction)
 

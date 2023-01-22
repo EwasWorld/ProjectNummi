@@ -25,7 +25,7 @@ fun CategoryItem(
             modifier = modifier
     ) {
         CornerTriangleBox(
-                color = category?.color ?: Color.Transparent,
+                color = category?.displayColor ?: Color.Transparent,
                 state = CornerTriangleShapeState(
                         isTop = false,
                         xScale = 2f,
@@ -52,7 +52,7 @@ fun CategoryItem(
             modifier = modifier
     ) {
         CornerTriangleBox(
-                colors = categories.map { it?.color ?: Color.Transparent },
+                colors = categories.map { it?.displayColor ?: Color.Transparent },
                 state = CornerTriangleShapeState(
                         isTop = false,
                         xScale = 2f,

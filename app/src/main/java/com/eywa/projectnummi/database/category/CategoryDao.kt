@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.database.category
 
 import androidx.room.*
+import com.eywa.projectnummi.database.DbId
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -13,46 +14,49 @@ interface CategoryDao {
      */
     @Query(
             """
-                WITH RECURSIVE sub_cat(parentsString,catId,color) AS (
-                    SELECT NULL, id, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL) 
+                WITH RECURSIVE sub_cat(parentsIdsString, allNamesString, id, color) AS (
+                    SELECT NULL, name, id, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL) 
                         FROM ${DatabaseCategory.TABLE_NAME} 
                         WHERE parentCategoryId IS NULL
                         
                     UNION ALL
                     SELECT
                             CASE
-                                WHEN cat.parentCategoryId IS NULL THEN sub_cat.parentsString
-                                WHEN sub_cat.parentsString IS NULL THEN cat.parentCategoryId
-                                ELSE cat.parentCategoryId || ',' || sub_cat.parentsString
+                                WHEN cat.parentCategoryId IS NULL THEN sub_cat.parentsIdsString
+                                WHEN sub_cat.parentsIdsString IS NULL THEN cat.parentCategoryId
+                                ELSE cat.parentCategoryId || ',' || sub_cat.parentsIdsString
                             END,
+                            cat.name || '${CategoryIdWithParentIds.NAME_SEPARATOR}' || sub_cat.allNamesString,
                             cat.id,
                             IIF(cat.matchParentColor = 0 OR cat.parentCategoryId IS NULL, cat.color, sub_cat.color)
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
-                        WHERE cat.parentCategoryId = sub_cat.catId
+                        WHERE cat.parentCategoryId = sub_cat.id
                 )
                 SELECT *
                 FROM sub_cat
+                GROUP BY sub_cat.id
             """
     )
-    fun getParentIds(): Flow<List<CategoryIdWithParentIds>>
+    fun getParentIds(): Flow<Map<DbId, CategoryIdWithParentIds>>
 
     /**
      * Direct parent first, root last
      */
     @Query(
             """
-                WITH RECURSIVE sub_cat(parentsString,catId,color) AS (
-                    SELECT NULL, parentCategoryId, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL)
-                        FROM ${DatabaseCategory.TABLE_NAME} 
+                WITH RECURSIVE sub_cat(parentsIdsString, allNamesString, current, color) AS (
+                    SELECT NULL, name, parentCategoryId, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL)
+                        FROM ${DatabaseCategory.TABLE_NAME}
                         WHERE id = :id
-                        
+
                     UNION ALL
                     SELECT
                             CASE
-                                WHEN cat.id IS NULL THEN sub_cat.parentsString
-                                WHEN sub_cat.parentsString IS NULL THEN cat.id
-                                ELSE sub_cat.parentsString || ',' || cat.id
+                                WHEN cat.id IS NULL THEN sub_cat.parentsIdsString
+                                WHEN sub_cat.parentsIdsString IS NULL THEN cat.id
+                                ELSE sub_cat.parentsIdsString || ',' || cat.id
                             END,
+                            sub_cat.allNamesString || '${CategoryIdWithParentIds.NAME_SEPARATOR}' || cat.name,
                             cat.parentCategoryId,
                             CASE
                                 WHEN NOT sub_cat.color IS NULL THEN sub_cat.color
@@ -60,11 +64,11 @@ interface CategoryDao {
                                 ELSE NULL
                             END
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
-                        WHERE cat.id = sub_cat.catId
+                        WHERE cat.id = sub_cat.current
                 )
-                SELECT parentsString, :id as catId, color
+                SELECT parentsIdsString, allNamesString, color
                 FROM sub_cat
-                WHERE catId IS NULL
+                WHERE current IS NULL
             """
     )
     fun getParentIds(id: Int): Flow<CategoryIdWithParentIds>

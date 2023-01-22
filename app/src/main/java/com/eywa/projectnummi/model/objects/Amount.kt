@@ -1,7 +1,7 @@
 package com.eywa.projectnummi.model.objects
 
 import com.eywa.projectnummi.database.amount.DatabaseAmount
-import com.eywa.projectnummi.database.amount.FullDatabaseAmount
+import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
 
 data class Amount(
         val id: Int,
@@ -16,11 +16,10 @@ data class Amount(
         val amount: Int,
 ) {
     constructor(
-            dbAmount: FullDatabaseAmount,
+            dbAmount: FullDatabaseAmountWithFullCategory,
     ) : this(
             id = dbAmount.amount.id,
-            // TODO Uncomment
-            category = null, // dbAmount.category?.let { Category(it) },
+            category = dbAmount.category?.let { Category(it) },
             person = dbAmount.person?.let { Person(it) },
             amount = dbAmount.amount.amount
     )
