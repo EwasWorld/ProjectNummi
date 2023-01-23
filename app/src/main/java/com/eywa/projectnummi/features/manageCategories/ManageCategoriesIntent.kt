@@ -14,4 +14,5 @@ sealed class ManageCategoriesIntent {
     data class CreateCategoryDialogAction(val action: CreateCategoryDialogIntent) : ManageCategoriesIntent()
     data class ManageItemDialogAction(val action: ManageItemDialogIntent) : ManageCategoriesIntent()
     data class DeleteConfirmationDialogAction(val action: DeleteConfirmationDialogIntent) : ManageCategoriesIntent()
+    object DeleteThisAndSubCategories : ManageCategoriesIntent()
 }

@@ -12,4 +12,7 @@ data class ManageCategoriesState(
         val manageItemDialogState: ManageItemDialogState<Category>? = null,
         val deleteDialogState: DeleteConfirmationDialogState<Category>? = null,
         val navigateInitiatedFor: NummiNavRoute? = null,
-)
+) {
+    val deleteWithSubCategoriesState =
+            deleteDialogState?.item?.takeIf { item -> categories?.any { it.hasParentWithId(item.id) } == true }
+}

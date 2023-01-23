@@ -79,6 +79,7 @@ class ManageCategoriesViewModel @Inject constructor(
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
             is TabClicked -> _state.update { it.copy(navigateInitiatedFor = action.item.navRoute) }
             NavigationResolved -> _state.update { it.copy(navigateInitiatedFor = null) }
+            DeleteThisAndSubCategories -> deleteItem(true)
         }
     }
 
@@ -117,19 +118,25 @@ class ManageCategoriesViewModel @Inject constructor(
 
     private fun handleDeleteConfirmationDialogIntent(action: DeleteConfirmationDialogIntent) {
         when (action) {
-            DeleteConfirmationDialogIntent.Ok -> {
-                val deleteItem = _state.value.deleteDialogState?.item
-                if (deleteItem != null) {
-                    viewModelScope.launch { categoryRepo.delete(deleteItem.asDbCategory()) }
+            DeleteConfirmationDialogIntent.Ok -> deleteItem(false)
+            DeleteConfirmationDialogIntent.Cancel ->
+                _state.update { it.copy(manageItemDialogState = null, deleteDialogState = null) }
+        }
+    }
+
+    private fun deleteItem(deleteSubCategories: Boolean) {
+        val deleteItem = _state.value.deleteDialogState?.item
+        if (deleteItem != null) {
+            val subCategories = _state.value.categories?.filter { it.hasParentWithId(deleteItem.id) }?.map { it.id }
+            viewModelScope.launch {
+                if (deleteSubCategories && !subCategories.isNullOrEmpty()) {
+                    categoryRepo.delete(subCategories.plus(deleteItem.id))
                 }
-                _state.update {
-                    it.copy(
-                            manageItemDialogState = null,
-                            deleteDialogState = null,
-                    )
+                else {
+                    categoryRepo.delete(deleteItem.asDbCategory())
                 }
             }
-            DeleteConfirmationDialogIntent.Cancel -> _state.update { it.copy(deleteDialogState = null) }
         }
+        _state.update { it.copy(manageItemDialogState = null, deleteDialogState = null) }
     }
 }

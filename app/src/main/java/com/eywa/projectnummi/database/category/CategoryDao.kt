@@ -79,6 +79,14 @@ interface CategoryDao {
     @Delete
     suspend fun delete(category: DatabaseCategory)
 
+    @Query(
+            """
+                DELETE FROM ${DatabaseCategory.TABLE_NAME}
+                WHERE (id IN (:ids))
+            """
+    )
+    suspend fun delete(ids: List<Int>)
+
     @Update
     suspend fun update(vararg categories: DatabaseCategory)
 }

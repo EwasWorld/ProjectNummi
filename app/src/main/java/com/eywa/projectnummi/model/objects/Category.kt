@@ -32,8 +32,7 @@ data class Category(
          * The names of all parent categories (direct parent first, root last)
          */
         val parentNames: List<String>? = null,
-
-        ) : HasNameAndId {
+) : HasNameAndId {
     constructor(
             dbCategory: FullDatabaseCategory,
     ) : this(
