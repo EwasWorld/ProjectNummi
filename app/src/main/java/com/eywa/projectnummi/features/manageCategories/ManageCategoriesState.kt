@@ -5,6 +5,7 @@ import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.category.createCategoryDialog.CreateCategoryDialogState
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialogState
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialogState
+import com.eywa.projectnummi.utils.CategorySortNode
 
 data class ManageCategoriesState(
         val categories: List<Category>? = null,
@@ -15,4 +16,7 @@ data class ManageCategoriesState(
 ) {
     val deleteWithSubCategoriesState =
             deleteDialogState?.item?.takeIf { item -> categories?.any { it.hasParentWithId(item.id) } == true }
+
+    val sortedCategories = categories?.let { CategorySortNode.generate(it).getOrdered() }
 }
+

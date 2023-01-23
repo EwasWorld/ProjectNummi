@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.eywa.projectnummi.database.DbColor
 import com.eywa.projectnummi.database.category.DatabaseCategory
 import com.eywa.projectnummi.database.category.FullDatabaseCategory
+import com.eywa.projectnummi.model.HasLevel
 import com.eywa.projectnummi.model.HasNameAndId
 
 data class Category(
@@ -32,7 +33,7 @@ data class Category(
          * The names of all parent categories (direct parent first, root last)
          */
         val parentNames: List<String>? = null,
-) : HasNameAndId {
+) : HasNameAndId, HasLevel {
     constructor(
             dbCategory: FullDatabaseCategory,
     ) : this(
@@ -56,6 +57,8 @@ data class Category(
     override fun getItemName(): String = name
 
     override fun getItemId(): Int = id
+
+    override fun getItemLevel(): Int = parentIds?.size ?: 0
 
     fun hasParentWithId(id: Int): Boolean = parentIds?.contains(id) ?: false
 }

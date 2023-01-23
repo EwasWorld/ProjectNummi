@@ -72,7 +72,8 @@ fun ManageCategoriesScreen(
     )
 
     ManageScaffold(
-            displayItems = state.categories ?: listOf(),
+            displayItems = state.sortedCategories ?: listOf(),
+            keepOrder = true,
             addFabContentDescription = "Add category",
             onAddFabClicked = { listener(AddCategoryClicked) },
             currentTab = ManageTabSwitcherItem.CATEGORIES,

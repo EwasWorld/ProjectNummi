@@ -19,6 +19,7 @@ import com.eywa.projectnummi.theme.NummiTheme
 @Composable
 fun <T : HasName> ManageScaffold(
         displayItems: List<T>,
+        keepOrder: Boolean = false,
         addFabContentDescription: String,
         onAddFabClicked: () -> Unit,
         currentTab: ManageTabSwitcherItem,
@@ -41,6 +42,7 @@ fun <T : HasName> ManageScaffold(
         ) {
             ItemList(
                     items = displayItems,
+                    keepOrder = keepOrder,
                     contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
             ) {
                 BorderedItem(

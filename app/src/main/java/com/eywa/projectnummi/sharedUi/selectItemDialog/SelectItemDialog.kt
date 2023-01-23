@@ -17,11 +17,13 @@ import com.eywa.projectnummi.sharedUi.account.AccountItem
 import com.eywa.projectnummi.sharedUi.category.CategoryItem
 import com.eywa.projectnummi.sharedUi.person.PersonItem
 import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent.*
+import com.eywa.projectnummi.utils.CategorySortNode
 
 
 @Composable
 fun <I : HasNameAndId> SelectItemDialog(
         title: String,
+        keepOrder: Boolean = false,
         newItemButtonText: String? = null,
         isShown: Boolean = true,
         hasDefaultItem: Boolean = true,
@@ -40,6 +42,7 @@ fun <I : HasNameAndId> SelectItemDialog(
     ) {
         ItemList(
                 items = state?.items,
+                keepOrder = keepOrder,
                 onNewItemClicked = { listener(CreateNew) },
                 hasDefaultItem = hasDefaultItem,
                 newItemButtonText = newItemButtonText?.takeIf { !isMultiSelect },
@@ -77,7 +80,8 @@ fun SelectCategoryDialog(
         listener: (SelectItemDialogIntent) -> Unit,
 ) = SelectItemDialog(
         isShown = isShown,
-        state = state,
+        state = state?.copy(items = CategorySortNode.generate(state.items).getOrdered()),
+        keepOrder = true,
         listener = listener,
         itemContent = { CategoryItem(category = it) },
         title = if (state?.allowMultiSelect == true) "Select categories" else "Select a category",
