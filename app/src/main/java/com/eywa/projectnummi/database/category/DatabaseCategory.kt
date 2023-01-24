@@ -49,6 +49,20 @@ class CategoryIdWithParentIds(
      */
     fun getAllNames() = allNamesString?.split(NAME_SEPARATOR)
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is CategoryIdWithParentIds) return false
+        return parentsIdsString == other.parentsIdsString
+                && allNamesString == other.allNamesString
+                && color.value == other.color.value
+    }
+
+    override fun hashCode(): Int {
+        var result = parentsIdsString?.hashCode() ?: 0
+        result = 31 * result + (allNamesString?.hashCode() ?: 0)
+        result = 31 * result + color.value.hashCode()
+        return result
+    }
+
     companion object {
         internal const val NAME_SEPARATOR = "<!NM_SEP!>"
     }
