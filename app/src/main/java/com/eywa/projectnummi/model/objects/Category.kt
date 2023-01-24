@@ -32,7 +32,7 @@ data class Category(
         /**
          * The names of all parent categories (direct parent first, root last)
          */
-        val parentNames: List<String>? = null,
+        val allNames: List<String> = listOf(name),
 ) : HasNameAndId, HasLevel {
     constructor(
             dbCategory: FullDatabaseCategory,
@@ -43,8 +43,12 @@ data class Category(
             dbColor = dbCategory.category.color.value,
             displayColor = dbCategory.info?.color?.value ?: dbCategory.category.color.value,
             parentIds = dbCategory.info?.getParentsIds(),
-            parentNames = dbCategory.info?.getAllNames(),
+            allNames = dbCategory.info?.getAllNames() ?: listOf(dbCategory.category.name),
     )
+
+    init {
+        require(allNames.isNotEmpty()) { "Must have at least one name" }
+    }
 
     fun asDbCategory() = DatabaseCategory(
             id = id,

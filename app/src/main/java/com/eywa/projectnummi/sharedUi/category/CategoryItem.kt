@@ -18,6 +18,7 @@ import com.eywa.projectnummi.theme.NummiTheme
 fun CategoryItem(
         category: Category?,
         modifier: Modifier = Modifier,
+        showParentNames: Boolean = false,
         contentPadding: PaddingValues = PaddingValues(NummiTheme.dimens.listItemPadding),
 ) {
     Box(
@@ -33,7 +34,9 @@ fun CategoryItem(
                 ),
         )
         Text(
-                text = category?.name ?: "No category",
+                text = category?.allNames?.takeIf { showParentNames }?.joinToString(" - ")
+                        ?: category?.name
+                        ?: "No category",
                 color = NummiTheme.colors.appBackground.content,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(contentPadding)
@@ -62,7 +65,7 @@ fun CategoryItem(
         Text(
                 text = when (categories.size) {
                     0 -> "All categories"
-                    1 -> categories.first()?.name ?: "No category"
+                    1 -> categories.first()?.allNames?.joinToString(" - ") ?: "No category"
                     else -> "Various categories"
                 },
                 color = NummiTheme.colors.appBackground.content,

@@ -26,7 +26,7 @@ object TransactionProvider {
                     amounts = listOf(
                             Amount(
                                     2,
-                                    null,
+                                    CategoryProvider.basic[7],
                                     PeopleProvider.basic[1],
                                     30,
                             ),
@@ -174,6 +174,20 @@ object TransactionProvider {
                     order = 4,
                     account = AccountProvider.basic[1],
                     isRecurring = true,
+            ),
+            Transaction(
+                    id = 12,
+                    date = DateProvider.getDate(-1),
+                    name = "No cat",
+                    amounts = listOf(
+                            Amount(
+                                    13,
+                                    null,
+                                    PeopleProvider.basic[1],
+                                    30,
+                            ),
+                    ),
+                    account = AccountProvider.basic[1],
             ),
     )
 }

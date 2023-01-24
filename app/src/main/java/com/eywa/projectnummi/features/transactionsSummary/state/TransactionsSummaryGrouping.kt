@@ -15,7 +15,7 @@ enum class TransactionsSummaryGrouping(private val displayName: String) : HasNam
                         .groupBy { it.first }
                         .map { (category, amounts) ->
                             TransactionsSummaryPieItem(
-                                    category?.name,
+                                    category?.allNames?.joinToString(" - "),
                                     category?.displayColor,
                                     amounts.sumOf { it.second },
                             )

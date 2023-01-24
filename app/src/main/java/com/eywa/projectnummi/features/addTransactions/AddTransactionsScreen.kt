@@ -205,7 +205,9 @@ private fun AmountRow(
             ) {
                 BorderedItem(
                         onClick = { listener(StartChangeCategory(rowIndex)) },
-                        content = { CategoryItem(category = state.getCategory(rowState.categoryId)) },
+                        content = {
+                            CategoryItem(category = state.getCategory(rowState.categoryId), showParentNames = true)
+                        },
                 )
                 BorderedItem(
                         onClick = { listener(StartChangePerson(rowIndex)) },

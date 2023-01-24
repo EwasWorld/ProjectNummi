@@ -226,7 +226,7 @@ fun ViewTransactionsScreen(
                                         ) {
                                             if (amount.category != null) {
                                                 Text(
-                                                        text = amount.category.name,
+                                                        text = amount.category.allNames.joinToString(" - "),
                                                         color = NummiTheme.colors.appBackground.content,
                                                         modifier = Modifier.padding(end = 10.dp)
                                                 )

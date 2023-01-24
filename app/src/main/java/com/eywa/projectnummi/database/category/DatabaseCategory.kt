@@ -32,13 +32,7 @@ data class DatabaseCategory(
 data class FullDatabaseCategory(
         val category: DatabaseCategory,
         val info: CategoryIdWithParentIds?,
-) {
-    init {
-        check(category.parentCategoryId == null || info != null) {
-            "Info cannot be null if parent is present"
-        }
-    }
-}
+)
 
 class CategoryIdWithParentIds(
         private val parentsIdsString: String?,

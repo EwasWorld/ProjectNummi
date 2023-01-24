@@ -12,7 +12,14 @@ object CategoryProvider {
             "Work" to 0.8f,
             "Utilities" to 0.2f,
     )
-            .mapIndexed { index, (name, hue) -> Category(index + 1, name, ColorUtils.asCategoryColor(hue)) }
+            .mapIndexed { index, (name, hue) ->
+                Category(
+                        id = index + 1,
+                        name = name,
+                        dbColor = ColorUtils.asCategoryColor(hue),
+                        allNames = listOf(name),
+                )
+            }
             .plus(
                     listOf(
                             Category(
@@ -21,7 +28,7 @@ object CategoryProvider {
                                     dbColor = ColorUtils.asCategoryColor(0.5f),
                                     matchParentColor = false,
                                     parentIds = null,
-                                    parentNames = null,
+                                    allNames = listOf("Sport"),
                             ),
                             Category(
                                     id = 7,
@@ -30,7 +37,7 @@ object CategoryProvider {
                                     matchParentColor = true,
                                     displayColor = ColorUtils.asCategoryColor(0.5f),
                                     parentIds = listOf(6),
-                                    parentNames = listOf("Sport"),
+                                    allNames = listOf("Equipment", "Sport"),
                             ),
                             Category(
                                     id = 8,
@@ -39,7 +46,7 @@ object CategoryProvider {
                                     matchParentColor = false,
                                     displayColor = Color.Gray,
                                     parentIds = listOf(6),
-                                    parentNames = listOf("Sport"),
+                                    allNames = listOf("Membership", "Sport"),
                             ),
                     )
             )
@@ -53,7 +60,7 @@ object CategoryProvider {
                         matchParentColor = false,
                         displayColor = Color.Red,
                         parentIds = null,
-                        parentNames = null
+                        allNames = listOf("Top 1"),
                 )
         )
         add(
@@ -64,7 +71,7 @@ object CategoryProvider {
                         matchParentColor = true,
                         displayColor = Color.Red,
                         parentIds = listOf(1),
-                        parentNames = listOf("Top 1")
+                        allNames = listOf("Top 1 - Sub 1", "Top 1"),
                 )
         )
         add(
@@ -75,7 +82,7 @@ object CategoryProvider {
                         matchParentColor = true,
                         displayColor = Color.Red,
                         parentIds = listOf(2, 1),
-                        parentNames = listOf("Top 1 - Sub 1", "Top 1")
+                        allNames = listOf("Top 1 - Sub Sub 1", "Top 1 - Sub 1", "Top 1"),
                 )
         )
         add(
@@ -86,7 +93,7 @@ object CategoryProvider {
                         matchParentColor = false,
                         displayColor = Color.Cyan,
                         parentIds = listOf(1),
-                        parentNames = listOf("Top 1")
+                        allNames = listOf("Top 1 - Sub 2", "Top 1"),
                 )
         )
 
@@ -98,7 +105,7 @@ object CategoryProvider {
                         matchParentColor = false,
                         displayColor = Color.Magenta,
                         parentIds = null,
-                        parentNames = null
+                        allNames = listOf("Top 2"),
                 )
         )
         add(
@@ -109,7 +116,7 @@ object CategoryProvider {
                         matchParentColor = false,
                         displayColor = Color.Green,
                         parentIds = listOf(5),
-                        parentNames = listOf("Top 2")
+                        allNames = listOf("Top 2 - Sub 1", "Top 2"),
                 )
         )
 
@@ -121,7 +128,7 @@ object CategoryProvider {
                         matchParentColor = true,
                         displayColor = Color.White,
                         parentIds = null,
-                        parentNames = null
+                        allNames = listOf("Top 3"),
                 )
         )
         add(
@@ -132,7 +139,7 @@ object CategoryProvider {
                         matchParentColor = true,
                         displayColor = Color.White,
                         parentIds = listOf(7),
-                        parentNames = listOf("Top 3")
+                        allNames = listOf("Top 3 - Sub 1", "Top 3"),
                 )
         )
     }.toList()
