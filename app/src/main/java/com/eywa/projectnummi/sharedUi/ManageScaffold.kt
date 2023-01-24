@@ -27,9 +27,7 @@ fun <T : HasName> ManageScaffold(
         onItemClicked: (T?) -> Unit,
         itemContent: @Composable (T?) -> Unit,
 ) {
-    Column(
-            modifier = Modifier.fillMaxSize()
-    ) {
+    Column {
         TabSwitcher(
                 items = ManageTabSwitcherItem.values().toList(),
                 selectedItem = currentTab,
@@ -38,7 +36,9 @@ fun <T : HasName> ManageScaffold(
 
         Divider(color = NummiTheme.colors.divider)
         Box(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                        .weight(1f)
+                        .fillMaxSize()
         ) {
             ItemList(
                     items = displayItems,
