@@ -15,7 +15,14 @@ interface CategoryDao {
     @Query(
             """
                 WITH RECURSIVE sub_cat(parentsIdsString, allNamesString, id, color) AS (
-                    SELECT NULL, name, id, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL) 
+                    SELECT 
+                            NULL, 
+                            name, 
+                            id,
+                            CASE
+                                WHEN matchParentColor = 0 OR parentCategoryId IS NULL THEN color
+                                ELSE NULL
+                            END
                         FROM ${DatabaseCategory.TABLE_NAME} 
                         WHERE parentCategoryId IS NULL
                         
@@ -28,7 +35,10 @@ interface CategoryDao {
                             END,
                             cat.name || '${CategoryIdWithParentIds.NAME_SEPARATOR}' || sub_cat.allNamesString,
                             cat.id,
-                            IIF(cat.matchParentColor = 0 OR cat.parentCategoryId IS NULL, cat.color, sub_cat.color)
+                            CASE
+                                WHEN cat.matchParentColor = 0 OR cat.parentCategoryId IS NULL THEN cat.color
+                                ELSE sub_cat.color
+                            END
                         FROM ${DatabaseCategory.TABLE_NAME} as cat, sub_cat
                         WHERE cat.parentCategoryId = sub_cat.id
                 )
@@ -45,7 +55,14 @@ interface CategoryDao {
     @Query(
             """
                 WITH RECURSIVE sub_cat(parentsIdsString, allNamesString, current, color) AS (
-                    SELECT NULL, name, parentCategoryId, IIF(matchParentColor = 0 OR parentCategoryId IS NULL, color, NULL)
+                    SELECT 
+                            NULL,
+                            name, 
+                            parentCategoryId, 
+                            CASE
+                                WHEN matchParentColor = 0 OR parentCategoryId IS NULL THEN color
+                                ELSE NULL
+                            END
                         FROM ${DatabaseCategory.TABLE_NAME}
                         WHERE id = :id
 

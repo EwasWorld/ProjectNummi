@@ -8,7 +8,7 @@ plugins {
 ext.minimumSdkVersion = 21 // 2 digits
 ext.versionMajor = 0 // 2 digits
 ext.versionMinor = 3 // 2 digits
-ext.versionPatch = 1 // 1 digit
+ext.versionPatch = 2 // 1 digit
 ext.extraInfo = 0 // 2 digits (currently unused)
 ext.versionClassifier = null // Extra info to be appended to version name e.g. alpha (used for version name)
 ext.isSnapshot = false // Will append SNAPSHOT to version name
@@ -60,6 +60,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        releaseTest {
+            initWith(getByName("release"))
+            signingConfig signingConfigs.debug
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
@@ -90,7 +94,7 @@ android {
     }
     variantFilter { variant ->
         def names = variant.flavors*.name
-        if (variant.buildType.name == 'release' && !names.contains("live")) {
+        if (variant.buildType.name.contains('release') && !names.contains("live")) {
             setIgnore(true)
         }
     }
