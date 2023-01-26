@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
@@ -101,7 +100,6 @@ fun ViewTransactionsScreen(
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ViewTransactionsScreen(
         state: ViewTransactionsState,
@@ -171,6 +169,19 @@ fun ViewTransactionsScreen_Preview() {
         ViewTransactionsScreen(
                 ViewTransactionsState(
                         transactions = TransactionProvider.basic,
+                )
+        ) {}
+    }
+}
+
+@Preview
+@Composable
+fun Recurring_ViewTransactionsScreen_Preview() {
+    NummiScreenPreviewWrapper {
+        ViewTransactionsScreen(
+                ViewTransactionsState(
+                        transactions = TransactionProvider.basic,
+                        isRecurring = true,
                 )
         ) {}
     }

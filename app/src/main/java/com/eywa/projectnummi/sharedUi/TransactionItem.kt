@@ -1,26 +1,38 @@
 package com.eywa.projectnummi.sharedUi
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Amount
 import com.eywa.projectnummi.model.objects.Transaction
+import com.eywa.projectnummi.model.providers.CategoryProvider
+import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.utils.DateTimeFormat
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
+import java.util.*
 
 @Composable
 fun TransactionItemTiny(
@@ -84,8 +96,8 @@ fun TransactionItemCompact(
                             .fillMaxWidth()
                             .padding(horizontal = 18.dp, vertical = 12.dp)
             ) {
-                MainInfo(item = item, isRecurring = isRecurring)
-                // TODO TransactionItemCompact
+                TopRowInfo(item, isRecurring, true)
+                MainInfo(item)
             }
         }
     }
@@ -117,15 +129,30 @@ fun TransactionItemFull(
                             .fillMaxWidth()
                             .padding(horizontal = 18.dp, vertical = 12.dp)
             ) {
-                MainInfo(item, isRecurring)
+                val needsAmountsDetail = item.amounts.size > 1
+                        || item.amounts.first().let { it.category != null || it.person != null }
 
-                AmountRows(item.amounts)
+                TopRowInfo(item, isRecurring, false)
+                MainInfo(item, Modifier.padding(vertical = 5.dp))
+
+                if (needsAmountsDetail || item.note != null) {
+                    Divider(
+                            color = NummiTheme.colors.divider,
+                            modifier = Modifier.padding(bottom = 5.dp)
+                    )
+                }
+
+                if (needsAmountsDetail) {
+                    AmountRows(item.amounts)
+                }
 
                 if (item.note != null) {
                     Text(
                             text = item.note,
                             color = NummiTheme.colors.appBackground.content,
-                            modifier = Modifier.align(Alignment.Start)
+                            modifier = Modifier
+                                    .align(Alignment.Start)
+                                    .padding(bottom = 5.dp)
                     )
                 }
             }
@@ -134,18 +161,56 @@ fun TransactionItemFull(
 }
 
 @Composable
-private fun MainInfo(item: Transaction, isRecurring: Boolean) {
-    if (item.account != null) {
-        Text(
-                text = item.account.name,
-                color = NummiTheme.colors.appBackground.content,
-                fontStyle = FontStyle.Italic,
-        )
+private fun TopRowInfo(item: Transaction, isRecurring: Boolean, isCompact: Boolean) {
+    val hasAccount = item.account != null
+    val icons = TransactionIcon.values().filter { it.show(item) }.takeIf { isCompact }
+
+    if (hasAccount || !isRecurring || !icons.isNullOrEmpty()) {
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                modifier = Modifier.fillMaxWidth()
+        ) {
+            val maxLines = if (isCompact) 1 else Int.MAX_VALUE
+            if (!isRecurring) {
+                Text(
+                        text = DateTimeFormat.SHORT_DATE.format(item.date),
+                        color = NummiTheme.colors.appBackground.content,
+                        maxLines = maxLines,
+                        overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+            if (!icons.isNullOrEmpty()) {
+                Icons(icons = icons)
+
+                if (!hasAccount) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+
+            if (hasAccount) {
+                Text(
+                        text = item.account!!.name,
+                        color = NummiTheme.colors.appBackground.content,
+                        fontStyle = FontStyle.Italic,
+                        textAlign = TextAlign.End,
+                        maxLines = maxLines,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
+}
+
+@Composable
+private fun MainInfo(item: Transaction, modifier: Modifier = Modifier) {
     Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier
+                    .fillMaxWidth()
     ) {
         Text(
                 text = item.name,
@@ -153,12 +218,24 @@ private fun MainInfo(item: Transaction, isRecurring: Boolean) {
                 style = NummiTheme.typography.h5,
                 modifier = Modifier.weight(1f)
         )
-        if (!isRecurring) {
-            Text(
-                    text = DateTimeFormat.SHORT_DATE.format(item.date),
-                    color = NummiTheme.colors.appBackground.content,
-                    modifier = Modifier.padding(start = 10.dp)
-            )
+        Text(
+                text = "£" + item.amounts.sumOf { it.amount }.div100String(),
+                color = NummiTheme.colors.appBackground.content,
+                style = NummiTheme.typography.h6,
+        )
+    }
+}
+
+@Composable
+private fun Icons(icons: List<TransactionIcon>) {
+    if (icons.isNotEmpty()) {
+        Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+        ) {
+            icons.forEach {
+                it.Icon()
+            }
         }
     }
 }
@@ -198,7 +275,7 @@ private fun BoxScope.CornerTriangles(
 }
 
 @Composable
-private fun ColumnScope.AmountRows(amounts: List<Amount>) {
+private fun AmountRows(amounts: List<Amount>) {
     val uniquePeople = amounts.distinctBy { it.person }.size
     val uniqueCategories = amounts.distinctBy { it.category }.size
 
@@ -207,12 +284,13 @@ private fun ColumnScope.AmountRows(amounts: List<Amount>) {
             verticalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
                     .padding(horizontal = 15.dp)
-                    .padding(top = 5.dp)
+                    .padding(bottom = 5.dp)
     ) {
         amounts.forEach { amount ->
             Row(
                     verticalAlignment = Alignment.CenterVertically,
             ) {
+                // TODO What to do if one of these is too long
                 if (amount.category != null || uniqueCategories > 1) {
                     Text(
                             text = amount.category?.allNames?.joinToString(" - ")
@@ -242,42 +320,56 @@ private fun ColumnScope.AmountRows(amounts: List<Amount>) {
             }
         }
     }
-    if (amounts.size > 1) {
-        AmountsTotal(amounts)
-    }
 }
 
-@Composable
-private fun ColumnScope.AmountsTotal(amounts: List<Amount>) {
-    val oneDpWidth = with(LocalDensity.current) { 3.dp.toPx() }
-    val totalLinesColor = NummiTheme.colors.transactionTotalLines
-    Box(
-            modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 6.dp, bottom = 5.dp)
-    ) {
-        Text(
-                text = amounts.sumOf { it.amount }.div100String().asCurrency(),
-                color = NummiTheme.colors.appBackground.content,
-                modifier = Modifier
-                        .padding(bottom = 4.dp)
-                        .padding(horizontal = 8.dp)
-        )
-        Canvas(
-                modifier = Modifier.matchParentSize()
-        ) {
-            fun customLine(height: Float) = drawLine(
-                    totalLinesColor,
-                    Offset(0f, height),
-                    Offset(size.width, height),
-                    strokeWidth = oneDpWidth / 2f
-            )
-
-            customLine(0f)
-            customLine(size.height)
-            customLine(size.height - oneDpWidth * 1)
+private enum class TransactionIcon {
+    CATEGORIES {
+        override val show: (Transaction) -> Boolean = { transaction ->
+            transaction.amounts.distinctBy { it.category }.size > 1
         }
-    }
+
+        @Composable
+        override fun Icon() {
+            Icon(
+                    painter = painterResource(com.eywa.projectnummi.R.drawable.ic_category_outline),
+                    contentDescription = "Has multiple categories",
+                    tint = NummiTheme.colors.appBackground.content,
+            )
+        }
+    },
+    PEOPLE {
+        override val show: (Transaction) -> Boolean = { transaction ->
+            transaction.amounts.distinctBy { it.person }.size > 1
+        }
+
+        @Composable
+        override fun Icon() {
+            Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = "Has multiple people",
+                    tint = NummiTheme.colors.appBackground.content,
+            )
+        }
+    },
+    NOTE {
+        override val show: (Transaction) -> Boolean = { it.note != null }
+
+        @Composable
+        override fun Icon() {
+            Icon(
+                    // TODO Replace icon
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "Has note",
+                    tint = NummiTheme.colors.appBackground.content,
+            )
+        }
+    },
+    ;
+
+    abstract val show: (Transaction) -> Boolean
+
+    @Composable
+    abstract fun Icon()
 }
 
 @Preview
@@ -290,9 +382,25 @@ fun Tiny_TransactionItem_Preview() {
 
 @Preview
 @Composable
-fun Compact_TransactionItem_Preview() {
-    NummiPreviewWrapper {
-        TransactionItemCompact(item = TransactionProvider.basic[3])
+fun Compact_TransactionItem_Preview(
+        @PreviewParameter(CompactPreviewParamProvider::class) param: Transaction
+) {
+    NummiPreviewWrapper(
+            contentPadding = PaddingValues(10.dp),
+    ) {
+        TransactionItemCompact(item = param)
+    }
+}
+
+@Preview
+@Composable
+fun CompactRecurring_TransactionItem_Preview(
+        @PreviewParameter(CompactPreviewParamProvider::class) param: Transaction
+) {
+    NummiPreviewWrapper(
+            contentPadding = PaddingValues(10.dp),
+    ) {
+        TransactionItemCompact(item = param, isRecurring = true)
     }
 }
 
@@ -305,3 +413,46 @@ fun Full_TransactionItem_Preview() {
         TransactionItemFull(item = TransactionProvider.basic[3])
     }
 }
+
+// TODO Screenshot testing to enumerate possibilities
+class CompactPreviewParamProvider : CollectionPreviewParameterProvider<Transaction>(
+        listOf(
+                Transaction(
+                        id = 0,
+                        date = Calendar.getInstance(),
+                        name = "Amazon but with a very long name for no reason",
+                        amounts = listOf(Amount(id = 0, amount = 10_00)),
+                ),
+                Transaction(
+                        id = 0,
+                        date = Calendar.getInstance(),
+                        name = "Amazon",
+                        amounts = listOf(
+                                Amount(id = 0, amount = 10_00, category = CategoryProvider.basic[0]),
+                                Amount(id = 1, amount = 10_00, category = CategoryProvider.basic[1]),
+                        ),
+                ),
+                Transaction(
+                        id = 0,
+                        date = Calendar.getInstance(),
+                        name = "Amazon",
+                        amounts = listOf(
+                                Amount(id = 0, amount = 10_00, person = PeopleProvider.basic[0]),
+                                Amount(id = 1, amount = 10_00, person = PeopleProvider.basic[1]),
+                        ),
+                        account = Account(id = 0, name = "Here is some stupidly long account name", type = null),
+                        note = "Hi, I'm a note",
+                ),
+                Transaction(
+                        id = 0,
+                        date = Calendar.getInstance(),
+                        name = "Amazon",
+                        amounts = listOf(
+                                Amount(id = 0, amount = 10_00, category = CategoryProvider.basic[0]),
+                                Amount(id = 1, amount = 10_00, person = PeopleProvider.basic[1]),
+                        ),
+                        account = Account(id = 0, name = "NatWest", type = null),
+                        note = "Hi, I'm a note",
+                ),
+        )
+)

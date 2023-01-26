@@ -5,11 +5,11 @@ import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
 
 data class Amount(
         val id: Int,
-        val category: Category?,
+        val category: Category? = null,
         /**
          * Null for default person
          */
-        val person: Person?,
+        val person: Person? = null,
         /**
          * In pennies
          */
