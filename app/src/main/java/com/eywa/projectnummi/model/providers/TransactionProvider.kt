@@ -52,6 +52,7 @@ object TransactionProvider {
             Transaction(
                     id = 4,
                     date = DateProvider.getDate(-3),
+                    account = AccountProvider.basic[1],
                     name = "Amazon",
                     amounts = listOf(
                             Amount(
@@ -68,7 +69,7 @@ object TransactionProvider {
                             ),
                     ),
                     order = 1,
-                    note = "A few of my favourite things. Plus some other miscellaneous items that I will not divulge",
+                    note = "A few of my favourite things. Plus some other miscellaneous items that I will not elaborate upon",
             ),
             Transaction(
                     id = 5,

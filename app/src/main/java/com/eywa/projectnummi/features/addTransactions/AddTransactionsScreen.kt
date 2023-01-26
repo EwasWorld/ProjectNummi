@@ -76,9 +76,9 @@ fun AddTransactionsScreen(
                 verticalArrangement = Arrangement.spacedBy(25.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(NummiTheme.dimens.screenPadding)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(NummiTheme.dimens.screenPadding)
         ) {
             MainInfo(state, listener)
 
@@ -111,8 +111,8 @@ fun AddTransactionsScreen(
                     contentColor = NummiTheme.colors.fab.content,
                     onClick = { listener(StartSelectTransaction) },
                     modifier = Modifier
-                        .padding(NummiTheme.dimens.fabToScreenEdgePadding)
-                        .align(Alignment.BottomEnd)
+                            .padding(NummiTheme.dimens.fabToScreenEdgePadding)
+                            .align(Alignment.BottomEnd)
             ) {
                 Icon(
                         imageVector = Icons.Default.FavoriteBorder,
@@ -166,7 +166,7 @@ private fun Dialogs(
             listener = { listener(SelectTransactionDialogAction(it)) },
             itemContent = {
                 if (it != null) {
-                    TransactionItem(transaction = it)
+                    TransactionItemTiny(transaction = it)
                 }
                 else {
                     Text(
@@ -239,8 +239,8 @@ private fun MainInfo(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 5.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp)
         ) {
             DateInput(
                     date = state.date,
@@ -263,9 +263,9 @@ private fun MainInfo(
             label = "Name",
             placeholderText = "Tesco",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 5.dp)
-                .padding(top = 5.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 5.dp)
+                    .padding(top = 5.dp)
         )
         NummiTextField(
             text = state.note,
@@ -273,8 +273,8 @@ private fun MainInfo(
             label = "Note",
             placeholderText = "",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
         )
     }
 }
@@ -323,8 +323,8 @@ private fun NameInput(
             label = "Name",
             placeholderText = "Tesco",
             modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
     )
 }
 
@@ -430,8 +430,8 @@ private fun AddRowButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
-                .clickable(onClick = onClick)
-                .padding(end = 5.dp)
+                    .clickable(onClick = onClick)
+                    .padding(end = 5.dp)
     ) {
         Icon(
                 imageVector = Icons.Default.Add,
