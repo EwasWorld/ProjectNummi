@@ -180,10 +180,11 @@ class AddTransactionsViewModel @Inject constructor(
             )
             _state.update {
                 it.copy(
-                        name = "",
-                        isOutgoing = true,
-                        amountRows = listOf(AmountInputState()),
-                        creatingFromRecurring = false,
+                    name = "",
+                    note = "",
+                    isOutgoing = true,
+                    amountRows = listOf(AmountInputState()),
+                    creatingFromRecurring = false,
                 )
             }
         }
@@ -219,6 +220,7 @@ class AddTransactionsViewModel @Inject constructor(
                     it.copy(amountRows = it.amountRows.updateAt(action.rowIndex) { copy(amount = action.amount) })
                 }
             is NameChanged -> _state.update { it.copy(name = action.name) }
+            is NoteChanged -> _state.update { it.copy(note = action.note) }
             ToggleIsOutgoing -> _state.update { it.copy(isOutgoing = !it.isOutgoing) }
             ToggleIsRecurring -> _state.update { it.copy(isRecurring = !it.isRecurring) }
         }

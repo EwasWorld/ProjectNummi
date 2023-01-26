@@ -186,8 +186,8 @@ fun ViewTransactionsScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     verticalArrangement = Arrangement.spacedBy(5.dp),
                                     modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 18.dp, vertical = 12.dp)
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 18.dp, vertical = 12.dp)
                             ) {
                                 if (item.account != null) {
                                     Text(
@@ -237,11 +237,14 @@ fun ViewTransactionsScreen(
                                                         color = NummiTheme.colors.appBackground.content,
                                                         fontStyle = FontStyle.Italic,
                                                         modifier = Modifier
-                                                                .background(
-                                                                        NummiTheme.colors.transactionAmountDetail,
-                                                                        RoundedCornerShape(100),
-                                                                )
-                                                                .padding(horizontal = 10.dp, vertical = 2.dp)
+                                                            .background(
+                                                                NummiTheme.colors.transactionAmountDetail,
+                                                                RoundedCornerShape(100),
+                                                            )
+                                                            .padding(
+                                                                horizontal = 10.dp,
+                                                                vertical = 2.dp
+                                                            )
                                                 )
                                             }
                                             Spacer(modifier = Modifier.weight(1f))
@@ -257,15 +260,15 @@ fun ViewTransactionsScreen(
                                     val totalLinesColor = NummiTheme.colors.transactionTotalLines
                                     Box(
                                             modifier = Modifier
-                                                    .align(Alignment.End)
-                                                    .padding(end = 6.dp, bottom = 5.dp)
+                                                .align(Alignment.End)
+                                                .padding(end = 6.dp, bottom = 5.dp)
                                     ) {
                                         Text(
                                                 text = item.amounts.sumOf { it.amount }.div100String().asCurrency(),
                                                 color = NummiTheme.colors.appBackground.content,
                                                 modifier = Modifier
-                                                        .padding(bottom = 4.dp)
-                                                        .padding(horizontal = 8.dp)
+                                                    .padding(bottom = 4.dp)
+                                                    .padding(horizontal = 8.dp)
                                         )
                                         Canvas(
                                                 modifier = Modifier.matchParentSize()
@@ -273,8 +276,8 @@ fun ViewTransactionsScreen(
                                             fun customLine(height: Float) = drawLine(
                                                     totalLinesColor,
                                                     Offset(0f, height),
-                                                    Offset(size.width, height),
-                                                    strokeWidth = oneDpWidth / 2f
+                                                Offset(size.width, height),
+                                                strokeWidth = oneDpWidth / 2f
                                             )
 
                                             customLine(0f)
@@ -282,6 +285,13 @@ fun ViewTransactionsScreen(
                                             customLine(size.height - oneDpWidth * 1)
                                         }
                                     }
+                                }
+                                if (item.note != null) {
+                                    Text(
+                                        text = item.note,
+                                        color = NummiTheme.colors.appBackground.content,
+                                        modifier = Modifier.align(Alignment.Start)
+                                    )
                                 }
                             }
                         }
@@ -295,8 +305,8 @@ fun ViewTransactionsScreen(
                 contentColor = NummiTheme.colors.fab.content,
                 onClick = { listener(AddClicked) },
                 modifier = Modifier
-                        .padding(NummiTheme.dimens.fabToScreenEdgePadding)
-                        .align(Alignment.BottomEnd)
+                    .padding(NummiTheme.dimens.fabToScreenEdgePadding)
+                    .align(Alignment.BottomEnd)
         ) {
             Icon(
                     imageVector = Icons.Default.Add,

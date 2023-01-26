@@ -10,21 +10,23 @@ import java.util.*
 import kotlin.math.roundToInt
 
 data class AddTransactionsState(
-        val creatingFromRecurring: Boolean = false,
-        val editing: Transaction? = null,
-        val isEditComplete: Boolean = false,
+    val creatingFromRecurring: Boolean = false,
+    val editing: Transaction? = null,
+    val isEditComplete: Boolean = false,
 
-        val date: Calendar = editing?.date?.takeIf { !creatingFromRecurring } ?: DateUtils.currentDate(),
-        val name: String = editing?.name ?: "",
-        val isOutgoing: Boolean = editing?.isOutgoing ?: true,
-        val isRecurring: Boolean = editing?.isRecurring?.takeIf { !creatingFromRecurring } ?: false,
+    val date: Calendar = editing?.date?.takeIf { !creatingFromRecurring }
+        ?: DateUtils.currentDate(),
+    val name: String = editing?.name ?: "",
+    val note: String = editing?.note ?: "",
+    val isOutgoing: Boolean = editing?.isOutgoing ?: true,
+    val isRecurring: Boolean = editing?.isRecurring?.takeIf { !creatingFromRecurring } ?: false,
 
-        /**
-         * null for not loaded
-         */
-        val categories: List<Category>? = null,
-        val createCategoryDialogState: CreateCategoryDialogState? = null,
-        val selectCategoryDialogIsShown: Boolean = false,
+    /**
+     * null for not loaded
+     */
+    val categories: List<Category>? = null,
+    val createCategoryDialogState: CreateCategoryDialogState? = null,
+    val selectCategoryDialogIsShown: Boolean = false,
 
         /**
          * null for not loaded
@@ -82,16 +84,17 @@ data class AddTransactionsState(
                 val oldAmount = editing?.amounts
                         ?.find { it.category?.id == amountState.categoryId && it.person?.id == amountState.personId }
                 Amount(
-                        id = oldAmount?.id ?: 0,
-                        amount = amountState.amount.asPennyValue(),
-                        category = getCategory(amountState.categoryId),
-                        person = getPerson(amountState.personId),
+                    id = oldAmount?.id ?: 0,
+                    amount = amountState.amount.asPennyValue(),
+                    category = getCategory(amountState.categoryId),
+                    person = getPerson(amountState.personId),
                 )
             },
-            isOutgoing = isOutgoing,
-            account = account,
-            order = editing?.order ?: -1,
-            isRecurring = isRecurring,
+        isOutgoing = isOutgoing,
+        account = account,
+        order = editing?.order ?: -1,
+        isRecurring = isRecurring,
+        note = note.takeIf { it.isNotBlank() },
     )
 }
 

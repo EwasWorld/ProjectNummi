@@ -18,6 +18,7 @@ object TransactionProvider {
                                     1_50,
                             ),
                     ),
+                    note = "Some sweet croissants",
             ),
             Transaction(
                     id = 2,
@@ -67,6 +68,7 @@ object TransactionProvider {
                             ),
                     ),
                     order = 1,
+                    note = "A few of my favourite things. Plus some other miscellaneous items that I will not divulge",
             ),
             Transaction(
                     id = 5,
@@ -177,7 +179,7 @@ object TransactionProvider {
             ),
             Transaction(
                     id = 12,
-                    date = DateProvider.getDate(-1),
+                    date = DateProvider.getDate(-10),
                     name = "No cat",
                     amounts = listOf(
                             Amount(

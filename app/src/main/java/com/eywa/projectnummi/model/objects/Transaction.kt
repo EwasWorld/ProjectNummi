@@ -10,52 +10,55 @@ import java.util.*
 /**
  * @see [DatabaseTransaction]
  */
-// TODO Transaction.note feature
 data class Transaction(
-        val id: Int,
-        val date: Calendar,
-        val name: String,
-        val amounts: List<Amount>,
-        val isOutgoing: Boolean = true,
-        val account: Account? = null,
-        val order: Int = -1,
-        val isRecurring: Boolean = false,
+    val id: Int,
+    val date: Calendar,
+    val name: String,
+    val amounts: List<Amount>,
+    val isOutgoing: Boolean = true,
+    val account: Account? = null,
+    val order: Int = -1,
+    val isRecurring: Boolean = false,
+    val note: String? = null,
 ) : HasNameAndId {
     constructor(
             dbTransaction: FullDatabaseTransactionWithFullCategory,
     ) : this(
-            id = dbTransaction.transaction.id,
-            date = dbTransaction.transaction.date,
-            name = dbTransaction.transaction.name,
-            amounts = dbTransaction.amounts.map { Amount(it) },
-            isOutgoing = dbTransaction.transaction.isOutgoing,
-            account = dbTransaction.account?.let { Account(it) },
-            order = dbTransaction.transaction.order,
-            isRecurring = dbTransaction.transaction.isRecurring,
+        id = dbTransaction.transaction.id,
+        date = dbTransaction.transaction.date,
+        name = dbTransaction.transaction.name,
+        amounts = dbTransaction.amounts.map { Amount(it) },
+        isOutgoing = dbTransaction.transaction.isOutgoing,
+        account = dbTransaction.account?.let { Account(it) },
+        order = dbTransaction.transaction.order,
+        isRecurring = dbTransaction.transaction.isRecurring,
+        note = dbTransaction.transaction.note,
     )
 
     constructor(
             dbTransaction: DatabaseTransactionWithFullAccount,
             dbAmounts: List<FullDatabaseAmountWithFullCategory>,
     ) : this(
-            id = dbTransaction.transaction.id,
-            date = dbTransaction.transaction.date,
-            name = dbTransaction.transaction.name,
-            amounts = dbAmounts.map { Amount(it) },
-            isOutgoing = dbTransaction.transaction.isOutgoing,
-            account = dbTransaction.account?.let { Account(it) },
-            order = dbTransaction.transaction.order,
-            isRecurring = dbTransaction.transaction.isRecurring,
+        id = dbTransaction.transaction.id,
+        date = dbTransaction.transaction.date,
+        name = dbTransaction.transaction.name,
+        amounts = dbAmounts.map { Amount(it) },
+        isOutgoing = dbTransaction.transaction.isOutgoing,
+        account = dbTransaction.account?.let { Account(it) },
+        order = dbTransaction.transaction.order,
+        isRecurring = dbTransaction.transaction.isRecurring,
+        note = dbTransaction.transaction.note,
     )
 
     fun asDbTransaction() = DatabaseTransaction(
-            id = id,
-            date = date,
-            name = name,
-            accountId = account?.id,
-            isOutgoing = isOutgoing,
-            order = order,
-            isRecurring = isRecurring,
+        id = id,
+        date = date,
+        name = name,
+        accountId = account?.id,
+        isOutgoing = isOutgoing,
+        order = order,
+        isRecurring = isRecurring,
+        note = note,
     )
 
     fun getDbAmounts(id: Int? = null) = amounts.map { it.asDatabaseAmount(id) }

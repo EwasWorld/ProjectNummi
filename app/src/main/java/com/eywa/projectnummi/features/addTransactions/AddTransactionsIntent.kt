@@ -18,6 +18,7 @@ sealed class AddTransactionsIntent {
     data class DateChanged(val date: Calendar) : ValueChangedIntent()
     data class DateIncremented(val daysAdded: Int) : ValueChangedIntent()
     data class NameChanged(val name: String) : ValueChangedIntent()
+    data class NoteChanged(val note: String) : ValueChangedIntent()
     data class AmountChanged(val rowIndex: Int, val amount: String) : ValueChangedIntent()
 
     data class DeleteAmountRow(val rowIndex: Int) : AddTransactionsIntent()

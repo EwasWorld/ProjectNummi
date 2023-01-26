@@ -76,9 +76,9 @@ fun AddTransactionsScreen(
                 verticalArrangement = Arrangement.spacedBy(25.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(NummiTheme.dimens.screenPadding)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(NummiTheme.dimens.screenPadding)
         ) {
             MainInfo(state, listener)
 
@@ -111,8 +111,8 @@ fun AddTransactionsScreen(
                     contentColor = NummiTheme.colors.fab.content,
                     onClick = { listener(StartSelectTransaction) },
                     modifier = Modifier
-                            .padding(NummiTheme.dimens.fabToScreenEdgePadding)
-                            .align(Alignment.BottomEnd)
+                        .padding(NummiTheme.dimens.fabToScreenEdgePadding)
+                        .align(Alignment.BottomEnd)
             ) {
                 Icon(
                         imageVector = Icons.Default.FavoriteBorder,
@@ -239,8 +239,8 @@ private fun MainInfo(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 5.dp)
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp)
         ) {
             DateInput(
                     date = state.date,
@@ -248,19 +248,33 @@ private fun MainInfo(
                     onChange = { listener(DateChanged(it)) },
             )
             CheckboxInput(
-                    text = "Outgoing",
-                    isSelected = state.isOutgoing,
-                    onClick = { listener(ToggleIsOutgoing) },
+                text = "Outgoing",
+                isSelected = state.isOutgoing,
+                onClick = { listener(ToggleIsOutgoing) },
             )
         }
         BorderedItem(
-                onClick = { listener(StartChangeAccount) },
-                content = { AccountItem(account = state.account) }
+            onClick = { listener(StartChangeAccount) },
+            content = { AccountItem(account = state.account) }
         )
-        NameInput(
-                name = state.name,
-                onChange = { listener(NameChanged(it)) },
-                modifier = Modifier.padding(top = 5.dp)
+        NummiTextField(
+            text = state.name,
+            onTextChanged = { listener(NameChanged(it)) },
+            label = "Name",
+            placeholderText = "Tesco",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 5.dp)
+                .padding(top = 5.dp)
+        )
+        NummiTextField(
+            text = state.note,
+            onTextChanged = { listener(NoteChanged(it)) },
+            label = "Note",
+            placeholderText = "",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
         )
     }
 }
@@ -309,8 +323,8 @@ private fun NameInput(
             label = "Name",
             placeholderText = "Tesco",
             modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
     )
 }
 
@@ -416,8 +430,8 @@ private fun AddRowButton(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             modifier = Modifier
-                    .clickable(onClick = onClick)
-                    .padding(end = 5.dp)
+                .clickable(onClick = onClick)
+                .padding(end = 5.dp)
     ) {
         Icon(
                 imageVector = Icons.Default.Add,
