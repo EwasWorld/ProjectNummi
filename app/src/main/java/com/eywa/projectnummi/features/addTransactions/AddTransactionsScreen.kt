@@ -204,14 +204,14 @@ private fun AmountRow(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 BorderedItem(
-                        onClick = { listener(StartChangeCategory(rowIndex)) },
                         content = {
                             CategoryItem(category = state.getCategory(rowState.categoryId), showParentNames = true)
                         },
+                        modifier = Modifier.clickable { listener(StartChangeCategory(rowIndex)) }
                 )
                 BorderedItem(
-                        onClick = { listener(StartChangePerson(rowIndex)) },
                         content = { PersonItem(person = state.getPerson(rowState.personId)) },
+                        modifier = Modifier.clickable { listener(StartChangePerson(rowIndex)) }
                 )
             }
         }
@@ -248,33 +248,33 @@ private fun MainInfo(
                     onChange = { listener(DateChanged(it)) },
             )
             CheckboxInput(
-                text = "Outgoing",
-                isSelected = state.isOutgoing,
-                onClick = { listener(ToggleIsOutgoing) },
+                    text = "Outgoing",
+                    isSelected = state.isOutgoing,
+                    onClick = { listener(ToggleIsOutgoing) },
             )
         }
         BorderedItem(
-            onClick = { listener(StartChangeAccount) },
-            content = { AccountItem(account = state.account) }
+                content = { AccountItem(account = state.account) },
+                modifier = Modifier.clickable { listener(StartChangeAccount) }
         )
         NummiTextField(
-            text = state.name,
-            onTextChanged = { listener(NameChanged(it)) },
-            label = "Name",
-            placeholderText = "Tesco",
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 5.dp)
-                    .padding(top = 5.dp)
+                text = state.name,
+                onTextChanged = { listener(NameChanged(it)) },
+                label = "Name",
+                placeholderText = "Tesco",
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 5.dp)
+                        .padding(top = 5.dp)
         )
         NummiTextField(
-            text = state.note,
-            onTextChanged = { listener(NoteChanged(it)) },
-            label = "Note",
-            placeholderText = "",
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                text = state.note,
+                onTextChanged = { listener(NoteChanged(it)) },
+                label = "Note",
+                placeholderText = "",
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.eywa.projectnummi.features.manageCategories
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
@@ -100,10 +101,10 @@ fun DeleteSubcategoriesDialog(
                 modifier = Modifier.padding(bottom = 10.dp)
         )
         BorderedItem(
-                onClick = onDeleteSubCategories,
                 modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp)
+                        .clickable { onDeleteSubCategories() }
         ) {
             Text(
                     text = "Yes, delete it and all sub categories",
@@ -112,10 +113,10 @@ fun DeleteSubcategoriesDialog(
             )
         }
         BorderedItem(
-                onClick = onDeleteJustThis,
                 modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 10.dp)
+                        .clickable { onDeleteJustThis() }
         ) {
             Text(
                     text = "Yes, just delete this category",

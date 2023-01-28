@@ -114,16 +114,16 @@ fun TransactionsSummaryFiltersScreen(
             )
         }
         BorderedItem(
-                onClick = { listener(OpenSelectDialog(ACCOUNT)) },
                 content = { AccountItem(accounts = state.selectedAccounts) },
+                modifier = Modifier.clickable { listener(OpenSelectDialog(ACCOUNT)) }
         )
         BorderedItem(
-                onClick = { listener(OpenSelectDialog(CATEGORY)) },
                 content = { CategoryItem(categories = state.selectedCategories) },
+                modifier = Modifier.clickable { listener(OpenSelectDialog(CATEGORY)) }
         )
         BorderedItem(
-                onClick = { listener(OpenSelectDialog(PERSON)) },
                 content = { PersonItem(people = state.selectedPeople) },
+                modifier = Modifier.clickable { listener(OpenSelectDialog(PERSON)) }
         )
         CheckboxInput(
                 text = "Show incoming",

@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.sharedUi.category.createCategoryDialog
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
@@ -60,8 +61,8 @@ fun CreateCategoryDialog(
                         style = NummiTheme.typography.h6,
                 )
                 BorderedItem(
-                        onClick = { listener(OpenSelectParentCategoryDialog) },
                         content = { CategoryItem(category = state?.parentCategory) },
+                        modifier = Modifier.clickable { listener(OpenSelectParentCategoryDialog) }
                 )
             }
 

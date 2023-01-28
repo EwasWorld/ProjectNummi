@@ -1,6 +1,7 @@
 package com.eywa.projectnummi.features.transactionsSummary.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
@@ -56,7 +57,7 @@ private fun ListBreakdown(
 ) {
     state.groupedItems.forEachIndexed { index, item ->
         BorderedItem(
-                onClick = { listener(SummaryItemSelected(index)) },
+                modifier = Modifier.clickable { listener(SummaryItemSelected(index)) }
         ) {
             Box(
                     contentAlignment = Alignment.Center,

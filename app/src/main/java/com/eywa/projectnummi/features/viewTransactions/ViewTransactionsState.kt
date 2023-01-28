@@ -16,4 +16,5 @@ data class ViewTransactionsState(
         val manageItemDialogState: ManageItemDialogState<Transaction>? = null,
         val deleteDialogState: DeleteConfirmationDialogState<Transaction>? = null,
         val extras: UniqueClassSet<ViewTransactionsExtra> = UniqueClassSet(),
+        val selectedTransactionId: Int? = null,
 )

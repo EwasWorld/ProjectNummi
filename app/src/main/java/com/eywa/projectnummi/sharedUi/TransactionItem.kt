@@ -1,5 +1,8 @@
 package com.eywa.projectnummi.sharedUi
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,12 +10,12 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
@@ -133,11 +136,17 @@ fun TransactionItemFull(
                         || item.amounts.first().let { it.category != null || it.person != null }
 
                 TopRowInfo(item, isRecurring, false)
-                MainInfo(item, Modifier.padding(vertical = 5.dp))
+                MainInfo(item)
 
-                if (needsAmountsDetail || item.note != null) {
-                    Divider(
-                            color = NummiTheme.colors.divider,
+                Divider(
+                        color = NummiTheme.colors.divider,
+                        modifier = Modifier.padding(bottom = 5.dp)
+                )
+
+                if (!needsAmountsDetail && item.note == null) {
+                    Text(
+                            text = "No additional info",
+                            color = NummiTheme.colors.appBackground.content,
                             modifier = Modifier.padding(bottom = 5.dp)
                     )
                 }
@@ -161,33 +170,51 @@ fun TransactionItemFull(
 }
 
 @Composable
+fun TransactionItemCompactToFull(
+        showCompact: Boolean,
+        item: Transaction,
+        modifier: Modifier = Modifier,
+        isRecurring: Boolean = item.isRecurring,
+) {
+    Box(
+            // TODO Better animation
+            modifier = modifier.animateContentSize(spring(stiffness = Spring.StiffnessLow))
+    ) {
+        if (showCompact) {
+            TransactionItemCompact(
+                    item = item,
+                    isRecurring = isRecurring,
+            )
+        }
+        else {
+            TransactionItemFull(
+                    item = item,
+                    isRecurring = isRecurring,
+            )
+        }
+    }
+}
+
+@Composable
 private fun TopRowInfo(item: Transaction, isRecurring: Boolean, isCompact: Boolean) {
     val hasAccount = item.account != null
-    val icons = TransactionIcon.values().filter { it.show(item) }.takeIf { isCompact }
+    val icons = TransactionIcon.values().filter { it.show(item) }
 
-    if (hasAccount || !isRecurring || !icons.isNullOrEmpty()) {
+    if (hasAccount || !isRecurring || icons.isNotEmpty()) {
         Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(15.dp),
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
                 modifier = Modifier.fillMaxWidth()
         ) {
-            val maxLines = if (isCompact) 1 else Int.MAX_VALUE
             if (!isRecurring) {
                 Text(
                         text = DateTimeFormat.SHORT_DATE.format(item.date),
                         color = NummiTheme.colors.appBackground.content,
-                        maxLines = maxLines,
                         overflow = TextOverflow.Ellipsis,
                 )
             }
 
-            if (!icons.isNullOrEmpty()) {
-                Icons(icons = icons)
-
-                if (!hasAccount) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
+            Icons(icons = icons)
 
             if (hasAccount) {
                 Text(
@@ -195,7 +222,7 @@ private fun TopRowInfo(item: Transaction, isRecurring: Boolean, isCompact: Boole
                         color = NummiTheme.colors.appBackground.content,
                         fontStyle = FontStyle.Italic,
                         textAlign = TextAlign.End,
-                        maxLines = maxLines,
+                        maxLines = if (isCompact) 1 else Int.MAX_VALUE,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.weight(1f)
                 )
@@ -229,9 +256,11 @@ private fun MainInfo(item: Transaction, modifier: Modifier = Modifier) {
 @Composable
 private fun Icons(icons: List<TransactionIcon>) {
     if (icons.isNotEmpty()) {
+        // TODO Scale causes icons to not be left aligned when no date present
         Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.scale(0.7f)
         ) {
             icons.forEach {
                 it.Icon()
@@ -261,8 +290,9 @@ private fun BoxScope.CornerTriangles(
     )
 
     if (amounts.any { it.category != null }) {
+        val defaultColor = NummiTheme.colors.pieChartDefault
         CornerTriangleBox(
-                colors = amounts.map { it.category?.displayColor }.reversed(),
+                colors = amounts.map { it.category?.displayColor ?: defaultColor }.reversed(),
                 state = CornerTriangleShapeState(
                         isTop = false,
                         segmentWeights = amounts.map { it.amount }.reversed(),
@@ -357,8 +387,7 @@ private enum class TransactionIcon {
         @Composable
         override fun Icon() {
             Icon(
-                    // TODO Replace icon
-                    imageVector = Icons.Outlined.Info,
+                    painter = painterResource(com.eywa.projectnummi.R.drawable.ic_note_outline),
                     contentDescription = "Has note",
                     tint = NummiTheme.colors.appBackground.content,
             )

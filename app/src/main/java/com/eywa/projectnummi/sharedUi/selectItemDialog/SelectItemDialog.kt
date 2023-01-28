@@ -48,8 +48,8 @@ fun <I : HasNameAndId> SelectItemDialog(
                 newItemButtonText = newItemButtonText?.takeIf { !isMultiSelect },
         ) { item ->
             BorderedItem(
-                    isSelected = state?.isSelected(item),
-                    onClick = { listener(if (isMultiSelect) ToggleItemSelected(item) else ItemChosen(item)) },
+                    isSelected = state?.isSelected(item) ?: false,
+                    onSelected = { listener(if (isMultiSelect) ToggleItemSelected(item) else ItemChosen(item)) },
                     modifier = Modifier.fillMaxWidth()
             ) {
                 itemContent(item)

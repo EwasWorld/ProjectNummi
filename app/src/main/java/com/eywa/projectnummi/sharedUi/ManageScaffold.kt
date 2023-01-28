@@ -1,5 +1,6 @@
 package com.eywa.projectnummi.sharedUi
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
 import androidx.compose.material.FloatingActionButton
@@ -46,9 +47,10 @@ fun <T : HasName> ManageScaffold(
                     contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
             ) {
                 BorderedItem(
-                        onClick = { onItemClicked(it) },
                         content = { itemContent(it) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { onItemClicked(it) }
                 )
             }
 

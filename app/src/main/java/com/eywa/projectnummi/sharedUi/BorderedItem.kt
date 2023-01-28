@@ -13,17 +13,30 @@ import com.eywa.projectnummi.theme.NummiTheme
 @Composable
 fun BorderedItem(
         modifier: Modifier = Modifier,
-        isSelected: Boolean? = null,
-        onClick: () -> Unit = {},
+        isSelected: Boolean,
+        onSelected: (() -> Unit),
         content: @Composable () -> Unit,
 ) {
-    val selectable = if (isSelected == null) Modifier else Modifier.selectable(isSelected, onClick = onClick)
     Surface(
-            color = if (isSelected == true) NummiTheme.colors.listItemSelectedBackground else Color.Transparent,
-            border = BorderStroke(NummiTheme.dimens.getBorder(isSelected ?: false), NummiTheme.colors.listItemBorder),
+            color = if (isSelected) NummiTheme.colors.listItemSelectedBackground else Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.getBorder(isSelected), NummiTheme.colors.listItemBorder),
             shape = NummiTheme.shapes.generalListItem,
-            onClick = onClick,
+            onClick = onSelected,
             content = content,
-            modifier = modifier.then(selectable),
+            modifier = modifier.selectable(selected = isSelected, onClick = onSelected),
+    )
+}
+
+@Composable
+fun BorderedItem(
+        modifier: Modifier = Modifier,
+        content: @Composable () -> Unit,
+) {
+    Surface(
+            color = Color.Transparent,
+            border = BorderStroke(NummiTheme.dimens.getBorder(false), NummiTheme.colors.listItemBorder),
+            shape = NummiTheme.shapes.generalListItem,
+            content = content,
+            modifier = modifier,
     )
 }

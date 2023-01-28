@@ -1,6 +1,6 @@
 package com.eywa.projectnummi.features.viewTransactions
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,7 +25,7 @@ import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.TabSwitcher
-import com.eywa.projectnummi.sharedUi.TransactionItemFull
+import com.eywa.projectnummi.sharedUi.TransactionItemCompactToFull
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
@@ -137,10 +138,16 @@ fun ViewTransactionsScreen(
                     modifier = Modifier.weight(1f)
             ) {
                 items(displayItems) { item ->
-                    TransactionItemFull(
+                    TransactionItemCompactToFull(
+                            showCompact = item.id != state.selectedTransactionId,
                             item = item,
                             isRecurring = state.isRecurring,
-                            modifier = Modifier.clickable { listener(TransactionClicked(item)) }
+                            modifier = Modifier.pointerInput(item) {
+                                detectTapGestures(
+                                        onTap = { listener(TransactionClicked(item)) },
+                                        onLongPress = { listener(TransactionLongClicked(item)) },
+                                )
+                            }
                     )
                 }
             }

@@ -93,17 +93,10 @@ class ViewTransactionsViewModel @Inject constructor(
         when (action) {
             is TransactionClicked ->
                 _state.update {
-                    it.copy(
-                            manageItemDialogState = ManageItemDialogState(
-                                    item = action.transaction,
-                                    options = contextMenuOptions.keys.toList().filter { option ->
-                                        (option as? ViewTransactionsManageItemOptions)
-                                                ?.shouldShow?.invoke(it, action.transaction)
-                                                ?: true
-                                    },
-                            )
-                    )
+                    val newId = action.transaction.id.takeIf { id -> id != it.selectedTransactionId }
+                    it.copy(selectedTransactionId = newId)
                 }
+            is TransactionLongClicked -> _state.update { it.openManageItemMenu(action.transaction) }
             is ManageItemDialogAction -> handleManageItemDialogIntent(action.action)
             is DeleteConfirmationDialogAction -> handleDeleteConfirmationDialogIntent(action.action)
             is TabClicked -> _state.update { it.copy(extras = it.extras.plusOrReplace(ManageTabChanged(action.item))) }
@@ -111,6 +104,18 @@ class ViewTransactionsViewModel @Inject constructor(
             is ClearExtra -> _state.update { it.copy(extras = it.extras.minus(action.extra::class)) }
         }
     }
+
+    private fun ViewTransactionsState.openManageItemMenu(transaction: Transaction) =
+            copy(
+                    manageItemDialogState = ManageItemDialogState(
+                            item = transaction,
+                            options = contextMenuOptions.keys.toList().filter { option ->
+                                (option as? ViewTransactionsManageItemOptions)
+                                        ?.shouldShow?.invoke(this, transaction)
+                                        ?: true
+                            },
+                    )
+            )
 
     private fun handleManageItemDialogIntent(action: ManageItemDialogIntent) {
         when (action) {
