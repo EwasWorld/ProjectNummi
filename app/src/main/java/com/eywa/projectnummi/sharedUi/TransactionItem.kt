@@ -1,13 +1,11 @@
 package com.eywa.projectnummi.sharedUi
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
@@ -17,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,10 +28,12 @@ import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.model.providers.CategoryProvider
 import com.eywa.projectnummi.model.providers.PeopleProvider
 import com.eywa.projectnummi.model.providers.TransactionProvider
+import com.eywa.projectnummi.sharedUi.utils.NummiIconInfo
 import com.eywa.projectnummi.theme.NummiTheme
 import com.eywa.projectnummi.utils.DateTimeFormat
 import com.eywa.projectnummi.utils.asCurrency
 import com.eywa.projectnummi.utils.div100String
+import com.google.accompanist.flowlayout.FlowRow
 import java.util.*
 
 @Composable
@@ -74,44 +73,15 @@ fun TransactionItemTiny(
 }
 
 @Composable
-fun TransactionItemCompact(
-        item: Transaction,
-        modifier: Modifier = Modifier,
-        isRecurring: Boolean = item.isRecurring,
-) {
-    BorderedItem(
-            modifier = modifier.fillMaxWidth()
-    ) {
-        Box(
-                contentAlignment = Alignment.Center,
-                modifier = modifier
-        ) {
-            CornerTriangles(
-                    isOutgoing = item.isOutgoing,
-                    amounts = item.amounts,
-                    forceSize = with(LocalDensity.current) { NummiTheme.dimens.viewTransactionTriangleSize.toPx() },
-                    categoryYScale = 1.5f,
-            )
-            Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(5.dp),
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp, vertical = 12.dp)
-            ) {
-                TopRowInfo(item, isRecurring, true)
-                MainInfo(item)
-            }
-        }
-    }
-}
-
-@Composable
 fun TransactionItemFull(
         item: Transaction,
+        showCompact: Boolean,
         modifier: Modifier = Modifier,
         isRecurring: Boolean = item.isRecurring,
 ) {
+    val needsAmountsDetail = item.amounts.size > 1
+            || item.amounts.first().let { it.category != null || it.person != null }
+
     BorderedItem(
             modifier = modifier.fillMaxWidth()
     ) {
@@ -126,71 +96,49 @@ fun TransactionItemFull(
             )
 
             Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(5.dp),
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp, vertical = 12.dp)
+                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp)
             ) {
-                val needsAmountsDetail = item.amounts.size > 1
-                        || item.amounts.first().let { it.category != null || it.person != null }
-
-                TopRowInfo(item, isRecurring, false)
-                MainInfo(item)
-
-                Divider(
-                        color = NummiTheme.colors.divider,
-                        modifier = Modifier.padding(bottom = 5.dp)
-                )
-
-                if (!needsAmountsDetail && item.note == null) {
-                    Text(
-                            text = "No additional info",
-                            color = NummiTheme.colors.appBackground.content,
-                            modifier = Modifier.padding(bottom = 5.dp)
-                    )
+                Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(5.dp),
+                        modifier = Modifier.fillMaxWidth()
+                ) {
+                    TopRowInfo(item, isRecurring, showCompact)
+                    MainInfo(item)
                 }
-
-                if (needsAmountsDetail) {
-                    AmountRows(item.amounts)
-                }
-
-                if (item.note != null) {
-                    Text(
-                            text = item.note,
-                            color = NummiTheme.colors.appBackground.content,
+                AnimatedVisibility(visible = !showCompact) {
+                    Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier
-                                    .align(Alignment.Start)
-                                    .padding(bottom = 5.dp)
-                    )
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                    ) {
+                        Divider(
+                                color = NummiTheme.colors.divider,
+                        )
+
+                        if (!needsAmountsDetail && item.note == null) {
+                            Text(
+                                    text = "No additional info",
+                                    color = NummiTheme.colors.appBackground.content,
+                            )
+                        }
+
+                        if (needsAmountsDetail) {
+                            AmountRows(item.amounts)
+                        }
+
+                        if (item.note != null) {
+                            Text(
+                                    text = item.note,
+                                    color = NummiTheme.colors.appBackground.content,
+                                    modifier = Modifier.align(Alignment.Start)
+                            )
+                        }
+                    }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun TransactionItemCompactToFull(
-        showCompact: Boolean,
-        item: Transaction,
-        modifier: Modifier = Modifier,
-        isRecurring: Boolean = item.isRecurring,
-) {
-    Box(
-            // TODO Better animation
-            modifier = modifier.animateContentSize(spring(stiffness = Spring.StiffnessLow))
-    ) {
-        if (showCompact) {
-            TransactionItemCompact(
-                    item = item,
-                    isRecurring = isRecurring,
-            )
-        }
-        else {
-            TransactionItemFull(
-                    item = item,
-                    isRecurring = isRecurring,
-            )
         }
     }
 }
@@ -198,13 +146,15 @@ fun TransactionItemCompactToFull(
 @Composable
 private fun TopRowInfo(item: Transaction, isRecurring: Boolean, isCompact: Boolean) {
     val hasAccount = item.account != null
-    val icons = TransactionIcon.values().filter { it.show(item) }
+    val icons = TransactionContent.values().filter { it.show(item) }
 
     if (hasAccount || !isRecurring || icons.isNotEmpty()) {
         Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize()
         ) {
             if (!isRecurring) {
                 Text(
@@ -214,7 +164,13 @@ private fun TopRowInfo(item: Transaction, isRecurring: Boolean, isCompact: Boole
                 )
             }
 
-            Icons(icons = icons)
+            if (icons.isNotEmpty()) {
+                AnimatedVisibility(visible = isCompact) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        icons.forEach { it.Icon() }
+                    }
+                }
+            }
 
             if (hasAccount) {
                 Text(
@@ -250,22 +206,6 @@ private fun MainInfo(item: Transaction, modifier: Modifier = Modifier) {
                 color = NummiTheme.colors.appBackground.content,
                 style = NummiTheme.typography.h6,
         )
-    }
-}
-
-@Composable
-private fun Icons(icons: List<TransactionIcon>) {
-    if (icons.isNotEmpty()) {
-        // TODO Scale causes icons to not be left aligned when no date present
-        Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                modifier = Modifier.scale(0.7f)
-        ) {
-            icons.forEach {
-                it.Icon()
-            }
-        }
     }
 }
 
@@ -306,43 +246,45 @@ private fun BoxScope.CornerTriangles(
 
 @Composable
 private fun AmountRows(amounts: List<Amount>) {
-    val uniquePeople = amounts.distinctBy { it.person }.size
-    val uniqueCategories = amounts.distinctBy { it.category }.size
+    val hasMultiplePeople = amounts.distinctBy { it.person }.size > 1
+    val hasMultipleCategories = amounts.distinctBy { it.category }.size > 1
 
     Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp),
-            modifier = Modifier
-                    .padding(horizontal = 15.dp)
-                    .padding(bottom = 5.dp)
+            modifier = Modifier.padding(horizontal = 15.dp)
     ) {
         amounts.forEach { amount ->
             Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(15.dp),
             ) {
-                // TODO What to do if one of these is too long
-                if (amount.category != null || uniqueCategories > 1) {
-                    Text(
-                            text = amount.category?.allNames?.joinToString(" - ")
-                                    ?: "No category",
-                            color = NummiTheme.colors.appBackground.content,
-                            modifier = Modifier.padding(end = 10.dp)
-                    )
+                FlowRow(
+                        crossAxisSpacing = 5.dp,
+                        modifier = Modifier.weight(1f)
+                ) {
+                    if (amount.category != null || hasMultipleCategories) {
+                        Text(
+                                text = amount.category?.allNames?.joinToString(" - ")
+                                        ?: "No category",
+                                color = NummiTheme.colors.appBackground.content,
+                                modifier = Modifier.padding(end = 10.dp)
+                        )
+                    }
+                    if (amount.person?.id != null || hasMultiplePeople) {
+                        Text(
+                                text = amount.person?.name ?: "Me",
+                                color = NummiTheme.colors.appBackground.content,
+                                fontStyle = FontStyle.Italic,
+                                modifier = Modifier
+                                        .background(
+                                                NummiTheme.colors.transactionAmountDetail,
+                                                RoundedCornerShape(100),
+                                        )
+                                        .padding(horizontal = 10.dp, vertical = 2.dp)
+                        )
+                    }
                 }
-                if (amount.person?.id != null || uniquePeople > 1) {
-                    Text(
-                            text = amount.person?.name ?: "Me",
-                            color = NummiTheme.colors.appBackground.content,
-                            fontStyle = FontStyle.Italic,
-                            modifier = Modifier
-                                    .background(
-                                            NummiTheme.colors.transactionAmountDetail,
-                                            RoundedCornerShape(100),
-                                    )
-                                    .padding(horizontal = 10.dp, vertical = 2.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
                 Text(
                         text = amount.amount.div100String().asCurrency(),
                         color = NummiTheme.colors.appBackground.content,
@@ -352,53 +294,37 @@ private fun AmountRows(amounts: List<Amount>) {
     }
 }
 
-private enum class TransactionIcon {
-    CATEGORIES {
-        override val show: (Transaction) -> Boolean = { transaction ->
-            transaction.amounts.distinctBy { it.category }.size > 1
-        }
-
-        @Composable
-        override fun Icon() {
-            Icon(
-                    painter = painterResource(com.eywa.projectnummi.R.drawable.ic_category_outline),
+private enum class TransactionContent(val info: NummiIconInfo, val show: (Transaction) -> Boolean) {
+    CATEGORIES(
+            NummiIconInfo.PainterIcon(
+                    com.eywa.projectnummi.R.drawable.ic_category_outline,
                     contentDescription = "Has multiple categories",
-                    tint = NummiTheme.colors.appBackground.content,
-            )
-        }
-    },
-    PEOPLE {
-        override val show: (Transaction) -> Boolean = { transaction ->
-            transaction.amounts.distinctBy { it.person }.size > 1
-        }
-
-        @Composable
-        override fun Icon() {
-            Icon(
-                    imageVector = Icons.Outlined.Person,
+            ),
+            { transaction -> transaction.amounts.distinctBy { it.category }.size > 1 }
+    ),
+    PEOPLE(
+            NummiIconInfo.VectorIcon(
+                    Icons.Outlined.Person,
                     contentDescription = "Has multiple people",
-                    tint = NummiTheme.colors.appBackground.content,
-            )
-        }
-    },
-    NOTE {
-        override val show: (Transaction) -> Boolean = { it.note != null }
-
-        @Composable
-        override fun Icon() {
-            Icon(
-                    painter = painterResource(com.eywa.projectnummi.R.drawable.ic_note_outline),
+            ),
+            { transaction -> transaction.amounts.distinctBy { it.person }.size > 1 }
+    ),
+    NOTE(
+            NummiIconInfo.PainterIcon(
+                    com.eywa.projectnummi.R.drawable.ic_note_outline,
                     contentDescription = "Has note",
-                    tint = NummiTheme.colors.appBackground.content,
-            )
-        }
-    },
+            ),
+            { it.note != null }
+    ),
     ;
 
-    abstract val show: (Transaction) -> Boolean
-
     @Composable
-    abstract fun Icon()
+    fun Icon() {
+        info.copyIcon(
+                tint = NummiTheme.colors.appBackground.content,
+                modifier = Modifier.scale(0.7f)
+        ).NummiIcon()
+    }
 }
 
 @Preview
@@ -417,7 +343,7 @@ fun Compact_TransactionItem_Preview(
     NummiPreviewWrapper(
             contentPadding = PaddingValues(10.dp),
     ) {
-        TransactionItemCompact(item = param)
+        TransactionItemFull(item = param, showCompact = true)
     }
 }
 
@@ -429,7 +355,7 @@ fun CompactRecurring_TransactionItem_Preview(
     NummiPreviewWrapper(
             contentPadding = PaddingValues(10.dp),
     ) {
-        TransactionItemCompact(item = param, isRecurring = true)
+        TransactionItemFull(item = param, showCompact = true, isRecurring = true)
     }
 }
 
@@ -439,7 +365,7 @@ fun Full_TransactionItem_Preview() {
     NummiPreviewWrapper(
             contentPadding = PaddingValues(10.dp),
     ) {
-        TransactionItemFull(item = TransactionProvider.basic[3])
+        TransactionItemFull(item = TransactionProvider.basic[3], true)
     }
 }
 

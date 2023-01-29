@@ -132,6 +132,8 @@ dependencies {
 
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1"
+
+    implementation 'com.google.accompanist:accompanist-flowlayout:0.23.1'
 }
 
 // Hilt: allow references to generated code

@@ -25,7 +25,7 @@ import com.eywa.projectnummi.navigation.NummiNavArgument
 import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.TabSwitcher
-import com.eywa.projectnummi.sharedUi.TransactionItemCompactToFull
+import com.eywa.projectnummi.sharedUi.TransactionItemFull
 import com.eywa.projectnummi.sharedUi.deleteConfirmationDialog.DeleteConfirmationDialog
 import com.eywa.projectnummi.sharedUi.manageItemDialog.ManageItemDialog
 import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
@@ -138,7 +138,7 @@ fun ViewTransactionsScreen(
                     modifier = Modifier.weight(1f)
             ) {
                 items(displayItems) { item ->
-                    TransactionItemCompactToFull(
+                    TransactionItemFull(
                             showCompact = item.id != state.selectedTransactionId,
                             item = item,
                             isRecurring = state.isRecurring,
