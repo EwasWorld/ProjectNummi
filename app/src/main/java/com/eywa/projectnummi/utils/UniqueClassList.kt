@@ -15,4 +15,8 @@ class UniqueClassSet<E : Any> private constructor(
 
     @Suppress("UNCHECKED_CAST")
     fun <T : E> get(item: KClass<T>): T? = map[item] as? T
+
+    fun forEach(block: (E) -> Unit) {
+        map.values.forEach(block)
+    }
 }

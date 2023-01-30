@@ -21,8 +21,6 @@ import androidx.navigation.NavController
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
 import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
-import com.eywa.projectnummi.navigation.NummiNavArgument
-import com.eywa.projectnummi.navigation.NummiNavRoute
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.TabSwitcher
 import com.eywa.projectnummi.sharedUi.TransactionItemFull
@@ -59,104 +57,33 @@ fun ViewTransactionsScreen(
 ) {
     val state = viewModel.state.collectAsState()
 
-    LaunchedEffect(state.value.extras) {
-        launch {
-            val extras = state.value.extras
-            extras.get(ViewTransactionsExtra.EditTransaction::class)?.let {
-                NummiNavRoute.EDIT_TRANSACTIONS.navigate(
-                        navController, mapOf(NummiNavArgument.TRANSACTION_ID to it.transaction.id.toString())
-                )
-                viewModel.handle(ClearExtra(it))
-            }
-
-            extras.get(ViewTransactionsExtra.NewTransactionFromRecurring::class)?.let {
-                NummiNavRoute.ADD_TRANSACTIONS_FROM_RECURRING.navigate(
-                        navController,
-                        mapOf(
-                                NummiNavArgument.TRANSACTION_ID to it.transaction.id.toString(),
-                                NummiNavArgument.INIT_FROM_RECURRING_TRANSACTION to true.toString(),
-                        )
-                )
-                viewModel.handle(ClearExtra(it))
-            }
-
-            extras.get(ViewTransactionsExtra.ManageTabChanged::class)?.let {
-                it.tab.navRoute.navigate(navController)
-                viewModel.handle(ClearExtra(it))
-            }
-
-            extras.get(ViewTransactionsExtra.AddTransactions::class)?.let {
-                NummiNavRoute.ADD_TRANSACTIONS.navigate(
-                        navController,
-                        mapOf(NummiNavArgument.TICK_SAVE_AS_RECURRING to state.value.isRecurring.toString()),
-                )
-                viewModel.handle(ClearExtra(it))
-            }
-        }
-    }
-
-    ViewTransactionsScreen(
+    HandleViewTransactionsExtras(
             state = state.value,
-            listener = { viewModel.handle(it) },
-    )
-}
-
-@Composable
-fun ViewTransactionsScreen(
-        state: ViewTransactionsState,
-        listener: (ViewTransactionsIntent) -> Unit,
-) {
-    val displayItems = if (state.isRecurring) state.transactions.sortedBy { it.name }
-    else state.transactions.sortedWith(descendingDateTransactionComparator)
-
-    ManageItemDialog(
-            isShown = state.deleteDialogState == null,
-            state = state.manageItemDialogState,
-            listener = { listener(ManageItemDialogAction(it)) },
-    )
-    DeleteConfirmationDialog(
-            isShown = true,
-            state = state.deleteDialogState,
-            listener = { listener(DeleteConfirmationDialogAction(it)) },
+            navController = navController,
+            viewModel = viewModel,
     )
 
     Box(
             modifier = Modifier.fillMaxSize()
     ) {
-        Column {
-            if (state.isRecurring) {
-                TabSwitcher(
-                        items = ManageTabSwitcherItem.values().toList(),
-                        selectedItem = ManageTabSwitcherItem.RECURRING,
-                        itemClickedListener = { listener(TabClicked(it)) },
-                )
-            }
-            LazyColumn(
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
-                    modifier = Modifier.weight(1f)
-            ) {
-                items(displayItems) { item ->
-                    TransactionItemFull(
-                            showCompact = item.id != state.selectedTransactionId,
-                            item = item,
-                            isRecurring = state.isRecurring,
-                            modifier = Modifier.pointerInput(item) {
-                                detectTapGestures(
-                                        onTap = { listener(TransactionClicked(item)) },
-                                        onLongPress = { listener(TransactionLongClicked(item)) },
-                                )
-                            }
-                    )
-                }
-            }
-        }
+        ViewTransactionsColumn(
+                state = state.value,
+                headerContent = {
+                    if (viewModel.isRecurring) {
+                        TabSwitcher(
+                                items = ManageTabSwitcherItem.values().toList(),
+                                selectedItem = ManageTabSwitcherItem.RECURRING,
+                                itemClickedListener = { viewModel.handleViewTransactionIntent(TabClicked(it)) },
+                        )
+                    }
+                },
+                listener = { viewModel.handleViewTransactionIntent(it) },
+        )
         // TODO show/hide on scroll up/down
         FloatingActionButton(
                 backgroundColor = NummiTheme.colors.fab.main,
                 contentColor = NummiTheme.colors.fab.content,
-                onClick = { listener(AddClicked) },
+                onClick = { viewModel.handleViewTransactionIntent(AddClicked) },
                 modifier = Modifier
                         .padding(NummiTheme.dimens.fabToScreenEdgePadding)
                         .align(Alignment.BottomEnd)
@@ -169,11 +96,69 @@ fun ViewTransactionsScreen(
     }
 }
 
+@Composable
+fun HandleViewTransactionsExtras(
+        state: ViewTransactionsState,
+        navController: NavController,
+        viewModel: ViewTransactionsViewModelHelper,
+) {
+    LaunchedEffect(state.extras) {
+        launch {
+            state.extras.forEach { it.handle(navController, viewModel) }
+        }
+    }
+}
+
+@Composable
+fun ViewTransactionsColumn(
+        state: ViewTransactionsState,
+        modifier: Modifier = Modifier,
+        headerContent: (@Composable () -> Unit)? = null,
+        listener: (ViewTransactionsIntent) -> Unit,
+) {
+    ManageItemDialog(
+            isShown = state.deleteDialogState == null,
+            state = state.manageItemDialogState,
+            listener = { listener(ManageItemDialogAction(it)) },
+    )
+    DeleteConfirmationDialog(
+            isShown = true,
+            state = state.deleteDialogState,
+            listener = { listener(DeleteConfirmationDialogAction(it)) },
+    )
+
+    Column(
+            modifier = modifier.fillMaxSize()
+    ) {
+        headerContent?.invoke()
+
+        LazyColumn(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                contentPadding = PaddingValues(NummiTheme.dimens.screenPadding),
+                modifier = Modifier.weight(1f)
+        ) {
+            items(state.transactions) { item ->
+                TransactionItemFull(
+                        showCompact = item.id != state.selectedTransactionId,
+                        item = item,
+                        modifier = Modifier.pointerInput(item) {
+                            detectTapGestures(
+                                    onTap = { listener(TransactionClicked(item)) },
+                                    onLongPress = { listener(TransactionLongClicked(item)) },
+                            )
+                        }
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun ViewTransactionsScreen_Preview() {
     NummiScreenPreviewWrapper {
-        ViewTransactionsScreen(
+        ViewTransactionsColumn(
                 ViewTransactionsState(
                         transactions = TransactionProvider.basic,
                 )
@@ -185,10 +170,9 @@ fun ViewTransactionsScreen_Preview() {
 @Composable
 fun Recurring_ViewTransactionsScreen_Preview() {
     NummiScreenPreviewWrapper {
-        ViewTransactionsScreen(
+        ViewTransactionsColumn(
                 ViewTransactionsState(
-                        transactions = TransactionProvider.basic,
-                        isRecurring = true,
+                        transactions = TransactionProvider.basic.map { it.copy(isRecurring = true) },
                 )
         ) {}
     }

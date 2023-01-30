@@ -2,6 +2,7 @@ package com.eywa.projectnummi.features.transactionsSummary
 
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionSummarySelectionDialog
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryTabSwitcherItem
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent
 import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
 import com.eywa.projectnummi.utils.Polar
 import java.util.*
@@ -20,6 +21,8 @@ sealed class TransactionsSummaryIntent {
 
     data class SummaryItemSelected(val index: Int) : SummaryIntent()
     data class SummaryPieClicked(val polar: Polar) : SummaryIntent()
+
+    data class ViewTransactionsAction(val action: ViewTransactionsIntent) : SummaryIntent()
 
     sealed class FilterIntent : TransactionsSummaryIntent()
     sealed class SummaryIntent : TransactionsSummaryIntent()

@@ -77,7 +77,6 @@ fun TransactionItemFull(
         item: Transaction,
         showCompact: Boolean,
         modifier: Modifier = Modifier,
-        isRecurring: Boolean = item.isRecurring,
 ) {
     val needsAmountsDetail = item.amounts.size > 1
             || item.amounts.first().let { it.category != null || it.person != null }
@@ -103,7 +102,7 @@ fun TransactionItemFull(
                         verticalArrangement = Arrangement.spacedBy(5.dp),
                         modifier = Modifier.fillMaxWidth()
                 ) {
-                    TopRowInfo(item, isRecurring, showCompact)
+                    TopRowInfo(item, item.isRecurring, showCompact)
                     MainInfo(item)
                 }
                 AnimatedVisibility(visible = !showCompact) {
@@ -355,7 +354,7 @@ fun CompactRecurring_TransactionItem_Preview(
     NummiPreviewWrapper(
             contentPadding = PaddingValues(10.dp),
     ) {
-        TransactionItemFull(item = param, showCompact = true, isRecurring = true)
+        TransactionItemFull(item = param.copy(isRecurring = true), showCompact = true)
     }
 }
 

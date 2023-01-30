@@ -2,6 +2,7 @@ package com.eywa.projectnummi.features.transactionsSummary.state
 
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryGrouping.CATEGORY
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsState
 import com.eywa.projectnummi.model.HasNameAndId
 import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Category
@@ -30,6 +31,8 @@ data class TransactionsSummaryState(
 
         val selectedDialogIds: List<Int?> = emptyList(),
         val openSelectDialog: TransactionSummarySelectionDialog? = null,
+
+        val viewTransactionStateRaw: ViewTransactionsState = ViewTransactionsState(),
 ) {
     val selectedAccounts = get(filtersState.selectedAccountIds, accounts) { id, item -> item.id == id }
     val selectedCategories = get(filtersState.selectedCategoryIds, categories) { id, item -> item.id == id }
@@ -53,12 +56,13 @@ data class TransactionsSummaryState(
     }
     val selectedItem by lazy { selectedItemIndex?.let { groupedItems.getOrNull(it) } }
 
+    val viewTransactionState by lazy { viewTransactionStateRaw.copy(transactions = transactions ?: emptyList()) }
+
     private fun List<TransactionsSummaryPieItem>.addArcs(): List<TransactionsSummaryPieItem> {
         var total = getTotal()
         val items = if (total != null) {
             this
-        }
-        else {
+        } else {
             val list = this.map { it.copy(amount = it.amount * -1) }.reversed()
             total = list.getTotal() ?: return this
             list

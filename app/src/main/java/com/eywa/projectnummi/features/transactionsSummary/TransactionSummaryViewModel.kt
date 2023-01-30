@@ -3,11 +3,15 @@ package com.eywa.projectnummi.features.transactionsSummary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eywa.projectnummi.database.NummiDatabase
+import com.eywa.projectnummi.database.transaction.TransactionRepo
 import com.eywa.projectnummi.database.transaction.TransactionsFilters
 import com.eywa.projectnummi.features.transactionsSummary.TransactionsSummaryIntent.*
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionSummarySelectionDialog.*
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryGrouping
 import com.eywa.projectnummi.features.transactionsSummary.state.TransactionsSummaryState
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsManageItemOptions
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsState
+import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsViewModelHelper
 import com.eywa.projectnummi.model.objects.Account
 import com.eywa.projectnummi.model.objects.Category
 import com.eywa.projectnummi.model.objects.Person
@@ -15,6 +19,7 @@ import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.sharedUi.selectItemDialog.SelectItemDialogIntent
 import com.eywa.projectnummi.utils.ListUtils.toggle
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,12 +27,31 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionSummaryViewModel @Inject constructor(
         db: NummiDatabase,
-) : ViewModel() {
+) : ViewModel(), ViewTransactionsViewModelHelper {
     private val _state = MutableStateFlow(TransactionsSummaryState())
     val state = _state.asStateFlow()
 
+    override val isRecurring: Boolean = false
+    override val vtTransactionRepo: TransactionRepo = db.transactionRepo()
+    override val vtViewModelScope: CoroutineScope = viewModelScope
+
+    override fun updateState(block: (ViewTransactionsState) -> ViewTransactionsState) = _state.update {
+        val newState = block(it.viewTransactionStateRaw)
+        if (newState.transactions != it.viewTransactionStateRaw.transactions) {
+            throw IllegalStateException("Transactions should not be changed as it is being overridden")
+        }
+        it.copy(viewTransactionStateRaw = newState)
+    }
+
+    override fun currentState(): ViewTransactionsState = _state.value.viewTransactionState
+
+    override fun getContextMenuItems(): List<ViewTransactionsManageItemOptions> = listOf(
+            ViewTransactionsManageItemOptions.Edit,
+            ViewTransactionsManageItemOptions.Delete,
+    )
+
     init {
-        viewModelScope.launch {
+        vtViewModelScope.launch {
             state.map { it.filtersState }.distinctUntilChanged().collectLatest { filters ->
                 db.transactionRepo().get(filters).collect { dbTransactions ->
                     val transactions = dbTransactions.map { (transaction, amounts) ->
@@ -38,17 +62,17 @@ class TransactionSummaryViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
+        vtViewModelScope.launch {
             db.categoryRepo().getFull().collect { categories ->
                 _state.update { it.copy(categories = categories.map { dbCat -> Category(dbCat) }) }
             }
         }
-        viewModelScope.launch {
+        vtViewModelScope.launch {
             db.personRepo().get().collect { people ->
                 _state.update { it.copy(people = people.map { dbPerson -> Person(dbPerson) }) }
             }
         }
-        viewModelScope.launch {
+        vtViewModelScope.launch {
             db.accountRepo().get().collect { accounts ->
                 _state.update { it.copy(accounts = accounts.map { dbAccount -> Account(dbAccount) }) }
             }
@@ -66,16 +90,11 @@ class TransactionSummaryViewModel @Inject constructor(
 
     private fun handleFilterIntent(action: FilterIntent) {
         when (action) {
-            is FromDateChanged ->
-                updateFilterState { it.copy(from = action.date) }
-            is ToDateChanged ->
-                updateFilterState { it.copy(to = action.date) }
-            ToggleShowIncoming ->
-                updateFilterState { it.copy(showIncoming = !it.showIncoming) }
-            ToggleShowOutgoing ->
-                updateFilterState { it.copy(showOutgoing = !it.showOutgoing) }
-            ToggleOutgoingIsPositive ->
-                _state.update { it.copy(outgoingIsPositive = !it.outgoingIsPositive) }
+            is FromDateChanged -> updateFilterState { it.copy(from = action.date) }
+            is ToDateChanged -> updateFilterState { it.copy(to = action.date) }
+            ToggleShowIncoming -> updateFilterState { it.copy(showIncoming = !it.showIncoming) }
+            ToggleShowOutgoing -> updateFilterState { it.copy(showOutgoing = !it.showOutgoing) }
+            ToggleOutgoingIsPositive -> _state.update { it.copy(outgoingIsPositive = !it.outgoingIsPositive) }
         }
     }
 
@@ -96,6 +115,7 @@ class TransactionSummaryViewModel @Inject constructor(
                     it.copy(selectedItemIndex = newItem)
                 }
             }
+            is ViewTransactionsAction -> handleViewTransactionIntent(action.action)
         }
     }
 

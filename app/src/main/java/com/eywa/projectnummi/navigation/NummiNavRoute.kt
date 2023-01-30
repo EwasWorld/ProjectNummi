@@ -86,7 +86,7 @@ enum class NummiNavRoute : NavRoute {
     TRANSACTIONS_SUMMARY {
         @Composable
         override fun Screen(navController: NavController, entry: NavBackStackEntry) =
-                TransactionsSummaryScreen()
+                TransactionsSummaryScreen(navController)
 
         // TODO Save state isn't working :(
         override fun saveStateOnNavigate(arguments: Map<String, NavArgument>?) = true
