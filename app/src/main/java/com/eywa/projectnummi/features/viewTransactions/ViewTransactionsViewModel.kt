@@ -50,7 +50,7 @@ class ViewTransactionsViewModel @Inject constructor(
                             .map { dbTransaction -> Transaction(dbTransaction) }
                             .let { transactions ->
                                 if (isRecurring) transactions.sortedBy { transaction -> transaction.name }
-                                else transactions.sortedWith(descendingDateTransactionComparator)
+                                else transactions
                             }
                             .let { transactions -> it.copy(transactions = transactions) }
                 }

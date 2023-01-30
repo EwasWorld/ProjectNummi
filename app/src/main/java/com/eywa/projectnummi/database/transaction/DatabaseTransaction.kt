@@ -7,7 +7,6 @@ import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
 import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
-import com.eywa.projectnummi.features.viewTransactions.descendingDateTransactionComparator
 import java.util.*
 
 @Entity(
@@ -41,7 +40,6 @@ data class DatabaseTransaction(
         val isOutgoing: Boolean = true,
         /**
          * The order that transactions with the same [date] should be shown
-         * @see [descendingDateTransactionComparator]
          */
         val order: Int = 1,
         val note: String? = null,

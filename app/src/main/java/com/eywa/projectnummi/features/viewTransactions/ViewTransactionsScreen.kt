@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.eywa.projectnummi.features.viewTransactions.ViewTransactionsIntent.*
-import com.eywa.projectnummi.model.objects.Transaction
 import com.eywa.projectnummi.model.providers.TransactionProvider
 import com.eywa.projectnummi.sharedUi.NummiScreenPreviewWrapper
 import com.eywa.projectnummi.sharedUi.TabSwitcher
@@ -30,25 +29,6 @@ import com.eywa.projectnummi.sharedUi.utils.ManageTabSwitcherItem
 import com.eywa.projectnummi.theme.NummiTheme
 import kotlinx.coroutines.launch
 
-
-/**
- * Sorts transactions as follows (in order):
- * - Nulls first
- * - Latest [Transaction.date] first
- * - Higher [Transaction.order] first
- */
-val descendingDateTransactionComparator: Comparator<Transaction> = object : Comparator<Transaction> {
-    override fun compare(t0: Transaction?, t1: Transaction?): Int {
-        if (t0 == null && t1 == null) return 0
-        if (t1 == null) return 1
-        if (t0 == null) return -1
-
-        val descendingDateComparison = t1.date.compareTo(t0.date)
-        if (descendingDateComparison != 0) return descendingDateComparison
-
-        return t1.order.compareTo(t0.order)
-    }
-}
 
 @Composable
 fun ViewTransactionsScreen(

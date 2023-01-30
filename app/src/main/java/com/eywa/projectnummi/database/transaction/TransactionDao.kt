@@ -6,18 +6,42 @@ import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
+private const val DATE_ORDER = "date DESC, `order` DESC"
+
 @Dao
 interface TransactionDao {
+    /**
+     * Items are ordered by [DatabaseTransaction.date] and [DatabaseTransaction.order]
+     */
     @Transaction
-    @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE isRecurring = :isRecurring")
+    @Query(
+            """
+                SELECT * 
+                FROM ${DatabaseTransaction.TABLE_NAME} 
+                WHERE isRecurring = :isRecurring 
+                ORDER BY $DATE_ORDER
+            """
+    )
     fun getFull(isRecurring: Boolean): Flow<List<FullDatabaseTransaction>>
 
+    /**
+     * Items are ordered by [DatabaseTransaction.date] and [DatabaseTransaction.order]
+     */
     @Transaction
-    @Query("SELECT * FROM ${DatabaseTransaction.TABLE_NAME} WHERE id = :id")
+    @Query(
+            """
+                SELECT * 
+                FROM ${DatabaseTransaction.TABLE_NAME} 
+                WHERE id = :id 
+                ORDER BY $DATE_ORDER
+            """
+    )
     fun getFull(id: Int): Flow<FullDatabaseTransaction>
 
     /**
-     * Note: does not return any [DatabaseTransaction.isRecurring] items
+     * Note:
+     * - Does not return any [DatabaseTransaction.isRecurring] items.
+     * - Items are ordered by [DatabaseTransaction.date] and [DatabaseTransaction.order]
      *
      * @param overrideShowAllAccounts ignore [accountIds], show all accounts
      * @param allowAccountIsNull include null values with [accountIds]
@@ -41,6 +65,7 @@ interface TransactionDao {
                     AND (:overrideShowAllCategories OR amount.categoryId IN (:categoryIds) OR (amount.categoryId IS null AND :allowCategoryIsNull))
                     AND (:overrideShowAllPeople OR amount.personId IN (:personIds) OR (amount.personId IS null AND :allowPersonIsNull))
                 GROUP BY tran.id
+                ORDER BY $DATE_ORDER
             """
     )
     fun get(
