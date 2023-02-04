@@ -60,6 +60,7 @@ fun ViewTransactionsScreen(
                 listener = { viewModel.handleViewTransactionIntent(it) },
         )
         // TODO show/hide on scroll up/down
+        // https://stackoverflow.com/questions/67737502/how-to-detect-up-down-scroll-for-a-column-with-vertical-scroll
         FloatingActionButton(
                 backgroundColor = NummiTheme.colors.fab.main,
                 contentColor = NummiTheme.colors.fab.content,

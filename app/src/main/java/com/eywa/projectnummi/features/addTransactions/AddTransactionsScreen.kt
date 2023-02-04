@@ -105,6 +105,7 @@ fun AddTransactionsScreen(
             FinalButtons(state, listener)
         }
         // TODO show/hide on scroll up/down
+        // https://stackoverflow.com/questions/67737502/how-to-detect-up-down-scroll-for-a-column-with-vertical-scroll
         if (!state.isEditing && !state.creatingFromRecurring) {
             FloatingActionButton(
                     backgroundColor = NummiTheme.colors.fab.main,
