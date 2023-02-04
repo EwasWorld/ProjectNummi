@@ -7,6 +7,8 @@ import com.eywa.projectnummi.database.amount.DatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.amount.FullDatabaseAmountWithFullCategory
 import com.eywa.projectnummi.database.category.CategoryIdWithParentIds
+import com.eywa.projectnummi.database.category.DatabaseCategory
+import com.eywa.projectnummi.database.person.DatabasePerson
 import java.util.*
 
 @Entity(
@@ -81,6 +83,45 @@ data class FullDatabaseTransaction(
                     account = account
             )
 }
+
+// TODO This feels dumb... Why isn't map working?
+data class DatabaseTransactionAndAmount(
+        val transactionId: Int,
+        val amountId: Int,
+        val accountId: Int,
+        val categoryId: Int?,
+        val personId: Int?,
+
+        @Relation(
+                parentColumn = "transactionId",
+                entityColumn = "id",
+        )
+        val transaction: DatabaseTransaction,
+
+        @Relation(
+                parentColumn = "amountId",
+                entityColumn = "id",
+        )
+        val amount: DatabaseAmount,
+
+        @Relation(
+                parentColumn = "accountId",
+                entityColumn = "id",
+        )
+        val account: DatabaseAccount?,
+
+        @Relation(
+                parentColumn = "categoryId",
+                entityColumn = "id",
+        )
+        val category: DatabaseCategory?,
+
+        @Relation(
+                parentColumn = "personId",
+                entityColumn = "id",
+        )
+        val person: DatabasePerson?,
+)
 
 data class FullDatabaseTransactionWithFullCategory(
         val transaction: DatabaseTransaction,

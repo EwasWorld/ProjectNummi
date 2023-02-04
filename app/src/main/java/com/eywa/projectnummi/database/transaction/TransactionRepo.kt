@@ -3,6 +3,7 @@ package com.eywa.projectnummi.database.transaction
 import androidx.room.Transaction
 import com.eywa.projectnummi.database.amount.AmountDao
 import com.eywa.projectnummi.database.amount.DatabaseAmount
+import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import com.eywa.projectnummi.database.category.CategoryDao
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -38,8 +39,18 @@ class TransactionRepo(
                     isOutgoing = filters.showOutgoing,
                     overrideShowInAndOut = filters.showOutgoing == filters.showIncoming,
             ).combine(categoryDao.getParentIds()) { transactions, categoryInfo ->
-                transactions.mapValues { (_, value) ->
-                    value.map { it.addCategoryInfoDbId(categoryInfo) }
+                transactions.groupBy { it.transaction.id }.map { (_, items) ->
+                    FullDatabaseTransactionWithFullCategory(
+                            transaction = items.first().transaction,
+                            account = items.first().account,
+                            amounts = items.map {
+                                FullDatabaseAmount(
+                                        amount = it.amount,
+                                        category = it.category,
+                                        person = it.person,
+                                ).addCategoryInfoDbId(categoryInfo)
+                            }
+                    )
                 }
             }
 

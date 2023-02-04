@@ -2,7 +2,6 @@ package com.eywa.projectnummi.database.transaction
 
 import androidx.room.*
 import com.eywa.projectnummi.database.amount.DatabaseAmount
-import com.eywa.projectnummi.database.amount.FullDatabaseAmount
 import kotlinx.coroutines.flow.Flow
 import java.util.*
 
@@ -54,7 +53,7 @@ interface TransactionDao {
     @Transaction
     @Query(
             """
-                SELECT *
+                SELECT tran.id as transactionId, amount.id as amountId, accountId, categoryId, personId
                 FROM ${DatabaseTransaction.TABLE_NAME} as tran
                 JOIN ${DatabaseAmount.TABLE_NAME} as amount ON tran.id = amount.transactionId
                 WHERE 
@@ -64,7 +63,6 @@ interface TransactionDao {
                     AND (:overrideShowAllAccounts OR tran.accountId IN (:accountIds) OR (tran.accountId IS null AND :allowAccountIsNull))
                     AND (:overrideShowAllCategories OR amount.categoryId IN (:categoryIds) OR (amount.categoryId IS null AND :allowCategoryIsNull))
                     AND (:overrideShowAllPeople OR amount.personId IN (:personIds) OR (amount.personId IS null AND :allowPersonIsNull))
-                GROUP BY tran.id
                 ORDER BY $DATE_ORDER
             """
     )
@@ -82,7 +80,7 @@ interface TransactionDao {
             overrideShowAllPeople: Boolean,
             isOutgoing: Boolean,
             overrideShowInAndOut: Boolean,
-    ): Flow<Map<DatabaseTransactionWithFullAccount, List<FullDatabaseAmount>>>
+    ): Flow<List<DatabaseTransactionAndAmount>>
 
     /**
      * @return max [DatabaseTransaction.order] where [DatabaseTransaction.date] == [date]

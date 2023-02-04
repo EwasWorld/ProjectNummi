@@ -53,11 +53,8 @@ class TransactionSummaryViewModel @Inject constructor(
     init {
         vtViewModelScope.launch {
             state.map { it.filtersState }.distinctUntilChanged().collectLatest { filters ->
-                db.transactionRepo().get(filters).collect { dbTransactions ->
-                    val transactions = dbTransactions.map { (transaction, amounts) ->
-                        Transaction(transaction, amounts)
-                    }
-                    _state.update { it.copy(transactions = transactions) }
+                db.transactionRepo().get(filters).collect { transactions ->
+                    _state.update { it.copy(transactions = transactions.map { t -> Transaction(t) }) }
                 }
             }
         }
